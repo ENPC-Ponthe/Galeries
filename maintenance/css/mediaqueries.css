@@ -1,0 +1,43 @@
+/*MEDIA QUERIES---*/
+@media only screen and (min-width:600px) and (max-width:920px) {
+	body {
+			font-size:10.5px;
+	}
+#countdown{
+	font-size:35px;
+	padding:0% 0% 2% 0%;
+}
+#countdown h5{
+	font-size:0.3em;
+}
+#social ul li{
+	font-size:1.5em;
+}
+}
+@media only screen and (max-width:599px) {
+	body {
+			font-size:7px;
+	}
+#countdown{
+	font-size:20px;
+	padding:0% 0% 2% 0%;
+}
+#countdown h5{
+	font-size:0.4em;
+}
+}
+@media only screen and (min-width:2000px){
+	body {
+			font-size:14px;
+	}
+#countdown{
+	font-size:60px;
+	padding:0% 0% 2% 0%;
+}
+#countdown h5{
+	font-size:0.3em;
+}
+#social ul li{
+	font-size:1.5em;
+}
+}
