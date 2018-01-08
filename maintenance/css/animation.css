@@ -1,0 +1,89 @@
+/*----Class Animation----*/
+.animation_01{
+	animation-name: titleanim_01;
+	animation-duration: 1.2s;
+	animation-iteration-count: 1;
+	animation-play-state: running;
+	/* Safari and Chrome: */
+	-webkit-animation-name: titleanim01;
+	-webkit-animation-duration: 1.2s;
+	-webkit-animation-iteration-count: 1;
+	-webkit-animation-play-state: running;
+	}
+	@keyframes titleanim01
+	{
+	0%   {opacity: 0;top:-100px;}
+	100% {opacity: 1;top:0px;}
+	}
+
+	@-webkit-keyframes titleanim01 /* Safari and Chrome */
+	{
+	0%   {opacity: 0;top:-100px;}
+	100% {opacity: 1;top:0px;}
+	}
+.animation_02{
+	animation-name: titleanim_02;
+	animation-duration: 2.5s;
+	animation-iteration-count: 1;
+	animation-play-state: running;
+	/* Safari and Chrome: */
+	-webkit-animation-name: titleanim_02;
+	-webkit-animation-duration: 2.5s;
+	-webkit-animation-iteration-count: 1;
+	-webkit-animation-play-state: running;
+	}
+	@keyframes titleanim_02
+	{
+	0%   {opacity: 0;}
+	100% {opacity: 1;}
+	}
+
+	@-webkit-keyframes titleanim_02 /* Safari and Chrome */
+	{
+	0%   {opacity: 0;}
+	100% {opacity: 1;}
+	}	
+.animation_03{
+	animation-name: titleanim_03;
+	animation-duration: 3.5s;
+	animation-iteration-count: 1;
+	animation-play-state: running;
+	/* Safari and Chrome: */
+	-webkit-animation-name: titleanim_03;
+	-webkit-animation-duration: 3.5s;
+	-webkit-animation-iteration-count: 1;
+	-webkit-animation-play-state: running;
+	}
+	@keyframes titleanim_03
+	{
+	0%   {opacity: 0;}
+	100% {opacity: 1;}
+	}
+
+	@-webkit-keyframes titleanim_03 /* Safari and Chrome */
+	{
+	0%   {opacity: 0;}
+	100% {opacity: 1;}
+	}		
+.animation_04{
+	animation-name: titleanim_04;
+	animation-duration: 4.5s;
+	animation-iteration-count: 1;
+	animation-play-state: running;
+	/* Safari and Chrome: */
+	-webkit-animation-name: titleanim_04;
+	-webkit-animation-duration: 4.5s;
+	-webkit-animation-iteration-count: 1;
+	-webkit-animation-play-state: running;
+	}
+	@keyframes titleanim_04
+	{
+	0%   {opacity: 0;}
+	100% {opacity: 1;}
+	}
+
+	@-webkit-keyframes titleanim_04 /* Safari and Chrome */
+	{
+	0%   {opacity: 0;}
+	100% {opacity: 1;}
+	}			
