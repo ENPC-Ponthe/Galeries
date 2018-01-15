@@ -1,6 +1,5 @@
 {% extends "layout/layout.html" %}
-
-{% block content %}
+{%block content %}
             <!-- === BEGIN CONTENT === -->
             <div id="content">
                 <div class="container background-white">
@@ -9,17 +8,22 @@
                         <div class="col-md-9">
                             <!-- Main Content -->
                             <div class="headline">
-                                <h2>Contact Form</h2>
+                                <h2>Réserver du matériel</h2>
                             </div>
-                            <p>At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas feugiat. Et harum quidem rerum facilis est et expedita distinctio lorem ipsum dolor
-                                sit amet, consectetur adipiscing elit landitiis.</p>
+                            <p> Formulaire de réservation </p>
                             <br>
                             <!-- Contact Form -->
-                            <form>
-                                <label>Name</label>
+                            <form action="" method="post">
+                                <label>Nom</label>
                                 <div class="row margin-bottom-20">
                                     <div class="col-md-6 col-md-offset-0">
-                                        <input class="form-control" type="text">
+                                        <input type="text" class="form-control" name="nom" >
+                                    </div>
+                                </div>
+                                <label>Prénom</label>
+                                <div class="row margin-bottom-20">
+                                    <div class="col-md-6 col-md-offset-0">
+                                        <input type="text" class="form-control" name="prenom" >
                                     </div>
                                 </div>
                                 <label>Email
@@ -27,17 +31,17 @@
                                 </label>
                                 <div class="row margin-bottom-20">
                                     <div class="col-md-6 col-md-offset-0">
-                                        <input class="form-control" type="text">
+                                        <input class="form-control" type="text" name= "Email ">
                                     </div>
                                 </div>
                                 <label>Message</label>
                                 <div class="row margin-bottom-20">
                                     <div class="col-md-8 col-md-offset-0">
-                                        <textarea rows="8" class="form-control"></textarea>
+                                        <textarea rows="8" class="form-control" name = "message"></textarea>
                                     </div>
                                 </div>
                                 <p>
-                                    <button type="submit" class="btn btn-primary">Send Message</button>
+                                    <button type="submit" class="btn btn-primary" value="Envoyer">Send Message</button>
                                 </p>
                             </form>
                             <!-- End Contact Form -->
@@ -52,42 +56,18 @@
                                     <h3 class="panel-title">Contact Info</h3>
                                 </div>
                                 <div class="panel-body">
-                                    <p>Lorem ipsum dolor sit amet, no cetero voluptatum est, audire sensibus maiestatis vis et. Vitae audire prodesset an his. Nulla ubique omnesque in sit.</p>
-                                    <ul class="list-unstyled">
+                                    <p>Pour des questions supplémentaires sur le club ou la réservation de matériel, vous pouvez contacter la présidente du club Ponthé avec les informations ci-jointes </p>
                                         <li>
-                                            <i class="fa-phone color-primary"></i>+353-44-55-66</li>
+                                            <i class="fa-phone color-primary"></i>06 29 78 24 32</li>
                                         <li>
-                                            <i class="fa-envelope color-primary"></i>info@example.com</li>
-                                        <li>
-                                            <i class="fa-home color-primary"></i>http://www.example.com</li>
-                                    </ul>
-                                    <ul class="list-unstyled">
-                                        <li>
-                                            <strong class="color-primary">Monday-Friday:</strong>9am to 6pm</li>
-                                        <li>
-                                            <strong class="color-primary">Saturday:</strong>10am to 3pm</li>
-                                        <li>
-                                            <strong class="color-primary">Sunday:</strong>Closed</li>
-                                    </ul>
+                                            <i class="fa-envelope color-primary"></i>ines.tazi@eleves.enpc.fr </li>
                                 </div>
                             </div>
                             <!-- End recent Posts -->
-                            <!-- About -->
-                            <div class="panel panel-default">
-                                <div class="panel-heading">
-                                    <h3 class="panel-title">About</h3>
-                                </div>
-                                <div class="panel-body">
-                                    Et harum quidem rerum facilis est et expedita distinctio lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut non libero consectetur adipiscing elit magna. Sed et quam lacus. Fusce condimentum eleifend enim a feugiat.
-                                </div>
-                            </div>
-                            <!-- End About -->
                         </div>
                         <!-- End Side Column -->
                     </div>
                 </div>
             </div>
             <!-- === END CONTENT === -->
-            <!-- === BEGIN FOOTER === -->
-           
-            {% endblock %}
+{% endblock %}
