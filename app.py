@@ -32,14 +32,15 @@ def user_loader(email):
 def request_loader(request):
     email = request.form.get('email')
     # this must be done by fetching user from database
-    if email not in users:
-        return
-    user = User()
-    user.id = email
     # DO NOT ever store passwords in plaintext and always compare password
     # hashes using constant-time comparison!
-    user.is_authenticated = request.form['password'] == users[email]['password']
-    return user
+    if email in users and request.form['password'] == users[email]['password']:
+        user = User()
+        user.id = email
+        user.is_authenticated = True
+        return user
+    else:
+        return
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -83,23 +84,23 @@ def reservation() :
 @login_required
 def depotfichiers():
     if request.method == 'POST':
-        
+
         f = request.files['fic']
-        
+
         if f: # on verifie qu'un fichier a bien ete envoye
-            
+
             if extension_ok(f.filename): # on verifie que son extension est valide
-                
+
                 nom = secure_filename(f.filename)
-                
+
                 f.save(DOSSIER_UPS + nom)
-                
+
                 flash(u'Bravo! Vos images ont ete envoyees! :)','succes')
-        
+
             else:
-                
+
                 flash(u'Ce fichier ne porte pas l extension png, jpg, jpeg, gif ou bmp !', 'error')
-    
+
     else:
         flash(u'Vous avez oublie le fichier !', 'error')
     return render_template('depotfichiers.html')
