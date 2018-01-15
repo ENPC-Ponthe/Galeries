@@ -1,2 +1,4 @@
 flask
 flask-login
+werkzeug
+flask-mail
