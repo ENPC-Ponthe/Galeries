@@ -52,6 +52,8 @@ body {
   background-position: 50% 0;
   background-repeat: no-repeat;
   background-size: cover !important;
+  min-height: 100%;
+  height: fit-content;
   position: relative;
 }
 .primary-container-background .primary-container {
