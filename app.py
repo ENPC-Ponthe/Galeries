@@ -3,27 +3,21 @@ from werkzeug import secure_filename
 from flask_mail import Mail,Message
 import os
 from flask_login import LoginManager, UserMixin, login_user , logout_user , current_user , login_required
-from flaskext.mysql import MySQL
-
+import mysql.connector
 
 app = Flask(__name__)
-mysql = MySQL()
 
-app.config['MYSQL_DATABASE_HOST'] = 'vps.enpc.org'
-app.config['MYSQL_DATABASE_USER'] = 'enpc-ponthe'
-app.config['MYSQL_DATABASE_PASSWORD'] = 'Ponthasm7gorique2017'
-app.config['MYSQL_DATABASE_DB'] = 'enpc-ponthe'
-app.config['MYSQL_DATABASE_PORT'] = 7501
-
-mysql.init_app(app)
+dbconnexion = mysql.connector.connect(host="vps.enpc.org", port="7501", \
+    user="enpc-ponthe",password="Ponthasm7gorique2017", \
+    database="enpc-ponthe")
 
 app.secret_key = 'd66HREGTHUVGDRfdt4'
 DOSSIER_UPS = './uploads/'
 login_manager = LoginManager()
 login_manager.init_app(app)
 
-users = {} 
-cursor = mysql.connect().cursor()
+users = {}
+cursor = dbconnexion.cursor()
 cursor.execute("SELECT * FROM Admin")
 var = cursor.fetchall()
 for admin in var:
@@ -33,7 +27,7 @@ for admin in var:
         'firstname': admin[2],
         'email': admin[3],
         'password': admin[4]}
-    users[str(admin[3])] = empDict 
+    users[str(admin[3])] = empDict
 cursor.close()
 
 
