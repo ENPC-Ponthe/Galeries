@@ -17,18 +17,25 @@ app.config['MYSQL_DATABASE_PORT'] = 7501
 
 mysql.init_app(app)
 
-cursor = mysql.connect().cursor()
-cursor.execute("""INSERT INTO `Admin` (`id`, `lastname`, `firstname`, `email`, `password` ) VALUES ('0', 'Tazi', 'Ines', 'ines.tazi@eleves.enpc.fr', 'ines' ) """ ) 
-
-app.config['secret_key'] = 'd66HREGTHUVGDRfdt4'
-
+app.secret_key = 'd66HREGTHUVGDRfdt4'
 DOSSIER_UPS = './uploads/'
 login_manager = LoginManager()
-
 login_manager.init_app(app)
 
-# Mock.
-users = {'user': {'password': 'secret'}}
+users = {} 
+cursor = mysql.connect().cursor()
+cursor.execute("SELECT * FROM Admin")
+var = cursor.fetchall()
+for admin in var:
+    empDict = {
+        'id': admin[0],
+        'lastname': admin[1],
+        'firstname': admin[2],
+        'email': admin[3],
+        'password': admin[4]}
+    users[str(admin[3])] = empDict 
+cursor.close()
+
 
 class User(UserMixin):
     pass
@@ -36,7 +43,6 @@ class User(UserMixin):
 
 @login_manager.user_loader
 def user_loader(email):
-    # this must be done by fetching user from database
     if email not in users:
         return
     user = User()
@@ -47,9 +53,6 @@ def user_loader(email):
 @login_manager.request_loader
 def request_loader(request):
     email = request.form.get('email')
-    # this must be done by fetching user from database
-    # DO NOT ever store passwords in plaintext and always compare password
-    # hashes using constant-time comparison!
     if email in users and request.form['password'] == users[email]['password']:
         user = User()
         user.id = email
@@ -60,24 +63,15 @@ def request_loader(request):
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    curs = mysql.connection.cursor()
-    curs.execute("INSERT INTO Admin (lastname, firstname, email, password) VALUES ('Tazi', 'Ines', 'ines.tazi@eleves.enpc.fr', 'ines')")
-    curs.close()
-    curso = mysql.connection.cursor()
-    curso.execute("SELECT * FROM Admin")
-    var = curso.fetchall()
-    curso.close()
-    #if request.method == 'GET':
-    #    return getLoginPage()
-
-    #email = request.form['email']
-    #if request.form['password'] == users[email]['password']:
-    #    user = User()
-    #    user.id = email
-    #    login_user(user)
-    #    return getHome()
-    #return getLoginPage()
-    return jsonify(var)
+    if request.method == 'GET':
+        return getLoginPage()
+    email = request.form['email']
+    if request.form['password'] == users[email]['password']:
+        user = User()
+        user.id = email
+        login_user(user)
+        return getHome()
+    return getLoginPage()
 
 @app.route('/logout')
 def logout():
