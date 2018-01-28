@@ -1,23 +1,27 @@
-from flask import Flask,render_template,request, flash, redirect, url_for, send_file
+from flask import Flask,render_template,request, flash, redirect, url_for, jsonify
 from werkzeug import secure_filename
 from flask_mail import Mail,Message
 import os
 from flask_login import LoginManager, UserMixin, login_user , logout_user , current_user , login_required
 from flaskext.mysql import MySQL
+
+
 app = Flask(__name__)
 mysql = MySQL()
 
-app.config['MYSQL_DATABASE_HOST'] = 'va1757-001.privatesq'
+app.config['MYSQL_DATABASE_HOST'] = 'vps.enpc.org'
 app.config['MYSQL_DATABASE_USER'] = 'enpc-ponthe'
 app.config['MYSQL_DATABASE_PASSWORD'] = 'Ponthasm7gorique2017'
 app.config['MYSQL_DATABASE_DB'] = 'enpc-ponthe'
-app.config['MYSQL_DATABASE_PORT'] = '35287'
+app.config['MYSQL_DATABASE_PORT'] = 7501
 
 mysql.init_app(app)
 
 cursor = mysql.connect().cursor()
-cursor.execute("""INSERT INTO `Admin` (`Nom`, `Prénom`, `Mail`, `MDP`) VALUES ('Tazi', 'Ines', 'ines.tazi@eleves.enpc.fr', 'ines') """ ) 
-app.secret_key = 'd66HREGTHUVGDRfdt4'
+cursor.execute("""INSERT INTO `Admin` (`id`, `lastname`, `firstname`, `email`, `password` ) VALUES ('0', 'Tazi', 'Ines', 'ines.tazi@eleves.enpc.fr', 'ines' ) """ ) 
+
+app.config['secret_key'] = 'd66HREGTHUVGDRfdt4'
+
 DOSSIER_UPS = './uploads/'
 login_manager = LoginManager()
 
@@ -56,16 +60,24 @@ def request_loader(request):
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    if request.method == 'GET':
-        return getLoginPage()
+    curs = mysql.connection.cursor()
+    curs.execute("INSERT INTO Admin (lastname, firstname, email, password) VALUES ('Tazi', 'Ines', 'ines.tazi@eleves.enpc.fr', 'ines')")
+    curs.close()
+    curso = mysql.connection.cursor()
+    curso.execute("SELECT * FROM Admin")
+    var = curso.fetchall()
+    curso.close()
+    #if request.method == 'GET':
+    #    return getLoginPage()
 
-    email = request.form['email']
-    if request.form['password'] == users[email]['password']:
-        user = User()
-        user.id = email
-        login_user(user)
-        return getHome()
-    return getLoginPage()
+    #email = request.form['email']
+    #if request.form['password'] == users[email]['password']:
+    #    user = User()
+    #    user.id = email
+    #    login_user(user)
+    #    return getHome()
+    #return getLoginPage()
+    return jsonify(var)
 
 @app.route('/logout')
 def logout():
