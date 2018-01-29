@@ -4,6 +4,7 @@ from flask_mail import Mail,Message
 import os
 from flask_login import LoginManager, UserMixin, login_user , logout_user , current_user , login_required
 import mysql.connector
+from itsdangerous import URLSafeTimedSerializer, SignatureExpired 
 
 app = Flask(__name__)
 
@@ -24,13 +25,17 @@ app.config.update(
     MAIL_PORT= 465,
     MAIL_USE_SSL=True,
     MAIL_USERNAME = 'fabien.lespagnol21@gmail.com',
-    MAIL_PASSWORD = ''
+    MAIL_PASSWORD = 'Lavieestbelle94220=GM'
     )
     
 mail=Mail(app)
 
+s=URLSafeTimedSerializer(app.secret_key)
+
 class User(UserMixin):
     pass
+
+user = User()
 
 users = {}
 cursor = dbconnexion.cursor()
@@ -78,6 +83,33 @@ def login():
         return getHome()
     return getLoginPage()
 
+@app.route('/creation-compte', methods=['GET', 'POST'])
+def creation():
+    if request.method == 'POST' :
+        user.id = 50 ,
+        user.nom=request.form['nom'],
+        user.prenom=request.form['prenom'],
+        user.email = request.form['email'],
+        user.MDP = request.form['password'],
+        email = request.form['email']
+        token = s.dumps(email, salt = 'email-confirm')
+        msg = Message('Confirm Email', sender = 'fabien.lespagnol21@gmail.com',recipients = [email])
+        link = url_for('confirm_email', token = token,  _external = True)
+        msg.body = 'Votre lien est {}'.format(link)
+        mail.send(msg)
+        return render_template('mail_confirmation.html')
+    return render_template('creation-compte.html')
+
+@app.route('/confirm_email/<token>')
+def confirm_email(token):
+    try :
+        email = s.loads(token, salt = 'email-confirm', max_age = 300 )
+        cursor = dbconnexion.cursor()
+        cursor.execute( " INSERT INTO `Admin` (`id`, `lastname`, `firsname`, `email`, `password`) VALUES (user.id, ,user.nom, user.prenom, user.email, user.MDP) " )
+    except SignatureExpired :
+        return '<h1> The token is expired </h1> ' 
+
+
 @app.route('/logout')
 def logout():
     logout_user()
@@ -98,7 +130,7 @@ def getLoginPage():
 @login_required
 def reservation() :
     if request.method == 'POST':
-        msg = Message(request.form['message'],sender= 'fabien.lespagnol21@gmail.com', recipients=[request.form['Email']])
+        msg = Message(request.form['message'],sender= 'fabien.lespagnol21@gmail.com', recipients=[request.form['email']])
         mail.send(msg)
         return render_template("mail_envoye.html" , p=request.form['prenom'], n=request.form['nom'])
     return render_template( 'materiel.html')
