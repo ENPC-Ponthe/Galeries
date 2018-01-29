@@ -78,7 +78,6 @@ def login():
         return getLoginPage()
     email = request.form['email']
     if request.form['password'] == users[email]['password']:
-        user = User()
         user.id = email
         login_user(user)
         return getHome()
@@ -87,13 +86,13 @@ def login():
 @app.route('/creation-compte', methods=['GET', 'POST'])
 def creation():
     if request.method == 'POST' :
-        user.id = 50 ,
+        user.id = 6 ,
         user.nom=request.form['nom'],
         user.prenom=request.form['prenom'],
         user.email = request.form['email'],
         user.MDP = request.form['password'],
         email = request.form['email']
-        token = s.dumps(email, salt = 'email-confirm')
+        token = s.dumps(email)
         msg = Message('Confirm Email', sender = 'fabien.lespagnol21@gmail.com',recipients = [email])
         link = url_for('confirm_email', token = token,  _external = True)
         msg.body = 'Votre lien est {}'.format(link)
@@ -104,11 +103,12 @@ def creation():
 @app.route('/confirm_email/<token>')
 def confirm_email(token):
     try :
-        email = s.loads(token, salt = 'email-confirm', max_age = 300 )
+        email = s.loads(token, max_age = 300 )
         cursor = dbconnexion.cursor()
-        cursor.execute( " INSERT INTO `Admin` (`id`, `lastname`, `firsname`, `email`, `password`) VALUES (user.id, ,user.nom, user.prenom, user.email, user.MDP) " )
+        cursor.execute( " INSERT INTO Admin (id, lastname, firstname, email, password) VALUES ( '1' , 'user.nom', 'user.prenom', 'user.email', 'user.MDP') " )
     except SignatureExpired :
         return '<h1> The token is expired </h1> ' 
+    return getHome()
 
 
 @app.route('/logout')
