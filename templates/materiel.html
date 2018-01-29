@@ -1,5 +1,5 @@
 {% extends "layout/layout.html" %}
-{%block content %}
+{% block content %}
             <!-- === BEGIN CONTENT === -->
             <div id="content">
                 <div class="container background-white">
@@ -17,13 +17,13 @@
                                 <label>Nom</label>
                                 <div class="row margin-bottom-20">
                                     <div class="col-md-6 col-md-offset-0">
-                                        <input type="text" class="form-control" name="nom" >
+                                        <input type="text" class="form-control" name="nom" id="nom" >
                                     </div>
                                 </div>
                                 <label>Prénom</label>
                                 <div class="row margin-bottom-20">
                                     <div class="col-md-6 col-md-offset-0">
-                                        <input type="text" class="form-control" name="prenom" >
+                                        <input type="text" class="form-control" name="prenom" id="prenom" >
                                     </div>
                                 </div>
                                 <label>Email
@@ -31,13 +31,13 @@
                                 </label>
                                 <div class="row margin-bottom-20">
                                     <div class="col-md-6 col-md-offset-0">
-                                        <input class="form-control" type="text" name= "Email ">
+                                        <input class="form-control" type="text" name= "Email" id="Email">
                                     </div>
                                 </div>
                                 <label>Message</label>
                                 <div class="row margin-bottom-20">
                                     <div class="col-md-8 col-md-offset-0">
-                                        <textarea rows="8" class="form-control" name = "message"></textarea>
+                                        <textarea rows="8" class="form-control" name = "message" id="message"></textarea>
                                     </div>
                                 </div>
                                 <p>
@@ -64,10 +64,5 @@
                                 </div>
                             </div>
                             <!-- End recent Posts -->
-                        </div>
-                        <!-- End Side Column -->
-                    </div>
-                </div>
-            </div>
             <!-- === END CONTENT === -->
 {% endblock %}

@@ -16,6 +16,22 @@ DOSSIER_UPS = './uploads/'
 login_manager = LoginManager()
 login_manager.init_app(app)
 
+mail=Mail(app)
+
+app.config.update(
+    DEBUG=True,
+    MAIL_SERVER='smtp.gmail.com',
+    MAIL_PORT= 465,
+    MAIL_USE_SSL=True,
+    MAIL_USERNAME = 'fabien.lespagnol21@gmail.com',
+    MAIL_PASSWORD = ''
+    )
+    
+mail=Mail(app)
+
+class User(UserMixin):
+    pass
+
 users = {}
 cursor = dbconnexion.cursor()
 cursor.execute("SELECT * FROM Admin")
@@ -29,11 +45,6 @@ for admin in var:
         'password': admin[4]}
     users[str(admin[3])] = empDict
 cursor.close()
-
-
-class User(UserMixin):
-    pass
-
 
 @login_manager.user_loader
 def user_loader(email):
@@ -87,8 +98,8 @@ def getLoginPage():
 @login_required
 def reservation() :
     if request.method == 'POST':
-        # msg = Message(request.form['message'],sender= ["fabien.lespagnol@eleves.enpc.fr"], recipients=[request.form['Email']])
-        # mail.send(msg)
+        msg = Message(request.form['message'],sender= 'fabien.lespagnol21@gmail.com', recipients=[request.form['Email']])
+        mail.send(msg)
         return render_template("mail_envoye.html" , p=request.form['prenom'], n=request.form['nom'])
     return render_template( 'materiel.html')
 
