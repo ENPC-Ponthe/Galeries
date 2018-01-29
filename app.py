@@ -14,6 +14,7 @@ dbconnexion = mysql.connector.connect(host="vps.enpc.org", port="7501", \
 
 app.secret_key = 'd66HREGTHUVGDRfdt4'
 DOSSIER_UPS = './uploads/'
+directory2=DOSSIER_UPS
 login_manager = LoginManager()
 login_manager.init_app(app)
 
@@ -138,27 +139,50 @@ def reservation() :
 @app.route('/depotfichiers.html', methods=['GET', 'POST'])
 @login_required
 def depotfichiers():
+
     if request.method == 'POST':
 
-        f = request.files['fic']
+        evenement=request.form['evenement']
+        date=request.form['date']
 
-        if f: # on verifie qu'un fichier a bien ete envoye
+        if evenement: # on verifie que evenement est non vide
 
-            if extension_ok(f.filename): # on verifie que son extension est valide
-
-                nom = secure_filename(f.filename)
-
-                f.save(DOSSIER_UPS + nom)
-
-                flash(u'Bravo! Vos images ont ete envoyees! :)','succes')
-
+            if date: # on verifie que date est non vide
+               directory=DOSSIER_UPS+date+'/'
+               createFolder(directory)
+               global directory2
+               directory2=directory+evenement+'/'
+               createFolder(directory2)
+               return redirect('/upload.html')
             else:
+                flash(u"Veuillez indiquer la date de l'évenement","error_date")
+        else:
+            flash(u"Veuillez indiquer le nom de l'évenement","error_event")
+    return render_template('depotfichiers.html') 
 
-                flash(u'Ce fichier ne porte pas l extension png, jpg, jpeg, gif ou bmp !', 'error')
-
-    else:
-        flash(u'Vous avez oublie le fichier !', 'error')
-    return render_template('depotfichiers.html')
+@app.route('/upload.html', methods=['GET', 'POST'])
+@login_required
+def upload():
+    t1=True
+    t2=True
+    if request.method == 'POST':
+        for f in request.files.getlist('photos'):
+            if f:
+                if extension_ok(f.filename): # on verifie que son extension est valide
+                    filename = secure_filename(f.filename)
+                    f.save(directory2+filename)
+                else:
+                    t1=False
+            else:
+                t2=False
+        if t1==True:
+            if t2==True:
+                flash(u'Bravo! Vos images ont ete envoyees! :)','succes')
+            else:
+                flash(u'Vous avez oublie le fichier !', 'error')
+        if t2==False:
+            flash(u'Ce fichier ne porte pas l extension png, jpg, jpeg, gif ou bmp !', 'error')
+    return render_template('upload.html')
 
 @app.route('/')
 @login_required
@@ -173,6 +197,13 @@ def getResource(name):
 def extension_ok(nomfic):
     """ Renvoie True si le fichier possede une extension d'image valide. """
     return '.' in nomfic and nomfic.rsplit('.', 1)[1] in ('png', 'jpg', 'jpeg', 'gif', 'bmp')
+
+def createFolder(directory):
+    try:
+        if not os.path.exists(directory):
+            os.makedirs(directory)
+    except OSError:
+        print ('Error: Creating directory. ' + directory)
 
 
 if __name__ == '__main__':

@@ -8,44 +8,66 @@
                         <div class="col-md-9">
                             <!-- Main Content -->
                             <div class="headline">
-                                <h2>Réserver du matériel</h2>
+                                <h2>Ajouter vos photos!!!</h2>
+                                <p> Description </p>
+                                <br>
+                                <!-- Contact Form -->
+                                <form action="" method="post">
+                                <label>Evenement</label>
+                                {% with msgs = get_flashed_messages(category_filter=['error_event']) %}
+
+                                        {% if msgs %}
+
+                                            <ul class="flashed {{ 'error_event' }}">
+
+                                                {% for m in msgs %}
+
+                                                    <li>{{ m|safe }}</li>
+
+                                                {% endfor %}
+
+                                            </ul>
+
+                                        {% endif %}
+
+                                    {% endwith %}
+                                <div class="row margin-bottom-20">
+                                    <div class="col-md-6 col-md-offset-0">
+                                        <input type="text" class="form-control" name="evenement" >
+                                    </div>
+                                </div>
+                                <label>Date</label>
+                                {% with msgs = get_flashed_messages(category_filter=['error_date']) %}
+
+                                        {% if msgs %}
+
+                                            <ul class="flashed {{ 'error_date' }}">
+
+                                                {% for m in msgs %}
+
+                                                    <li>{{ m|safe }}</li>
+
+                                                {% endfor %}
+
+                                            </ul>
+
+                                        {% endif %}
+
+                                    {% endwith %}
+                                <div class="row margin-bottom-20">
+                                    <div class="col-md-6 col-md-offset-0">
+                                        <input type="text" class="form-control" name="date" >
+                                    </div>
+                                </div>
+                                <p>
+                                    <button type="submit" class="btn btn-primary" value="Envoyer">Uploader vos photos</button>
+                                </p>
+                                </form>
+                                
                             </div>
-                            <p> Formulaire de réservation </p>
-                            <br>
-                            <!-- Contact Form -->
-                            <form action="" method="post" enctype="multipart/form-data">
-
-                                <label for="fic">Fichier</label><input id="fic" type="file" name="fic" />
-
-                                <input id="btsub" type="submit" value="Uploader" />
-
-                             </form>
-                            <!-- End Contact Form -->
+                            <div class="row margin-bottom-20">
+                                    <div class="col-md-6 col-md-offset-0">
+                                    </div>
                             <!-- End Main Content -->
-                        </div>
-                        <!-- End Main Column -->
-                        <!-- Side Column -->
-                        <div class="col-md-3">
-                            <!-- Recent Posts -->
-                            <div class="panel panel-default">
-                                <div class="panel-heading">
-                                    <h3 class="panel-title">Contact Info</h3>
-                                </div>
-                                <div class="panel-body">
-                                    <p>Pour des questions supplémentaires sur le club ou la réservation de matériel, vous pouvez contacter la présidente du club Ponthé avec les informations ci-jointes </p>
-                                    <ul>
-                                    <li>
-                                            <i class="fa-phone color-primary"></i>06 29 78 24 32</li>
-                                        <li>
-                                            <i class="fa-envelope color-primary"></i>ines.tazi@eleves.enpc.fr </li>
-                                    </ul>
-                                </div>
-                            </div>
-                            <!-- End recent Posts -->
-                        </div>
-                        <!-- End Side Column -->
-                    </div>
-                </div>
-            </div>
             <!-- === END CONTENT === -->
 {% endblock %}
