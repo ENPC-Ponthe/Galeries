@@ -102,7 +102,7 @@ def creation():
 
 @app.route('/confirm_email/<token>')
 def confirm_email(token):
-try :
+    try :
         email = s.loads(token, max_age = 300 )
         cursor = dbconnexion.cursor()
         print(user.nom)
