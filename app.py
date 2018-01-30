@@ -15,8 +15,35 @@ dbconnexion = mysql.connector.connect(host="vps.enpc.org", port="7501", \
 app.secret_key = 'd66HREGTHUVGDRfdt4'
 DOSSIER_UPS = './uploads/'
 directory2=DOSSIER_UPS
+dict_event=dict()
+dict_annee=dict()
 login_manager = LoginManager()
 login_manager.init_app(app)
+
+dict_event['Admissibles']='Admissibles'
+dict_event['Biéro']='Biéro'
+dict_event['Campagne BDA']='Campagne-BDA'
+dict_event['Campagne BDE']='Campagne-BDE'
+dict_event['Campagne BDS']='Campagne-BDS'
+dict_event['Challenge Centrale Lyon']='Challenge-Centrale-Lyon'
+dict_event["Coupe de l'X"]="Coupe-de-l'X"
+dict_event["Croisière"]="Croisière"
+dict_event["Interne"]="Interne"
+dict_event["NDLR"]="NDLR"
+dict_event["Scènes ouvertes"]="Scènes-ouvertes"
+dict_event["Semaine SKI"]="Semaine-SKI"
+dict_event["Skult"]='Skult'
+dict_event["Suponts"]='Suponts'
+dict_event["TOSS"]="TOSS"
+dict_event["tournoi TRIUM"]="tournoi-TRIUM"
+dict_event["Trophée Descartes"]="Trophée-Descartes"
+dict_event["Voyage"]="Voyage"
+dict_event["WE SKI"]="WE-SKI"
+dict_event["WEI"]="WEI"
+
+dict_annee["2016"]="2016"
+dict_annee["2017"]="2017"
+dict_annee["2018"]="2018"
 
 mail=Mail(app)
 
@@ -142,30 +169,58 @@ def reservation() :
 @app.route('/depotfichiers.html', methods=['GET', 'POST'])
 @login_required
 def depotfichiers():
-
     if request.method == 'POST':
-
         evenement=request.form['evenement']
         annee=request.form['annee']
         mois=request.form['mois']
         jour=request.form['jour']
         date=jour+'-'+mois+'-'+annee
-        if evenement: # on verifie que evenement est non vide
+        if request.form['Envoyer']=='Envoyer':
+            if evenement: # on verifie que evenement est non vide
 
-            if date: # on verifie que date est non vide
-               directory=DOSSIER_UPS+date+'/'
-               createFolder(directory)
-               global directory2
-               directory2=directory+evenement+'/'
-               createFolder(directory2)
-               return redirect('/upload.html')
+                if date: # on verifie que date est non vide
+                    directory=DOSSIER_UPS+date+'/'
+                    createFolder(directory)
+                    global directory2
+                    directory2=directory+evenement+'/'
+                    createFolder(directory2)
+                    return redirect('/upload.html')
+                else:
+                    flash(u"Veuillez indiquer la date de l'évenement","error_date")
             else:
-                flash(u"Veuillez indiquer la date de l'évenement","error_date")
+                flash(u"Veuillez indiquer le nom de l'évenement","error_event")
+        if request.form['Envoyer']=='create_event':
+            return redirect('/create_event.html')
+        if request.form['Envoyer']=='create_annee':
+            return redirect('/create_annee.html')
+    return render_template('depotfichiers.html',dict_event=dict_event.values(),dict_annee=dict_annee.values()) 
+
+
+@app.route('/create_event.html', methods=['GET', 'POST'])
+@login_required
+def create_event():
+
+    if request.method == 'POST':
+        new_event=request.form['new_event']
+        if new_event:
+            dict_event[new_event]=new_event
+            return redirect('depotfichiers.html')
         else:
-            flash(u"Veuillez indiquer le nom de l'évenement","error_event")
-    return render_template('depotfichiers.html') 
+            flash(u"Veuillez indiquer le nom du nouvel évenement","error_new_event")
+    return render_template('create_event.html') 
 
+@app.route('/create_annee.html', methods=['GET', 'POST'])
+@login_required
+def create_annee():
 
+    if request.method == 'POST':
+        new_annee=request.form['new_annee']
+        if new_annee:
+            dict_annee[new_annee]=new_annee
+            return redirect('depotfichiers.html')
+        else:
+            flash(u"Veuillez indiquer la nouvelle année","error_new_annee")
+    return render_template('create_annee.html') 
 @app.route('/upload.html', methods=['GET', 'POST'])
 @login_required
 def upload():
