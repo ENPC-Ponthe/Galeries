@@ -105,7 +105,10 @@ def confirm_email(token):
     try :
         email = s.loads(token, max_age = 300 )
         cursor = dbconnexion.cursor()
-        cursor.execute( " INSERT INTO Admin (id, lastname, firstname, email, password) VALUES ( '1' , 'user.nom', 'user.prenom', 'user.email', 'user.MDP') " )
+        add_admin = """INSERT INTO Admin (id, lastname, firstname, email, password) VALUES (, %s, %s, %s, %s)"""
+        new_admin = (user.id, user.nom, user.prenom , user.MDP )
+        cursor.execute(add_admin, new_admin)
+        dbconnexion.commit()
     except SignatureExpired :
         return '<h1> The token is expired </h1> ' 
     return getHome()
