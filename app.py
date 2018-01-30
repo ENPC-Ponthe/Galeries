@@ -86,11 +86,11 @@ def login():
 @app.route('/creation-compte', methods=['GET', 'POST'])
 def creation():
     if request.method == 'POST' :
-        user.id = 6 ,
-        user.nom=request.form['nom'],
-        user.prenom=request.form['prenom'],
-        user.email = request.form['email'],
-        user.MDP = request.form['password'],
+        user.id = 6
+        user.nom=request.form['nom']
+        user.prenom=request.form['prenom']
+        user.email = request.form['email']
+        user.MDP = request.form['password']
         email = request.form['email']
         token = s.dumps(email)
         msg = Message('Confirm Email', sender = 'fabien.lespagnol21@gmail.com',recipients = [email])
@@ -102,12 +102,12 @@ def creation():
 
 @app.route('/confirm_email/<token>')
 def confirm_email(token):
-    try :
+try :
         email = s.loads(token, max_age = 300 )
         cursor = dbconnexion.cursor()
-        add_admin = """INSERT INTO Admin (id, lastname, firstname, email, password) VALUES (, %s, %s, %s, %s)"""
-        new_admin = (user.id, user.nom, user.prenom , user.MDP )
-        cursor.execute(add_admin, new_admin)
+        print(user.nom)
+        add_admin = "INSERT INTO Admin(id, lastname, firstname, email, password) VALUES('%s', '%s', '%s', '%s', '%s')" % (user.id, user.nom, user.prenom , user.email, user.MDP ) 
+        cursor.execute(add_admin)
         dbconnexion.commit()
     except SignatureExpired :
         return '<h1> The token is expired </h1> ' 
