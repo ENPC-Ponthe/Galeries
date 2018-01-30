@@ -146,8 +146,10 @@ def depotfichiers():
     if request.method == 'POST':
 
         evenement=request.form['evenement']
-        date=request.form['date']
-
+        annee=request.form['annee']
+        mois=request.form['mois']
+        jour=request.form['jour']
+        date=jour+'-'+mois+'-'+annee
         if evenement: # on verifie que evenement est non vide
 
             if date: # on verifie que date est non vide
@@ -162,6 +164,7 @@ def depotfichiers():
         else:
             flash(u"Veuillez indiquer le nom de l'évenement","error_event")
     return render_template('depotfichiers.html') 
+
 
 @app.route('/upload.html', methods=['GET', 'POST'])
 @login_required
