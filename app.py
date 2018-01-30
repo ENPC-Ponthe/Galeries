@@ -193,7 +193,9 @@ def depotfichiers():
             return redirect('/create_event.html')
         if request.form['Envoyer']=='create_annee':
             return redirect('/create_annee.html')
-    return render_template('depotfichiers.html',dict_event=dict_event.values(),dict_annee=dict_annee.values()) 
+    ev=sorted(list(dict_event.values()))
+    an=sorted(list(dict_annee.values()))
+    return render_template('depotfichiers.html',dict_event=ev,dict_annee=an) 
 
 
 @app.route('/create_event.html', methods=['GET', 'POST'])
