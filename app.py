@@ -19,35 +19,9 @@ dbconnexion = mysql.connector.connect(host="vps.enpc.org", port="7501", \
 app.secret_key = 'd66HREGTHUVGDRfdt4'
 DOSSIER_UPS = './uploads/'
 directory2=DOSSIER_UPS
-dict_event=dict()
-dict_annee=dict()
+
 login_manager = LoginManager()
 login_manager.init_app(app)
-
-dict_event['Admissibles']='Admissibles'
-dict_event['Biero']='Biero'
-dict_event['Campagne BDA']='Campagne-BDA'
-dict_event['Campagne BDE']='Campagne-BDE'
-dict_event['Campagne BDS']='Campagne-BDS'
-dict_event['Challenge Centrale Lyon']='Challenge-Centrale-Lyon'
-dict_event["Coupe de l'X"]="Coupe-de-l'X"
-dict_event["Croisiere"]="Croisiere"
-dict_event["Interne"]="Interne"
-dict_event["NDLR"]="NDLR"
-dict_event["Scenes ouvertes"]="Scenes-ouvertes"
-dict_event["Semaine SKI"]="Semaine-SKI"
-dict_event["Skult"]='Skult'
-dict_event["Suponts"]='Suponts'
-dict_event["TOSS"]="TOSS"
-dict_event["tournois TRIUM"]="tournois-TRIUM"
-dict_event["Trophee Descartes"]="Trophee-Descartes"
-dict_event["Voyage"]="Voyage"
-dict_event["WE SKI"]="WE-SKI"
-dict_event["WEI"]="WEI"
-
-dict_annee["2016"]="2016"
-dict_annee["2017"]="2017"
-dict_annee["2018"]="2018"
 
 mail=Mail(app)
 
@@ -81,7 +55,20 @@ for admin in var:
         'email': admin[3],
         'password': admin[4]}
     users[str(admin[3])] = empDict
+liste_events = []
+cursor.execute("SELECT DISTINCT evenement FROM Events")
+var = cursor.fetchall()
+for events in var :
+    liste_events.append(events[0])
+liste_annees = []
+cursor.execute("SELECT DISTINCT date FROM Events")
+var = cursor.fetchall()
+for annees in var :
+    liste_annees.append(annees[0])    
 cursor.close()
+
+
+
 
 @login_manager.user_loader
 def user_loader(email):
@@ -197,8 +184,8 @@ def depotfichiers():
             return redirect('/create_event.html')
         if request.form['Envoyer']=='create_annee':
             return redirect('/create_annee.html')
-    ev=sorted(list(dict_event.values()))
-    an=sorted(list(dict_annee.values()))
+    ev=sorted(liste_events)
+    an=sorted(liste_annees)
     return render_template('depotfichiers.html',dict_event=ev,dict_annee=an) 
 
 
