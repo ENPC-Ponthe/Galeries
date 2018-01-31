@@ -1,3 +1,7 @@
+
+
+# -- coding: utf-8 --"
+
 from flask import Flask,render_template,request, flash, redirect, url_for, jsonify
 from werkzeug import secure_filename
 from flask_mail import Mail,Message
@@ -21,22 +25,22 @@ login_manager = LoginManager()
 login_manager.init_app(app)
 
 dict_event['Admissibles']='Admissibles'
-dict_event['Biéro']='Biéro'
+dict_event['Biero']='Biero'
 dict_event['Campagne BDA']='Campagne-BDA'
 dict_event['Campagne BDE']='Campagne-BDE'
 dict_event['Campagne BDS']='Campagne-BDS'
 dict_event['Challenge Centrale Lyon']='Challenge-Centrale-Lyon'
 dict_event["Coupe de l'X"]="Coupe-de-l'X"
-dict_event["Croisière"]="Croisière"
+dict_event["Croisiere"]="Croisiere"
 dict_event["Interne"]="Interne"
 dict_event["NDLR"]="NDLR"
-dict_event["Scènes ouvertes"]="Scènes-ouvertes"
+dict_event["Scenes ouvertes"]="Scenes-ouvertes"
 dict_event["Semaine SKI"]="Semaine-SKI"
 dict_event["Skult"]='Skult'
 dict_event["Suponts"]='Suponts'
 dict_event["TOSS"]="TOSS"
-dict_event["tournoi TRIUM"]="tournoi-TRIUM"
-dict_event["Trophée Descartes"]="Trophée-Descartes"
+dict_event["tournois TRIUM"]="tournois-TRIUM"
+dict_event["Trophee Descartes"]="Trophee-Descartes"
 dict_event["Voyage"]="Voyage"
 dict_event["WE SKI"]="WE-SKI"
 dict_event["WEI"]="WEI"
@@ -120,7 +124,7 @@ def creation():
         user.MDP = request.form['password']
         email = request.form['email']
         token = s.dumps(email)
-        msg = Message('Confirm Email', sender = 'fabien.lespagnol21@gmail.com',recipients = [email])
+        msg = Message('Confirm Email', sender = 'clubpontheenpc@gmail.com',recipients = [email])
         link = url_for('confirm_email', token = token,  _external = True)
         msg.body = 'Votre lien est {}'.format(link)
         mail.send(msg)
@@ -161,7 +165,7 @@ def getLoginPage():
 @login_required
 def reservation() :
     if request.method == 'POST':
-        msg = Message(request.form['message'],sender= 'fabien.lespagnol21@gmail.com', recipients=[request.form['email']])
+        msg = Message(request.form['message'],sender= 'clubpontheenpc@gmail.com', recipients=[request.form['email']])
         mail.send(msg)
         return render_template("mail_envoye.html" , p=request.form['prenom'], n=request.form['nom'])
     return render_template( 'materiel.html')
@@ -186,9 +190,9 @@ def depotfichiers():
                     createFolder(directory2)
                     return redirect('/upload.html')
                 else:
-                    flash(u"Veuillez indiquer la date de l'évenement","error_date")
+                    flash(u"Veuillez indiquer la date de l'evenement","error_date")
             else:
-                flash(u"Veuillez indiquer le nom de l'évenement","error_event")
+                flash(u"Veuillez indiquer le nom de l'evenement","error_event")
         if request.form['Envoyer']=='create_event':
             return redirect('/create_event.html')
         if request.form['Envoyer']=='create_annee':
@@ -208,7 +212,7 @@ def create_event():
             dict_event[new_event]=new_event
             return redirect('depotfichiers.html')
         else:
-            flash(u"Veuillez indiquer le nom du nouvel évenement","error_new_event")
+            flash(u"Veuillez indiquer le nom du nouvel evenement","error_new_event")
     return render_template('create_event.html') 
 
 @app.route('/create_annee.html', methods=['GET', 'POST'])
@@ -221,7 +225,7 @@ def create_annee():
             dict_annee[new_annee]=new_annee
             return redirect('depotfichiers.html')
         else:
-            flash(u"Veuillez indiquer la nouvelle année","error_new_annee")
+            flash(u"Veuillez indiquer la nouvelle annee","error_new_annee")
     return render_template('create_annee.html') 
 @app.route('/upload.html', methods=['GET', 'POST'])
 @login_required
