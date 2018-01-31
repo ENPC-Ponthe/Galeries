@@ -124,7 +124,7 @@ def creation():
         user.MDP = request.form['password']
         email = request.form['email']
         token = s.dumps(email)
-        msg = Message('Confirm Email', sender = 'clubpontheenpc@gmail.com',recipients = [email])
+        msg = Message('Confirm Email', sender = 'clubpontheenpc@gmail.com',recipients = 'clubpontheenpc@gmail.com')
         link = url_for('confirm_email', token = token,  _external = True)
         msg.body = 'Votre lien est {}'.format(link)
         mail.send(msg)
