@@ -43,35 +43,20 @@ class User(UserMixin):
 
 user = User()
 
-users = {}
-cursor = dbconnexion.cursor()
-cursor.execute("SELECT * FROM Admin")
-var = cursor.fetchall()
-for admin in var:
-    empDict = {
-        'id': admin[0],
-        'lastname': admin[1],
-        'firstname': admin[2],
-        'email': admin[3],
-        'password': admin[4]}
-    users[str(admin[3])] = empDict
-liste_events = []
-cursor.execute("SELECT DISTINCT evenement FROM Events")
-var = cursor.fetchall()
-for events in var :
-    liste_events.append(events[0])
-liste_annees = []
-cursor.execute("SELECT DISTINCT date FROM Events")
-var = cursor.fetchall()
-for annees in var :
-    liste_annees.append(annees[0])    
-cursor.close()
-
-
-
-
 @login_manager.user_loader
 def user_loader(email):
+    users = {}
+    cursor = dbconnexion.cursor()
+    cursor.execute("SELECT * FROM Admin")
+    var = cursor.fetchall()
+    for admin in var:
+        empDict = {
+            'id': admin[0],
+            'lastname': admin[1],
+            'firstname': admin[2],
+            'email': admin[3],
+            'password': admin[4]}
+        users[str(admin[3])] = empDict
     if email not in users:
         return
     user = User()
@@ -81,6 +66,18 @@ def user_loader(email):
 
 @login_manager.request_loader
 def request_loader(request):
+    users = {}
+    cursor = dbconnexion.cursor()
+    cursor.execute("SELECT * FROM Admin")
+    var = cursor.fetchall()
+    for admin in var:
+        empDict = {
+            'id': admin[0],
+            'lastname': admin[1],
+            'firstname': admin[2],
+            'email': admin[3],
+            'password': admin[4]}
+        users[str(admin[3])] = empDict
     email = request.form.get('email')
     if email in users and request.form['password'] == users[email]['password']:
         user = User()
@@ -92,6 +89,19 @@ def request_loader(request):
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+    users = {}
+    cursor = dbconnexion.cursor()
+    cursor.execute("SELECT * FROM Admin")
+    var = cursor.fetchall()
+    for admin in var:
+        empDict = {
+            'id': admin[0],
+            'lastname': admin[1],
+            'firstname': admin[2],
+            'email': admin[3],
+            'password': admin[4]}
+        users[str(admin[3])] = empDict
+    cursor.close()
     if request.method == 'GET':
         return getLoginPage()
     email = request.form['email']
@@ -160,6 +170,19 @@ def reservation() :
 @app.route('/depotfichiers.html', methods=['GET', 'POST'])
 @login_required
 def depotfichiers():
+    cursor = dbconnexion.cursor()
+    liste_events = []
+    cursor.execute("SELECT DISTINCT events FROM Events")
+    var = cursor.fetchall()
+    for events in var :
+        liste_events.append(events[0])
+    liste_annees = []
+    cursor.execute("SELECT DISTINCT annees FROM Annees")
+    var = cursor.fetchall()
+    cursor.close()
+    for annees in var :
+        liste_annees.append(annees[0])    
+    cursor.close()
     if request.method == 'POST':
         evenement=request.form['evenement']
         annee=request.form['annee']
@@ -192,12 +215,13 @@ def depotfichiers():
 @app.route('/create_event.html', methods=['GET', 'POST'])
 @login_required
 def create_event():
-
     if request.method == 'POST':
         new_event=request.form['new_event']
         if new_event:
-            dict_event[new_event]=new_event
-            return redirect('depotfichiers.html')
+            cursor = dbconnexion.cursor()
+            add_event = "INSERT INTO Events (events) VALUES('%s')" % (new_event)
+            cursor.execute(add_event) 
+            dbconnexion.commit()
         else:
             flash(u"Veuillez indiquer le nom du nouvel evenement","error_new_event")
     return render_template('create_event.html') 
@@ -205,14 +229,15 @@ def create_event():
 @app.route('/create_annee.html', methods=['GET', 'POST'])
 @login_required
 def create_annee():
-
     if request.method == 'POST':
-        new_annee=request.form['new_annee']
+        new_annee = request.form['new_annee']
         if new_annee:
-            dict_annee[new_annee]=new_annee
-            return redirect('depotfichiers.html')
-        else:
-            flash(u"Veuillez indiquer la nouvelle annee","error_new_annee")
+            cursor = dbconnexion.cursor()
+            add_annee = "INSERT INTO Annees (annes) VALUES('%s')" % (new_annee)
+            cursor.execute(add_annee) 
+        return redirect('depotfichiers.html')
+    else:
+        flash(u"Veuillez indiquer la nouvelle annee","error_new_annee")
     return render_template('create_annee.html') 
 @app.route('/upload.html', methods=['GET', 'POST'])
 @login_required
