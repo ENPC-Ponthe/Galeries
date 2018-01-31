@@ -60,7 +60,7 @@ def user_loader(email):
     if email not in users:
         return
     user = User()
-    user.id = email
+    user.email = email
     return user
 
 
@@ -81,7 +81,7 @@ def request_loader(request):
     email = request.form.get('email')
     if email in users and request.form['password'] == users[email]['password']:
         user = User()
-        user.id = email
+        user.email = email
         user.is_authenticated = True
         return user
     else:
@@ -106,7 +106,7 @@ def login():
         return getLoginPage()
     email = request.form['email']
     if request.form['password'] == users[email]['password']:
-        user.id = email
+        user.email = email
         login_user(user)
         return getHome()
     return getLoginPage()
@@ -114,32 +114,54 @@ def login():
 @app.route('/creation-compte', methods=['GET', 'POST'])
 def creation():
     if request.method == 'POST' :
-        user.id = 6
-        user.nom=request.form['nom']
-        user.prenom=request.form['prenom']
+        user.nom = request.form['nom']
+        user.prenom = request.form['prenom']
         user.email = request.form['email']
         user.MDP = request.form['password']
-        email = request.form['email']
-        token = s.dumps(email)
-        msg = Message('Confirm Email', sender = 'clubpontheenpc@gmail.com',recipients = 'clubpontheenpc@gmail.com')
+        token = s.dumps(user.email)
+        msg = Message('Confirm Email', sender = 'clubpontheenpc@gmail.com',recipients = [user.email] )
         link = url_for('confirm_email', token = token,  _external = True)
         msg.body = 'Votre lien est {}'.format(link)
         mail.send(msg)
-        return render_template('mail_confirmation.html')
+        return render_template('mail_confirmation.html', m = user.email)
     return render_template('creation-compte.html')
 
+@app.route('/reset-password', methods =['GET','POST'])
+def reset():
+    if request.method == 'POST' :
+        user.email = request.form['email']
+        user.MDP = request.form['password']
+        token = s.dumps(user.email)
+        msg = Message('Reset Email' , sender = 'clubpontheenpc@gmail.com', recipients = [user.email] )
+        link = url_for('reset_email', token = token, _external =True )
+        msg.body = 'Votre lien est {}'.format(link)
+        mail.send(msg)
+        return render_template('mail_confirmation.html', m = user.email)
+    return render_template('reset-password.html')
+    
+@app.route('/reset_email/<token>')
+def reset_email(token):
+    try :
+        email = s.loads(token, max_age = 300 )
+        cursor = dbconnexion.cursor()
+        reset_admin = "UPDATE Admin SET password = '%s' WHERE email = '%s' " % (user.MDP, user.email)
+        cursor.execute(reset_admin)
+        dbconnexion.commit()
+    except SignatureExpired :
+        return '<h1> The token is expired </h1> ' 
+    return getLoginPage()
+        
 @app.route('/confirm_email/<token>')
 def confirm_email(token):
     try :
         email = s.loads(token, max_age = 300 )
         cursor = dbconnexion.cursor()
-        print(user.nom)
-        add_admin = "INSERT INTO Admin(id, lastname, firstname, email, password) VALUES('%s', '%s', '%s', '%s', '%s')" % (user.id, user.nom, user.prenom , user.email, user.MDP ) 
+        add_admin = "INSERT INTO Admin(lastname, firstname, email, password) VALUES('%s', '%s', '%s', '%s')" % (user.nom, user.prenom , user.email, user.MDP ) 
         cursor.execute(add_admin)
         dbconnexion.commit()
     except SignatureExpired :
         return '<h1> The token is expired </h1> ' 
-    return getHome()
+    return getLoginPage()
 
 
 @app.route('/logout')
@@ -162,7 +184,7 @@ def getLoginPage():
 @login_required
 def reservation() :
     if request.method == 'POST':
-        msg = Message(request.form['message'],sender= 'clubpontheenpc@gmail.com', recipients=[request.form['email']])
+        msg = Message(request.form['message'],sender= 'clubpontheenpc@gmail.com', recipients= 'clubpontheenpc@gmail.com')
         mail.send(msg)
         return render_template("mail_envoye.html" , p=request.form['prenom'], n=request.form['nom'])
     return render_template( 'materiel.html')
