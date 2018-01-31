@@ -233,7 +233,7 @@ def create_annee():
         new_annee = request.form['new_annee']
         if new_annee:
             cursor = dbconnexion.cursor()
-            add_annee = "INSERT INTO Annees (annes) VALUES('%s')" % (new_annee)
+            add_annee = "INSERT INTO Annees (annees) VALUES('%s')" % (new_annee)
             cursor.execute(add_annee) 
         return redirect('depotfichiers.html')
     else:
