@@ -240,12 +240,12 @@ def depotfichiers():
 @app.route('/archives/<annee>')
 @login_required
 def archives_annee(annee):
-    return render_template('archives.html', annee = annee , annees = liste_annees, events = liste_events )
+    return render_template('archives_annee.html', annee = annee ,  annees = liste_annees, events = liste_events )
      
 @app.route('/archives/<annee>/<event>')
 @login_required
 def archives_evenement(annee,event):
-    return render_template('archives.html', annees = liste_annees, events = liste_events )
+    return render_template('archives_evenement.html', annee = annee, event = event, annees = liste_annees, events = liste_events )
 
 @app.route('/create_event', methods=['GET', 'POST'])
 @login_required
