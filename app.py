@@ -9,6 +9,10 @@ import os
 from flask_login import LoginManager, UserMixin, login_user , logout_user , current_user , login_required
 import mysql.connector
 from itsdangerous import URLSafeTimedSerializer, SignatureExpired 
+import string
+import random 
+
+liste_char=string.ascii_letters+string.digits
 
 app = Flask(__name__)
 
@@ -210,21 +214,14 @@ def depotfichiers():
     if request.method == 'POST':
         evenement=request.form['evenement']
         annee=request.form['annee']
-        date=annee
         if request.form['Envoyer']=='Envoyer':
             if evenement: # on verifie que evenement est non vide
-                if date: # on verifie que date est non vide
-                    cursor = dbconnexion.cursor()
-                    add_lien = "INSERT INTO Dossier (events,annees) VALUES ('%s','%s')" % (evenement,annee)
-                    cursor.execute(add_lien)
-                    dbconnexion.commit()
-                    cursor.close()
-                    directory=DOSSIER_UPS+date+'/'
+                if annee: # on verifie que date est non vide
+                    directory=DOSSIER_UPS+annee+'/'
                     createFolder(directory)
-                    global directory2
                     directory2=directory+evenement+'/'
                     createFolder(directory2)
-                    return redirect('/upload.html')
+                    return redirect(url_for('upload', annee = annee, event = evenement))
                 else:
                     flash(u"Veuillez indiquer la date de l'evenement","error_date")
             else:
@@ -274,18 +271,27 @@ def create_annee():
     else:
         flash(u"Veuillez indiquer la nouvelle annee","error_new_annee")
     return render_template('create_annee.html', annees = liste_annees, events = liste_events) 
-@app.route('/upload.html', methods=['GET', 'POST'])
+    
+@app.route('/upload.html/<annee>/<event>', methods=['GET', 'POST'])
 @login_required
-
-def upload():
+def upload(annee, event):
     t1=True
     t2=True
     if request.method == 'POST':
         for f in request.files.getlist('photos'):
             if f:
                 if extension_ok(f.filename): # on verifie que son extension est valide
-                    filename = secure_filename(f.filename)
-                    f.save(directory2+filename)
+                    _, ext = os.path.splitext(f.filename)
+                    filename = ""
+                    for i in range(54):
+                        filename += liste_char[random.randint(0,len(liste_char)-1)]
+                    filename= filename + ext
+                    f.save( DOSSIER_UPS + annee + '/' + event + '/' + filename)
+                    cursor = dbconnexion.cursor()
+                    add_lien = "INSERT INTO Dossier (events,annees,filename) VALUES ('%s','%s','%s')" % (event,annee,filename)
+                    cursor.execute(add_lien)
+                    dbconnexion.commit()
+                    cursor.close()
                 else:
                     t1=False
             else:
