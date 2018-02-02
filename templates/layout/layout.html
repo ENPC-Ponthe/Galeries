@@ -63,62 +63,24 @@
                                 <li>
                                     <span class="fa-th">Archives</span>
                                     <ul>
-                                        <li class="parent">
-                                            <span>Années</span>
-                                            <ul> 
                                                 <li>
-                                                    <a href="archives_2016.html" class="fa-group">2016</a>
+                                                    <span>Années</span>
                                                 </li>
-                                              
+                                            {% for annee in annees %}
                                                 <li>
-                                                    <a href="archives_2017.html" class="fa-group">2017</a>
+                                                    <a href="archives.html" class="parent">{{annee}}</a>
+                                                    <ul>
+                                                        {% for event in events %}
+                                                    <li>
+                                                        <a href="archives.html" class="fa-group">{{event}}</a>
+                                                    </li>
+                                                     {% endfor %}
+                                                     </ul>
                                                 </li>
-                                             
-                                                <li>
-                                                    <a href="archives_2018.html" class="fa-group">2018</a>
-                                                </li>
-                                             
-                                                <li>
-                                                    <a href="archives_2019.html" class="fa-group">2019</a>
-                                                </li>
-                                             
-                                                <li>
-                                                    <a href="archives_2020.html" class="fa-group">2020</a>
-                                                </li>
-                                            
-                                                <li>
-                                                    <a href="archives_2021.html" class="fa-group">2021</a>
-                                                </li>
-                                             
-                                                <li>
-                                                    <a href="archives_2022.html" class="fa-group">2022</a>
-                                                </li>
-                                             
-                                                <li>
-                                                    <a href="archives_2023.html" class="fa-group">2023</a>
-                                                </li>
-                                             
-                                                <li>
-                                                    <a href="archives_2024.html" class="fa-group">2024</a>
-                                                </li>
+                                                {% endfor %}
                                              </ul>
                                         </li>
-                                        <li>
-                                                <a href="archives_sport.html" class="fa-group">Sport</a>
-                                        </li>
-                                        <li>
-                                                <a href="archives_vieasso.html" class="fa-group">Vie Associative</a>
-                                        </li>
-                                        <li>
-                                                <a href="archives_voyages.html" class="fa-group">Voyages</a>
-                                        </li>
-                                        <li>
-                                                <a href="archives_films.html" class="fa-group">Films</a>
-                                        </li>
-                                    
-                                    </ul>
                                 </li>
-                            
                                 <li>        
                                     <a href="depotfichiers.html" class="fa-copy">Dépôt fichiers</a>
                                 </li>

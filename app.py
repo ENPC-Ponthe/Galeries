@@ -43,12 +43,26 @@ class User(UserMixin):
 
 user = User()
 
+cursor = dbconnexion.cursor()
+liste_events = []
+cursor.execute("SELECT DISTINCT events FROM Events")
+var = cursor.fetchall()
+for event in var :
+    liste_events.append(event[0])
+liste_annees = []
+cursor.execute("SELECT DISTINCT annees FROM Annees")
+var = cursor.fetchall()
+for annee in var :
+    liste_annees.append(annee[0])   
+cursor.close()
+
 @login_manager.user_loader
 def user_loader(email):
     users = {}
     cursor = dbconnexion.cursor()
     cursor.execute("SELECT * FROM Admin")
     var = cursor.fetchall()
+    cursor.close()
     for admin in var:
         empDict = {
             'id': admin[0],
@@ -60,7 +74,7 @@ def user_loader(email):
     if email not in users:
         return
     user = User()
-    user.email = email
+    user.id = email
     return user
 
 
@@ -70,6 +84,7 @@ def request_loader(request):
     cursor = dbconnexion.cursor()
     cursor.execute("SELECT * FROM Admin")
     var = cursor.fetchall()
+    cursor.close()
     for admin in var:
         empDict = {
             'id': admin[0],
@@ -81,7 +96,7 @@ def request_loader(request):
     email = request.form.get('email')
     if email in users and request.form['password'] == users[email]['password']:
         user = User()
-        user.email = email
+        user.id = email
         user.is_authenticated = True
         return user
     else:
@@ -106,7 +121,7 @@ def login():
         return getLoginPage()
     email = request.form['email']
     if request.form['password'] == users[email]['password']:
-        user.email = email
+        user.id = email
         login_user(user)
         return getHome()
     return getLoginPage()
@@ -123,7 +138,7 @@ def creation():
         link = url_for('confirm_email', token = token,  _external = True)
         msg.body = 'Votre lien est {}'.format(link)
         mail.send(msg)
-        return render_template('mail_confirmation.html', m = user.email)
+        return render_template('mail_confirmation.html', m = user.email,)
     return render_template('creation-compte.html')
 
 @app.route('/reset-password', methods =['GET','POST'])
@@ -184,26 +199,14 @@ def getLoginPage():
 @login_required
 def reservation() :
     if request.method == 'POST':
-        msg = Message(request.form['message'],sender= 'clubpontheenpc@gmail.com', recipients= 'clubpontheenpc@gmail.com')
+        msg = Message(request.form['message'],sender= 'clubpontheenpc@gmail.com', recipients= 'clubpontheenpc@gmail.com', events = liste_ev)
         mail.send(msg)
         return render_template("mail_envoye.html" , p=request.form['prenom'], n=request.form['nom'])
-    return render_template( 'materiel.html')
+    return render_template( 'materiel.html', annees = liste_annees, events = liste_events)
 
 @app.route('/depotfichiers.html', methods=['GET', 'POST'])
 @login_required
 def depotfichiers():
-    cursor = dbconnexion.cursor()
-    liste_events = []
-    cursor.execute("SELECT DISTINCT events FROM Events")
-    var = cursor.fetchall()
-    for events in var :
-        liste_events.append(events[0])
-    liste_annees = []
-    cursor.execute("SELECT DISTINCT annees FROM Annees")
-    var = cursor.fetchall()
-    cursor.close()
-    for annees in var :
-        liste_annees.append(annees[0])    
     cursor.close()
     if request.method == 'POST':
         evenement=request.form['evenement']
@@ -293,7 +296,7 @@ def getHome():
 @app.route('/<name>.html')
 @login_required
 def getResource(name):
-        return render_template(name+'.html')
+        return render_template(name+'.html', annees = liste_annees, events = liste_events)
 
 def extension_ok(nomfic):
     """ Renvoie True si le fichier possede une extension d'image valide. """
