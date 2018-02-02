@@ -207,17 +207,18 @@ def reservation() :
 @app.route('/depotfichiers.html', methods=['GET', 'POST'])
 @login_required
 def depotfichiers():
-    cursor.close()
     if request.method == 'POST':
         evenement=request.form['evenement']
         annee=request.form['annee']
-        mois=request.form['mois']
-        jour=request.form['jour']
-        date=jour+'-'+mois+'-'+annee
+        date=annee
         if request.form['Envoyer']=='Envoyer':
             if evenement: # on verifie que evenement est non vide
-
                 if date: # on verifie que date est non vide
+                    cursor = dbconnexion.cursor()
+                    add_lien = "INSERT INTO Dossier (events,annees) VALUES ('%s','%s')" % (evenement,annee)
+                    cursor.execute(add_lien)
+                    dbconnexion.commit()
+                    cursor.close()
                     directory=DOSSIER_UPS+date+'/'
                     createFolder(directory)
                     global directory2
@@ -234,10 +235,19 @@ def depotfichiers():
             return redirect('/create_annee.html')
     ev=sorted(liste_events)
     an=sorted(liste_annees)
-    return render_template('depotfichiers.html',dict_event=ev,dict_annee=an) 
+    return render_template('depotfichiers.html',dict_event=ev,dict_annee=an, annees = liste_annees, events = liste_events) 
 
+@app.route('/archives/<annee>')
+@login_required
+def archives_annee(annee):
+    return render_template('archives.html', annee = annee , annees = liste_annees, events = liste_events )
+     
+@app.route('/archives/<annee>/<event>')
+@login_required
+def archives_evenement(annee,event):
+    return render_template('archives.html', annees = liste_annees, events = liste_events )
 
-@app.route('/create_event.html', methods=['GET', 'POST'])
+@app.route('/create_event', methods=['GET', 'POST'])
 @login_required
 def create_event():
     if request.method == 'POST':
@@ -249,7 +259,7 @@ def create_event():
             dbconnexion.commit()
         else:
             flash(u"Veuillez indiquer le nom du nouvel evenement","error_new_event")
-    return render_template('create_event.html') 
+    return render_template('create_event.html', annees = liste_annees, events = liste_events) 
 
 @app.route('/create_annee.html', methods=['GET', 'POST'])
 @login_required
@@ -263,9 +273,10 @@ def create_annee():
         return redirect('depotfichiers.html')
     else:
         flash(u"Veuillez indiquer la nouvelle annee","error_new_annee")
-    return render_template('create_annee.html') 
+    return render_template('create_annee.html', annees = liste_annees, events = liste_events) 
 @app.route('/upload.html', methods=['GET', 'POST'])
 @login_required
+
 def upload():
     t1=True
     t2=True
@@ -286,7 +297,7 @@ def upload():
                 flash(u'Vous avez oublie le fichier !', 'error')
         if t2==False:
             flash(u'Ce fichier ne porte pas l extension png, jpg, jpeg, gif ou bmp !', 'error')
-    return render_template('upload.html')
+    return render_template('upload.html' , annees = liste_annees, events = liste_events)
 
 @app.route('/')
 @login_required
