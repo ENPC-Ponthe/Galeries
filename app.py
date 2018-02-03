@@ -237,7 +237,14 @@ def depotfichiers():
 @app.route('/archives/<annee>')
 @login_required
 def archives_annee(annee):
-    return render_template('archives_annee.html', annee = annee ,  annees = liste_annees, events = liste_events )
+    dict_events_annee = {}
+    cursor = dbconnexion.cursor()
+    selection = " SELECT events,filename FROM Dossier WHERE id = '%s', couverture = '%s' " % (annee,1)
+    cursor.execute(selection)
+    events = cursor.fetchall()
+    for event in events:
+        dict_events_annee[event[0]] = event[1] 
+    return render_template('archives_annee.html', annee = annee , annees = liste_annees, events = liste_events, events_annee = dict_events_annee )
      
 @app.route('/archives/<annee>/<event>')
 @login_required
