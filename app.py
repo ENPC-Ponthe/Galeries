@@ -242,7 +242,15 @@ def archives_annee(annee):
 @app.route('/archives/<annee>/<event>')
 @login_required
 def archives_evenement(annee,event):
-    return render_template('archives_evenement.html', annee = annee, event = event, annees = liste_annees, events = liste_events )
+    liste_filename = []
+    cursor = dbconnexion.cursor()
+    selection = "SELECT filename FROM Dossier WHERE (events = '%s' AND annees ='%s') " % (event,annee)
+    cursor.execute(selection)
+    var = cursor.fetchall()
+    cursor.close()
+    for filename in var :
+        liste_filename.append(filename[0])
+    return render_template('archives_evenement.html', annee = annee, event = event, annees = liste_annees, events = liste_events, filename = liste_filename)
 
 @app.route('/create_event', methods=['GET', 'POST'])
 @login_required
