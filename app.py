@@ -21,7 +21,7 @@ dbconnexion = mysql.connector.connect(host="vps.enpc.org", port="7501", \
     database="enpc-ponthe")
 
 app.secret_key = 'd66HREGTHUVGDRfdt4'
-DOSSIER_UPS = './static/uploads/'
+DOSSIER_UPS = './uploads/'
 directory2=DOSSIER_UPS
 
 login_manager = LoginManager()
@@ -195,11 +195,11 @@ def handleError(e):
     return login()
 
 # Authoriser la page de login
-@app.route('/login.html')
+@app.route('/login')
 def getLoginPage():
     return render_template('login.html')
 
-@app.route('/materiel.html',methods=['GET','POST'])
+@app.route('/materiel',methods=['GET','POST'])
 @login_required
 def reservation() :
     if request.method == 'POST':
@@ -208,7 +208,7 @@ def reservation() :
         return render_template("mail_envoye.html" , p=request.form['prenom'], n=request.form['nom'])
     return render_template( 'materiel.html', annees = liste_annees, events = liste_events)
 
-@app.route('/depotfichiers.html', methods=['GET', 'POST'])
+@app.route('/depotfichiers', methods=['GET', 'POST'])
 @login_required
 def depotfichiers():
     if request.method == 'POST':
@@ -227,9 +227,9 @@ def depotfichiers():
             else:
                 flash(u"Veuillez indiquer le nom de l'evenement","error_event")
         if request.form['Envoyer']=='create_event':
-            return redirect('/create_event.html')
+            return redirect('/create_event')
         if request.form['Envoyer']=='create_annee':
-            return redirect('/create_annee.html')
+            return redirect('/create_annee')
     ev=sorted(liste_events)
     an=sorted(liste_annees)
     return render_template('depotfichiers.html',dict_event=ev,dict_annee=an, annees = liste_annees, events = liste_events) 
@@ -269,11 +269,13 @@ def create_event():
             add_event = "INSERT INTO Events (events) VALUES('%s')" % (new_event)
             cursor.execute(add_event) 
             dbconnexion.commit()
+            cursor.close()
+            return redirect('/depotfichiers')
         else:
             flash(u"Veuillez indiquer le nom du nouvel evenement","error_new_event")
     return render_template('create_event.html', annees = liste_annees, events = liste_events) 
 
-@app.route('/create_annee.html', methods=['GET', 'POST'])
+@app.route('/create_annee', methods=['GET', 'POST'])
 @login_required
 def create_annee():
     if request.method == 'POST':
@@ -282,12 +284,14 @@ def create_annee():
             cursor = dbconnexion.cursor()
             add_annee = "INSERT INTO Annees (annees) VALUES('%s')" % (new_annee)
             cursor.execute(add_annee) 
-        return redirect('depotfichiers.html')
+            dbconnexion.commit()
+            cursor.close()
+            return redirect('depotfichiers')
     else:
         flash(u"Veuillez indiquer la nouvelle annee","error_new_annee")
     return render_template('create_annee.html', annees = liste_annees, events = liste_events) 
     
-@app.route('/upload.html/<annee>/<event>', methods=['GET', 'POST'])
+@app.route('/upload/<annee>/<event>', methods=['GET', 'POST'])
 @login_required
 def upload(annee, event):
     t1=True
@@ -323,9 +327,9 @@ def upload(annee, event):
 @app.route('/')
 @login_required
 def getHome():
-    return redirect('/index.html')
+    return redirect('/index')
 
-@app.route('/<name>.html')
+@app.route('/<name>')
 @login_required
 def getResource(name):
         return render_template(name+'.html', annees = liste_annees, events = liste_events)
