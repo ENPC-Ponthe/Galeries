@@ -239,7 +239,7 @@ def depotfichiers():
 def archives_annee(annee):
     dict_events_annee = {}
     cursor = dbconnexion.cursor()
-    selection = " SELECT events,filename FROM Dossier WHERE id = '%s', couverture = '%s' " % (annee,1)
+    selection = " SELECT events,filename FROM Dossier WHERE (couv = '%s' AND annees = '%s' )" % (1,annee)
     cursor.execute(selection)
     events = cursor.fetchall()
     for event in events:
