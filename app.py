@@ -21,7 +21,7 @@ dbconnexion = mysql.connector.connect(host="vps.enpc.org", port="7501", \
     database="enpc-ponthe")
 
 app.secret_key = 'd66HREGTHUVGDRfdt4'
-DOSSIER_UPS = './uploads/'
+DOSSIER_UPS = './static/uploads/'
 directory2=DOSSIER_UPS
 
 login_manager = LoginManager()
