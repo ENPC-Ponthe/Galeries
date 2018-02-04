@@ -137,12 +137,16 @@ def creation():
         user.prenom = request.form['prenom']
         user.email = request.form['email']
         user.MDP = request.form['password']
-        token = s.dumps(user.email)
-        msg = Message('Confirm Email', sender = 'clubpontheenpc@gmail.com',recipients = [user.email] )
-        link = url_for('confirm_email', token = token,  _external = True)
-        msg.body = 'Votre lien est {}'.format(link)
-        mail.send(msg)
-        return render_template('mail_confirmation.html', m = user.email,)
+        user.CMDP = request.form['confirmation_password']
+        if user.MDP == user.CMDP :
+            token = s.dumps(user.email)
+            msg = Message('Confirm Email', sender = 'clubpontheenpc@gmail.com',recipients = [user.email] )
+            link = url_for('confirm_email', token = token,  _external = True)
+            msg.body = 'Votre lien est {}'.format(link)
+            mail.send(msg)
+            return render_template('mail_confirmation.html', m = user.email,)
+        else : 
+            flash(u'Les deux mots de passe ne concordent pas', "error_password")
     return render_template('creation-compte.html')
 
 @app.route('/reset-password', methods =['GET','POST'])

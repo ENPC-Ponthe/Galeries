@@ -16,13 +16,13 @@
                                 <label>Nom</label>
                                 <div class="row margin-bottom-20">
                                     <div class="col-md-6 col-md-offset-0">
-                                        <input type="text" class="form-control" name="nom" id="nom" >
+                                        <input type="text" class="form-control" name="nom" id="nom" value = " {{request.form['nom']}} " > 
                                     </div>
                                 </div>
                                 <label>Prénom</label>
                                 <div class="row margin-bottom-20">
                                     <div class="col-md-6 col-md-offset-0">
-                                        <input type="text" class="form-control" name="prenom" id="prenom" >
+                                        <input type="text" class="form-control" name="prenom" id="prenom" value ="{{request.form['prenom']}}" >
                                     </div>
                                 </div>
                                 <label>Email </label>
@@ -45,6 +45,23 @@
                                         <input rows="8" type="password" class="form-control" name = "confirmation_password" id="confirmation_password">
                                     </div>
                                 </div>
+                                {% with msgs = get_flashed_messages(category_filter=['error_password']) %}
+
+                                        {% if msgs %}
+
+                                            <ul class="flashed {{ 'error_password' }}">
+
+                                                {% for m in msgs %}
+
+                                                    <li>{{ m|safe }}</li>
+
+                                                {% endfor %}
+
+                                            </ul>
+
+                                        {% endif %}
+
+                                    {% endwith %}
                                 <p>
                                     <button type="submit" class="btn btn-primary" value="Envoyer">Confirmer la création du compte</button>
                                 </p>
