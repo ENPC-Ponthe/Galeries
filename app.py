@@ -303,8 +303,8 @@ def upload(annee, event):
     if request.method == 'POST':
         for f in request.files.getlist('photos'):
             if f:
-                if extension_ok(f.filename): # on verifie que son extension est valide
-                    _, ext = os.path.splitext(f.filename.lower())
+                if extension_ok(f.filename.lower()): # on verifie que son extension est valide
+                    _, ext = os.path.splitext(f.filename)
                     filename = ""
                     for i in range(54):
                         filename += liste_char[random.randint(0,len(liste_char)-1)]
