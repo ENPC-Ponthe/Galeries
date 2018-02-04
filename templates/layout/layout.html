@@ -62,10 +62,9 @@
                                 <li>
                                     <span class="fa-th">Archives</span>
                                     <ul>
-                                                <li>
-                                                    <span>Années</span>
-                                                </li>
-                                            {% for annee in annees %}
+                                        <li>
+                                               
+                                                {% for annee in annees %}
                                                 <li>
                                                     <a href= {{url_for('archives_annee', annee = annee)}} class="parent">{{annee}}</a>
                                                     <ul>
@@ -76,9 +75,9 @@
                                                      {% endfor %}
                                                      </ul>
                                                 </li>
-                                                {% endfor %}
-                                             </ul>
+                                                {% endfor %}                            
                                         </li>
+                                    </ul>
                                 </li>
                                 <li>        
                                     <a href='/depotfichiers' class="fa-copy">Dépôt fichiers</a>
