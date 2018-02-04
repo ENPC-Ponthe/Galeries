@@ -304,7 +304,7 @@ def upload(annee, event):
         for f in request.files.getlist('photos'):
             if f:
                 if extension_ok(f.filename): # on verifie que son extension est valide
-                    _, ext = os.path.splitext(f.filename)
+                    _, ext = os.path.splitext(f.filename.lower())
                     filename = ""
                     for i in range(54):
                         filename += liste_char[random.randint(0,len(liste_char)-1)]
@@ -324,7 +324,7 @@ def upload(annee, event):
                 flash(u'Bravo! Vos images ont ete envoyees! :)','succes')
             else:
                 flash(u'Vous avez oublie le fichier !', 'error')
-        if t2==False:
+        if t1==False:
             flash(u'Ce fichier ne porte pas l extension png, jpg, jpeg, gif ou bmp !', 'error')
     return render_template('upload.html' , annees = liste_annees, events = liste_events)
 
