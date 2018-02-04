@@ -1,5 +1,7 @@
 
 
+
+
 # -- coding: utf-8 --"
 
 from flask import Flask,render_template,request, flash, redirect, url_for, jsonify
@@ -137,16 +139,12 @@ def creation():
         user.prenom = request.form['prenom']
         user.email = request.form['email']
         user.MDP = request.form['password']
-        user.CMDP = request.form['confirmation_password']
-        if user.MDP == user.CMDP :
-            token = s.dumps(user.email)
-            msg = Message('Confirm Email', sender = 'clubpontheenpc@gmail.com',recipients = [user.email] )
-            link = url_for('confirm_email', token = token,  _external = True)
-            msg.body = 'Votre lien est {}'.format(link)
-            mail.send(msg)
-            return render_template('mail_confirmation.html', m = user.email,)
-        else : 
-            flash(u'Les deux mots de passe ne concordent pas', "error_password")
+        token = s.dumps(user.email)
+        msg = Message('Confirm Email', sender = 'clubpontheenpc@gmail.com',recipients = [user.email] )
+        link = url_for('confirm_email', token = token,  _external = True)
+        msg.body = 'Votre lien est {}'.format(link)
+        mail.send(msg)
+        return render_template('mail_confirmation.html', m = user.email,)
     return render_template('creation-compte.html')
 
 @app.route('/reset-password', methods =['GET','POST'])
@@ -263,6 +261,20 @@ def archives_evenement(annee,event):
         liste_filename.append(filename[0])
     return render_template('archives_evenement.html', annee = annee, event = event, annees = liste_annees, events = liste_events, filename = liste_filename)
 
+  @app.route('/<categorie>')
+@login_required
+def archives_categorie(categorie):
+    liste_filename = []
+    cursor = dbconnexion.cursor()
+    selection = "SELECT filename FROM Dossier WHERE (categorie = '%s') " % (categorie)
+    cursor.execute(selection)
+    var = cursor.fetchall()
+    cursor.close()
+    for filename in var :
+        liste_filename.append(filename[0])
+    return render_template('archives_<categorie>.html', annee = annee, event = event, annees = liste_annees, events = liste_events, filename = liste_filename)
+
+
 @app.route('/create_event', methods=['GET', 'POST'])
 @login_required
 def create_event():
@@ -303,7 +315,7 @@ def upload(annee, event):
     if request.method == 'POST':
         for f in request.files.getlist('photos'):
             if f:
-                if extension_ok(f.filename.lower()): # on verifie que son extension est valide
+                if extension_ok(f.filename): # on verifie que son extension est valide
                     _, ext = os.path.splitext(f.filename)
                     filename = ""
                     for i in range(54):
@@ -324,7 +336,7 @@ def upload(annee, event):
                 flash(u'Bravo! Vos images ont ete envoyees! :)','succes')
             else:
                 flash(u'Vous avez oublie le fichier !', 'error')
-        if t1==False:
+        if t2==False:
             flash(u'Ce fichier ne porte pas l extension png, jpg, jpeg, gif ou bmp !', 'error')
     return render_template('upload.html' , annees = liste_annees, events = liste_events)
 
@@ -352,3 +364,4 @@ def createFolder(directory):
 
 if __name__ == '__main__':
     app.run(debug=True)
+
