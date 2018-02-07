@@ -64,11 +64,11 @@
                                     <ul>
                                         <li>
                                                
-                                                {% for annee in annees %}
+                                                {% for annee in dict_events %}
                                                 <li>
                                                     <a href= {{url_for('archives_annee', annee = annee)}} class="parent">{{annee}}</a>
                                                     <ul>
-                                                        {% for event in events %}
+                                                        {% for event in dict_events[annee] %}
                                                     <li>
                                                         <a href= {{url_for('archives_evenement', annee = annee, event =event)}} class="fa-group"> {{event}} </a>
                                                     </li>
