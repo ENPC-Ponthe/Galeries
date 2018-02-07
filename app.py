@@ -47,27 +47,26 @@ class User(UserMixin):
 
 user = User()
 
-cursor = dbconnexion.cursor()
-liste_events = []
-cursor.execute("SELECT DISTINCT events FROM Events")
-var = cursor.fetchall()
-for event in var :
-    liste_events.append(event[0])
-liste_annees = []
-cursor.execute("SELECT DISTINCT annees FROM Annees")
-var = cursor.fetchall()
-for annee in var :
-    liste_annees.append(annee[0])   
-cursor.close()
+def connexion(dict_events) :
+    cursor = dbconnexion.cursor()
+    cursor.execute ( "SELECT DISTINCT annees FROM Dossier")
+    liste_annees = cursor.fetchall()
+    for annee in liste_annees :
+        cursor.execute(" SELECT DISTINCT events FROM Dossier WHERE annees =  '%s' " % (annee[0]))
+        liste_events = cursor.fetchall()
+        dict_events[annee[0]] = []
+        for event in liste_events :
+            dict_events[annee[0]].append(event[0])
+    cursor.close()
 
 @login_manager.user_loader
 def user_loader(email):
     users = {}
     cursor = dbconnexion.cursor()
     cursor.execute("SELECT * FROM Admin")
-    var = cursor.fetchall()
+    liste_admin = cursor.fetchall()
     cursor.close()
-    for admin in var:
+    for admin in liste_admin:
         empDict = {
             'id': admin[0],
             'lastname': admin[1],
@@ -87,9 +86,9 @@ def request_loader(request):
     users = {}
     cursor = dbconnexion.cursor()
     cursor.execute("SELECT * FROM Admin")
-    var = cursor.fetchall()
+    liste_admin = cursor.fetchall()
     cursor.close()
-    for admin in var:
+    for admin in liste_admin:
         empDict = {
             'id': admin[0],
             'lastname': admin[1],
@@ -111,8 +110,8 @@ def login():
     users = {}
     cursor = dbconnexion.cursor()
     cursor.execute("SELECT * FROM Admin")
-    var = cursor.fetchall()
-    for admin in var:
+    liste_admin = cursor.fetchall()
+    for admin in liste_admin:
         empDict = {
             'id': admin[0],
             'lastname': admin[1],
@@ -130,21 +129,22 @@ def login():
         return getHome()
     return getLoginPage()
 
+
 @app.route('/creation-compte', methods=['GET', 'POST'])
 def creation():
     if request.method == 'POST' :
         user.nom = request.form['nom']
         user.prenom = request.form['prenom']
-        user.email = request.form['email']
+        user.id = request.form['email']
         user.MDP = request.form['password']
         user.CMDP = request.form['confirmation_password']
         if user.MDP == user.CMDP :
-            token = s.dumps(user.email)
-            msg = Message('Confirm Email', sender = 'clubpontheenpc@gmail.com',recipients = [user.email] )
+            token = s.dumps(user.id)
+            msg = Message('Confirm Email', sender = 'clubpontheenpc@gmail.com',recipients = [user.id] )
             link = url_for('confirm_email', token = token,  _external = True)
             msg.body = 'Votre lien est {}'.format(link)
             mail.send(msg)
-            return render_template('mail_confirmation.html', m = user.email,)
+            return render_template('mail_confirmation.html', m = user.id,)
         else : 
             flash(u'Les deux mots de passe ne concordent pas', "error_password")
     return render_template('creation-compte.html')
@@ -152,14 +152,14 @@ def creation():
 @app.route('/reset-password', methods =['GET','POST'])
 def reset():
     if request.method == 'POST' :
-        user.email = request.form['email']
+        user.id = request.form['email']
         user.MDP = request.form['password']
-        token = s.dumps(user.email)
-        msg = Message('Reset Email' , sender = 'clubpontheenpc@gmail.com', recipients = [user.email] )
+        token = s.dumps(user.id)
+        msg = Message('Reset Email' , sender = 'clubpontheenpc@gmail.com', recipients = [user.id] )
         link = url_for('reset_email', token = token, _external =True )
         msg.body = 'Votre lien est {}'.format(link)
         mail.send(msg)
-        return render_template('mail_confirmation.html', m = user.email)
+        return render_template('mail_confirmation.html', m = user.id)
     return render_template('reset-password.html')
     
 @app.route('/reset_email/<token>')
@@ -167,9 +167,10 @@ def reset_email(token):
     try :
         email = s.loads(token, max_age = 300 )
         cursor = dbconnexion.cursor()
-        reset_admin = "UPDATE Admin SET password = '%s' WHERE email = '%s' " % (user.MDP, user.email)
+        reset_admin = "UPDATE Admin SET password = '%s' WHERE email = '%s' " % (user.MDP, user.id)
         cursor.execute(reset_admin)
         dbconnexion.commit()
+        cursor.close()
     except SignatureExpired :
         return '<h1> The token is expired </h1> ' 
     return getLoginPage()
@@ -179,9 +180,10 @@ def confirm_email(token):
     try :
         email = s.loads(token, max_age = 300 )
         cursor = dbconnexion.cursor()
-        add_admin = "INSERT INTO Admin(lastname, firstname, email, password) VALUES('%s', '%s', '%s', '%s')" % (user.nom, user.prenom , user.email, user.MDP ) 
+        add_admin = "INSERT INTO Admin(lastname, firstname, email, password) VALUES('%s', '%s', '%s', '%s')" % (user.nom, user.prenom , user.id, user.MDP ) 
         cursor.execute(add_admin)
         dbconnexion.commit()
+        cursor.close()
     except SignatureExpired :
         return '<h1> The token is expired </h1> ' 
     return getLoginPage()
@@ -206,15 +208,19 @@ def getLoginPage():
 @app.route('/materiel',methods=['GET','POST'])
 @login_required
 def reservation() :
+    dict_events = {}
+    connexion(dict_events)
     if request.method == 'POST':
         msg = Message(request.form['message'],sender= 'clubpontheenpc@gmail.com', recipients= 'clubpontheenpc@gmail.com', events = liste_ev)
         mail.send(msg)
         return render_template("mail_envoye.html" , p=request.form['prenom'], n=request.form['nom'])
-    return render_template( 'materiel.html', annees = liste_annees, events = liste_events)
+    return render_template( 'materiel.html', dict_events = dict_events)
 
 @app.route('/depotfichiers', methods=['GET', 'POST'])
 @login_required
 def depotfichiers():
+    dict_events = {}
+    connexion(dict_events)
     if request.method == 'POST':
         evenement=request.form['evenement']
         annee=request.form['annee']
@@ -234,13 +240,28 @@ def depotfichiers():
             return redirect('/create_event')
         if request.form['Envoyer']=='create_annee':
             return redirect('/create_annee')
+    cursor = dbconnexion.cursor()
+    liste_events = []
+    cursor.execute("SELECT DISTINCT events FROM Events")
+    var = cursor.fetchall()
+    for event in var :
+        liste_events.append(event[0])
+    liste_annees = []
+    cursor.execute("SELECT DISTINCT annees FROM Annees")
+    var = cursor.fetchall()
+    for annee in var :
+        liste_annees.append(annee[0])   
+    cursor.close()
     ev=sorted(liste_events)
     an=sorted(liste_annees)
-    return render_template('depotfichiers.html',dict_event=ev,dict_annee=an, annees = liste_annees, events = liste_events) 
+    return render_template('depotfichiers.html',dict_event=ev,dict_annee=an, dict_events=dict_events) 
+
 
 @app.route('/archives/<annee>')
 @login_required
 def archives_annee(annee):
+    dict_events = {}
+    connexion(dict_events)
     dict_events_annee = {}
     cursor = dbconnexion.cursor()
     selection = " SELECT events,filename FROM Dossier WHERE (couv = '%s' AND annees = '%s' )" % (1,annee)
@@ -248,11 +269,13 @@ def archives_annee(annee):
     events = cursor.fetchall()
     for event in events:
         dict_events_annee[event[0]] = event[1] 
-    return render_template('archives_annee.html', annee = annee , annees = liste_annees, events = liste_events, events_annee = dict_events_annee )
+    return render_template('archives_annee.html', annee = annee ,events_annee = dict_events_annee, dict_events=dict_events )
      
 @app.route('/archives/<annee>/<event>')
 @login_required
 def archives_evenement(annee,event):
+    dict_events = {}
+    connexion(dict_events)
     liste_filename = []
     cursor = dbconnexion.cursor()
     selection = "SELECT filename FROM Dossier WHERE (events = '%s' AND annees ='%s') " % (event,annee)
@@ -261,11 +284,13 @@ def archives_evenement(annee,event):
     cursor.close()
     for filename in var :
         liste_filename.append(filename[0])
-    return render_template('archives_evenement.html', annee = annee, event = event, annees = liste_annees, events = liste_events, filename = liste_filename)
+    return render_template('archives_evenement.html', annee = annee, event = event, dict_events=dict_events, filename = liste_filename)
 
 @app.route('/create_event', methods=['GET', 'POST'])
 @login_required
 def create_event():
+    dict_events = {}
+    connexion(dict_events)
     if request.method == 'POST':
         new_event=request.form['new_event']
         if new_event:
@@ -277,11 +302,13 @@ def create_event():
             return redirect('/depotfichiers')
         else:
             flash(u"Veuillez indiquer le nom du nouvel evenement","error_new_event")
-    return render_template('create_event.html', annees = liste_annees, events = liste_events) 
+    return render_template('create_event.html', dict_events=dict_events) 
 
 @app.route('/create_annee', methods=['GET', 'POST'])
 @login_required
 def create_annee():
+    dict_events = {}
+    connexion(dict_events)
     if request.method == 'POST':
         new_annee = request.form['new_annee']
         if new_annee:
@@ -293,11 +320,13 @@ def create_annee():
             return redirect('depotfichiers')
     else:
         flash(u"Veuillez indiquer la nouvelle annee","error_new_annee")
-    return render_template('create_annee.html', annees = liste_annees, events = liste_events) 
+    return render_template('create_annee.html', dict_events=dict_events) 
     
 @app.route('/upload/<annee>/<event>', methods=['GET', 'POST'])
 @login_required
 def upload(annee, event):
+    dict_events = {}
+    connexion(dict_events)
     t1=True
     t2=True
     if request.method == 'POST':
@@ -326,7 +355,7 @@ def upload(annee, event):
                 flash(u'Vous avez oublie le fichier !', 'error')
         if t1==False:
             flash(u'Ce fichier ne porte pas l extension png, jpg, jpeg, gif ou bmp !', 'error')
-    return render_template('upload.html' , annees = liste_annees, events = liste_events)
+    return render_template('upload.html' , dict_events=dict_events)
 
 @app.route('/')
 @login_required
@@ -336,7 +365,9 @@ def getHome():
 @app.route('/<name>')
 @login_required
 def getResource(name):
-        return render_template(name+'.html', annees = liste_annees, events = liste_events)
+    dict_events = {}
+    connexion(dict_events)
+    return render_template(name+'.html', dict_events = dict_events )
 
 def extension_ok(nomfic):
     """ Renvoie True si le fichier possede une extension d'image valide. """
