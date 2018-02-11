@@ -66,7 +66,7 @@
                                                
                                                 {% for annee in dict_events %}
                                                 <li>
-                                                    <a href= {{url_for('archives_annee', annee = annee)}} class="parent">{{annee}}</a>
+                                                    <a href= {{url_for('archives_annee', annee = annee)}} class="parent"> {{annee}} </a>
                                                     <ul>
                                                         {% for event in dict_events[annee] %}
                                                     <li>
