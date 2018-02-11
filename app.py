@@ -257,7 +257,20 @@ def depotfichiers():
     return render_template('depotfichiers.html',dict_event=ev,dict_annee=an, dict_events=dict_events) 
 
 
-@app.route('/archives/<annee>')
+@app.route ('/archives/<cat>')
+@login_required 
+def archives_categorie(cat):
+    dict_events = {}
+    connexion(dict_events)
+    cursor = dbconnexion.cursor()
+    selection = " SELECT events, annees, filename FROM Dossier WHERE (couv = '%s' AND cat ='%s' )" % (1,cat)
+    cursor.execute(selection)
+    liste_events_annees = cursor.fetchall()
+    cursor.close()
+    return render_template('archives_categorie.html', liste_events_annees = liste_events_annees, dict_events = dict_events ) 
+    
+    
+@app.route('/archive/<annee>')
 @login_required
 def archives_annee(annee):
     dict_events = {}
