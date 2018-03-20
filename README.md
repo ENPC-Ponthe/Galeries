@@ -1,29 +1,33 @@
-# README #
+# Galleries Ponthé
 
-This README would normally document whatever steps are necessary to get your application up and running.
+### Installation
 
-### What is this repository for? ###
+Exécuter
+```
+./install.sh
+```
 
-* Quick summary
-* Version
-* [Learn Markdown](https://bitbucket.org/tutorials/markdowndemo)
+### Dévelopement
 
-### How do I get set up? ###
+Activer l'environnement de développement Python :
+```
+source venv/bin/activate
+```
 
-* Summary of set up
-* Configuration
-* Dependencies
-* Database configuration
-* How to run tests
-* Deployment instructions
+Lancer l'application
+```
+FLASK_APP=app.py flask run
+```
+Pour le rendre disponible sur le réseau ajouter `--host=0.0.0.0` (écoute toutes les IPs publiques)
 
-### Contribution guidelines ###
+## TODO
 
-* Writing tests
-* Code review
-* Other guidelines
+* SQLAlchemy example : https://jeffknupp.com/blog/2014/01/29/productionizing-a-flask-application/
+* Générer la doc avec sphinxcontrib-httpdomain :
+* set up linters : https://jeffknupp.com/blog/2016/12/09/how-python-linters-will-save-your-large-python-project/
+* Docker : http://www.patricksoftwareblog.com/using-docker-for-flask-application-development-not-just-production/
 
-### Who do I talk to? ###
+## Ressources :
 
-* Repo owner or admin
-* Other community or team contact
+http://www.patricksoftwareblog.com
+https://jeffknupp.com/blog/2014/01/29/productionizing-a-flask-application/
