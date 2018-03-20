@@ -1,5 +1,0 @@
-flask
-flask-login
-werkzeug
-flask-mail
-mysql-connector-python
