@@ -29,5 +29,6 @@ Pour le rendre disponible sur le réseau ajouter `--host=0.0.0.0` (écoute toute
 
 ## Ressources :
 
-http://www.patricksoftwareblog.com
-https://jeffknupp.com/blog/2014/01/29/productionizing-a-flask-application/
+* http://flask.pocoo.org/docs/0.12/tutorial/introduction/
+* http://www.patricksoftwareblog.com/flask-tutorial/
+* https://jeffknupp.com/blog/2014/01/29/productionizing-a-flask-application/
