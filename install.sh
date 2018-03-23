@@ -20,6 +20,7 @@ sudo -E apt-get install -y python3-pip apt-transport-https
 
 echo -e "\e[1m\e[34mInstallation de l'environnement python\e[0m"
 
+cd web
 pip3 install virtualenv
 virtualenv venv
 source venv/bin/activate
