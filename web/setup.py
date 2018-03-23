@@ -1,10 +1,9 @@
-viva# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 """
     setup
     ~~~~
-    KI-Hosting est un module développé pour automatiser les services d'hébergment
-    du club informatique des Ponts et Chaussées
-    :copyright: (c) 2017 by KI Clubinfo
+    Galeries Ponthé est le site du club d'audiovisuel des Ponts
+    :copyright: (c) 2018 by Club Ponthé
     :license: MIT, see LICENSE for more details.
 """
 
@@ -12,7 +11,7 @@ from setuptools import setup
 from os.path import join, dirname
 
 def readme():
-    with open('README.md') as f:
+    with open('../README.md') as f:
         return f.read()
 
 with open(join(dirname(__file__), 'ponthe/version.py'), 'r') as f:
@@ -22,7 +21,7 @@ with open (join(dirname(__file__), 'requirements.txt'), 'r') as f:
     install_requires = f.read().split("\n")
 
 setup(
-    name='Galleries Ponthé',
+    name='Galeries Ponthé',
     version=__version__,
     description='Site du Ponthé',
     long_description=readme(),
