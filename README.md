@@ -16,9 +16,19 @@ source venv/bin/activate
 
 Lancer l'application
 ```
-FLASK_APP=app.py flask run
+FLASK_APP=ponthe flask run
 ```
 Pour le rendre disponible sur le réseau ajouter `--host=0.0.0.0` (écoute toutes les IPs publiques)
+
+### ORM
+
+Migration :
+```
+cd web
+export FLASK_APP=ponthe
+flask db migrate
+flask db upgrade
+```
 
 ## TODO
 

@@ -21,7 +21,7 @@ with open (join(dirname(__file__), 'requirements.txt'), 'r') as f:
     install_requires = f.read().split("\n")
 
 setup(
-    name='Galeries Ponthé',
+    name='Galeries Ponthe',
     version=__version__,
     description='Site du Ponthé',
     long_description=readme(),

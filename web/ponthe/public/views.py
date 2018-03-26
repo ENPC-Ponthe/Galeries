@@ -21,17 +21,9 @@ dbconnexion = mysql.connector.connect(host="vps.enpc.org", port="7501", \
     user="enpc-ponthe",password="Ponthasm7gorique2017", \
     database="enpc-ponthe")
 
-db = SQLAlchemy(app)
-migrate = Migrate(app, db)
-
-login_manager = LoginManager()
-login_manager.init_app(app)
-
-mail=Mail(app)
-
 s=URLSafeTimedSerializer(app.secret_key)
 
-public = Blueprint('public', __name__, template_folder='templates')
+public = Blueprint('public', __name__)
 
 class User(UserMixin):
     pass

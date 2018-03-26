@@ -4,32 +4,27 @@
 
 from flask import Flask,render_template,request, flash, redirect, url_for, jsonify
 from werkzeug import secure_filename
-from flask_mail import Mail,Message
+from flask_mail import Message
 import os
-from flask_login import LoginManager, UserMixin, login_user , logout_user , current_user , login_required
+from flask_login import UserMixin, login_user , logout_user , current_user , login_required
 import mysql.connector
 from itsdangerous import URLSafeTimedSerializer, SignatureExpired
 import string
 import random
-from flask_sqlalchemy import SQLAlchemy
-from flask_migrate import Migrate
 
 liste_char=string.ascii_letters+string.digits
 
 
-dbconnexion = mysql.connector.connect(host="vps.enpc.org", port="7501", \
-    user="enpc-ponthe",password="Ponthasm7gorique2017", \
-    database="enpc-ponthe")
+# dbconnexion = mysql.connector.connect(host="vps.enpc.org", port="7501", \
+#     user="enpc-ponthe",password="Ponthasm7gorique2017", \
+#     database="enpc-ponthe")
 
 DOSSIER_UPS = './static/uploads/'
 directory2=DOSSIER_UPS
 
-db = SQLAlchemy(app)
-migrate = Migrate(app, db)
-
 s=URLSafeTimedSerializer(app.secret_key)
 
-users = Blueprint('users', __name__, template_folder='templates')
+users = Blueprint('users', __name__)
 
 @users.route('/materiel',methods=['GET','POST'])
 @login_required
@@ -100,7 +95,7 @@ def archives_categorie(cat):
     dict_events = {}
     connexion(dict_events)
     cursor = dbconnexion.cursor()
-    selection = " SELECT events, annees, filename FROM Dossier WHERE (couv = '%s' AND cat ='%s' )" % (1,cat)
+    selection = "SELECT events, annees, filename FROM Dossier WHERE (couv = '%s' AND cat ='%s' )" % (1,cat)
     cursor.execute(selection)
     liste_events_annees = cursor.fetchall()
     cursor.close()
