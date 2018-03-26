@@ -24,7 +24,10 @@ cd web
 pip3 install virtualenv
 virtualenv venv
 source venv/bin/activate
-pip3 install -r requirements.txt
+pip install --editable .
+export FLASK_APP=ponthe
+flask db init
+flask db upgrade
 
 echo -e "\e[1m\e[34mInstallation de la base de données\e[0m"
 sudo apt-get install mysql-server
