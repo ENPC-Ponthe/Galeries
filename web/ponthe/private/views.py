@@ -23,6 +23,18 @@ directory2=DOSSIER_UPS
 
 private = Blueprint('private', __name__)
 
+def connexion(dict_events) :
+    cursor = dbconnexion.cursor()
+    cursor.execute("SELECT DISTINCT annees FROM Dossier")
+    liste_annees = cursor.fetchall()
+    for annee in liste_annees:
+        cursor.execute(" SELECT DISTINCT events FROM Dossier WHERE annees = '%s' " % (annee[0]))
+        liste_events = cursor.fetchall()
+        dict_events[annee[0]] = []
+        for event in liste_events :
+            dict_events[annee[0]].append(event[0])
+    cursor.close()
+
 @private.route('/materiel',methods=['GET','POST'])
 @login_required
 def reservation() :

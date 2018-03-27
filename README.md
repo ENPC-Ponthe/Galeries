@@ -20,14 +20,22 @@ FLASK_APP=ponthe flask run
 ```
 Pour le rendre disponible sur le réseau ajouter `--host=0.0.0.0` (écoute toutes les IPs publiques)
 
-### ORM
+## ORM
 
-Migration :
+### Migration
+Générer les migrations dans *web/migrations/versions* :
 ```
 cd web
 export FLASK_APP=ponthe
 flask db migrate
 flask db upgrade
+```
+
+### Fixtures
+Supprimer la BDD et charges les fixtures de tous les fichiers YAML de *web/fixtures/* :
+```
+cd web
+ponthe/manager.py load_fixtures
 ```
 
 ## TODO
