@@ -28,6 +28,16 @@ Description: # Galleries Ponthé
         ```
         Pour le rendre disponible sur le réseau ajouter `--host=0.0.0.0` (écoute toutes les IPs publiques)
         
+        ### ORM
+        
+        Migration :
+        ```
+        cd web
+        export FLASK_APP=ponthe
+        flask db migrate
+        flask db upgrade
+        ```
+        
         ## TODO
         
         * SQLAlchemy example : https://jeffknupp.com/blog/2014/01/29/productionizing-a-flask-application/
