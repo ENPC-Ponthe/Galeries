@@ -13,15 +13,13 @@ import string
 import random
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
+from .. import app, login_manager
 
-liste_char=string.ascii_letters+string.digits
+dbconnexion = mysql.connector.connect(host="localhost", port="3306", \
+    user="ponthe",password="", \
+    database="ponthe")
 
-
-dbconnexion = mysql.connector.connect(host="vps.enpc.org", port="7501", \
-    user="enpc-ponthe",password="Ponthasm7gorique2017", \
-    database="enpc-ponthe")
-
-s=URLSafeTimedSerializer(app.secret_key)
+serializer=URLSafeTimedSerializer(app.secret_key)
 
 public = Blueprint('public', __name__)
 
@@ -148,7 +146,7 @@ def reset():
 @public.route('/reset_email/<token>')
 def reset_email(token):
     try :
-        email = s.loads(token, max_age = 300 )
+        email = serializer.loads(token, max_age = 300 )
         cursor = dbconnexion.cursor()
         reset_admin = "UPDATE Admin SET password = '%s' WHERE email = '%s' " % (user.MDP, user.id)
         cursor.execute(reset_admin)
@@ -161,7 +159,7 @@ def reset_email(token):
 @public.route('/confirm_email/<token>')
 def confirm_email(token):
     try :
-        email = s.loads(token, max_age = 300 )
+        email = serializer.loads(token, max_age = 300 )
         cursor = dbconnexion.cursor()
         add_admin = "INSERT INTO Admin(lastname, firstname, email, password) VALUES('%s', '%s', '%s', '%s')" % (user.nom, user.prenom , user.id, user.MDP )
         cursor.execute(add_admin)

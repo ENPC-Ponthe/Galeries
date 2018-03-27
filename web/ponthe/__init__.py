@@ -16,10 +16,10 @@ login_manager.init_app(app)
 # mail=Mail(app)
 
 from ponthe.public.views import public
-from ponthe.users.views import users
+from ponthe.private.views import private
 
 from . import models
 
 # register the blueprints
 app.register_blueprint(public)
-app.register_blueprint(users)
+app.register_blueprint(private)
