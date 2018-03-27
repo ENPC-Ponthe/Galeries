@@ -28,18 +28,6 @@ class User(UserMixin):
 
 user = User()
 
-def connexion(dict_events) :
-    cursor = dbconnexion.cursor()
-    cursor.execute ( "SELECT DISTINCT annees FROM Dossier")
-    liste_annees = cursor.fetchall()
-    for annee in liste_annees :
-        cursor.execute(" SELECT DISTINCT events FROM Dossier WHERE annees =  '%s' " % (annee[0]))
-        liste_events = cursor.fetchall()
-        dict_events[annee[0]] = []
-        for event in liste_events :
-            dict_events[annee[0]].append(event[0])
-    cursor.close()
-
 @login_manager.user_loader
 def user_loader(email):
     users = {}
