@@ -32,7 +32,7 @@ class Events(db.Model):
     __tablename__ = 'Events'
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    events = db.Column(db.String(64), nullable=False)   "nom de l'event Campagne BDE qui peut être sur plusieurs années"
+    events = db.Column(db.String(64), nullable=False)   # nom de l'event Campagne BDE qui peut être sur plusieurs années
     def __init__(self, events):
         self.events = events
 

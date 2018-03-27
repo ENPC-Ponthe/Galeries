@@ -2,7 +2,7 @@
 
 # -- coding: utf-8 --"
 
-from flask import Flask,render_template,request, flash, redirect, url_for, jsonify
+from flask import Flask,render_template,request, flash, redirect, url_for, jsonify, Blueprint
 from werkzeug import secure_filename
 from flask_mail import Message
 import os
@@ -14,7 +14,6 @@ import random
 
 liste_char=string.ascii_letters+string.digits
 
-
 # dbconnexion = mysql.connector.connect(host="vps.enpc.org", port="7501", \
 #     user="enpc-ponthe",password="Ponthasm7gorique2017", \
 #     database="enpc-ponthe")
@@ -22,11 +21,9 @@ liste_char=string.ascii_letters+string.digits
 DOSSIER_UPS = './static/uploads/'
 directory2=DOSSIER_UPS
 
-s=URLSafeTimedSerializer(app.secret_key)
+private = Blueprint('private', __name__)
 
-users = Blueprint('users', __name__)
-
-@users.route('/materiel',methods=['GET','POST'])
+@private.route('/materiel',methods=['GET','POST'])
 @login_required
 def reservation() :
     dict_events = {}
@@ -37,18 +34,7 @@ def reservation() :
         return render_template("mail_envoye.html" , p=request.form['prenom'], n=request.form['nom'])
     return render_template('materiel.html', dict_events = dict_events)
 
-@users.route('/materiel', methods=['GET','POST'])
-@login_required
-def reservation() :
-    dict_events = {}
-    connexion(dict_events)
-    if request.method == 'POST':
-        msg = Message(request.form['message'],sender= 'clubpontheenpc@gmail.com', recipients= 'clubpontheenpc@gmail.com', events = liste_ev)
-        mail.send(msg)
-        return render_template("mail_envoye.html" , p=request.form['prenom'], n=request.form['nom'])
-    return render_template( 'materiel.html', dict_events = dict_events)
-
-@users.route('/depotfichiers', methods=['GET', 'POST'])
+@private.route('/depotfichiers', methods=['GET', 'POST'])
 @login_required
 def depotfichiers():
     dict_events = {}
@@ -89,7 +75,7 @@ def depotfichiers():
     return render_template('depotfichiers.html', dict_event=ev, dict_annee=an, dict_events=dict_events)
 
 
-@users.route ('/archives/<cat>')
+@private.route ('/archives/<cat>')
 @login_required
 def archives_categorie(cat):
     dict_events = {}
@@ -102,7 +88,7 @@ def archives_categorie(cat):
     return render_template('archives_categorie.html', liste_events_annees = liste_events_annees, dict_events = dict_events )
 
 
-@users.route('/archive/<annee>')
+@private.route('/archive/<annee>')
 @login_required
 def archives_annee(annee):
     dict_events = {}
@@ -116,7 +102,7 @@ def archives_annee(annee):
         dict_events_annee[event[0]] = event[1]
     return render_template('archives_annee.html', annee = annee, events_annee = dict_events_annee, dict_events=dict_events )
 
-@users.route('/archives/<annee>/<event>')
+@private.route('/archives/<annee>/<event>')
 @login_required
 def archives_evenement(annee,event):
     dict_events = {}
@@ -131,7 +117,7 @@ def archives_evenement(annee,event):
         liste_filename.append(filename[0])
     return render_template('archives_evenement.html', annee = annee, event = event, dict_events=dict_events, filename = liste_filename)
 
-@users.route('/create_event', methods=['GET', 'POST'])
+@private.route('/create_event', methods=['GET', 'POST'])
 @login_required
 def create_event():
     dict_events = {}
@@ -149,7 +135,7 @@ def create_event():
             flash(u"Veuillez indiquer le nom du nouvel evenement","error_new_event")
     return render_template('create_event.html', dict_events=dict_events)
 
-@users.route('/create_annee', methods=['GET', 'POST'])
+@private.route('/create_annee', methods=['GET', 'POST'])
 @login_required
 def create_annee():
     dict_events = {}
@@ -167,7 +153,7 @@ def create_annee():
         flash(u"Veuillez indiquer la nouvelle annee","error_new_annee")
     return render_template('create_annee.html', dict_events=dict_events)
 
-@users.route('/upload/<annee>/<event>', methods=['GET', 'POST'])
+@private.route('/upload/<annee>/<event>', methods=['GET', 'POST'])
 @login_required
 def upload(annee, event):
     dict_events = {}
@@ -202,12 +188,12 @@ def upload(annee, event):
             flash(u'Ce fichier ne porte pas l extension png, jpg, jpeg, gif ou bmp !', 'error')
     return render_template('upload.html' , dict_events=dict_events)
 
-@users.route('/')
+@private.route('/')
 @login_required
 def getHome():
     return redirect('/index')
 
-@users.route('/<name>')
+@private.route('/<name>')
 @login_required
 def getResource(name):
     dict_events = {}
