@@ -1,0 +1,19 @@
+{% extends "layout/layout.html" %}
+
+{% block content %}
+    <div class="container background-white">
+        <div class="row margin-vert-30">
+            <!-- Main Column -->
+            <div class="col-md-9">
+                <!-- Main Content -->
+                <div class="headline">
+                    <h2> Mail de confirmation </h2>
+                    <p>
+                        Un mail de confirmation a été envoyé à l'adresse suivante : {{ email }}
+                    </p>y
+                </div>
+            </div>
+            <!-- End Main Column -->
+        </div>
+    </div>
+{% endblock %}

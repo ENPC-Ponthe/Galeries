@@ -1,0 +1,4 @@
+graft ponthe/templates
+graft ponthe/static
+
+include instance

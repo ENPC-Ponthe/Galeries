@@ -1,0 +1,129 @@
+{% extends "layout/layout.html" %}
+
+{% block content %}
+<!-- === BEGIN CONTENT === -->
+<div id="content">
+    <div class="container no-padding">
+        <div class="row">
+            <!-- Carousel Slideshow -->
+            <div id="carousel-example" class="carousel slide" data-ride="carousel">
+                <!-- Carousel Indicators -->
+                <ol class="carousel-indicators">
+                    <li data-target="#carousel-example" data-slide-to="0" class="active"></li>
+                    <li data-target="#carousel-example" data-slide-to="1"></li>
+                    <li data-target="#carousel-example" data-slide-to="2"></li>
+                    <li data-target="#carousel-example" data-slide-to="3"></li>
+                </ol>
+                <div class="clearfix"></div>
+                <!-- End Carousel Indicators -->
+                <!-- Carousel Images -->
+                <div class="carousel-inner">
+                    <div class="item active">
+                        <img src="static/img/fond.jpg">
+                    </div>
+                    <div class="item">
+                        <img src="{{ url_for('static', filename = 'img/slideshow/sport2.jpg') }}">
+                    </div>
+                    <div class="item">
+                        <img src="{{ url_for('static', filename = 'img/slideshow/font2.jpg') }}">
+                    </div>
+                    <div class="item">
+                        <img src="{{ url_for('static', filename = 'img/slideshow/asso4.jpg') }}">
+                    </div>
+                </div>
+                <!-- End Carousel Images -->
+                <!-- Carousel Controls -->
+                <a class="left carousel-control" href="#carousel-example" data-slide="prev">
+                    <span class="glyphicon glyphicon-chevron-left"></span>
+                </a>
+                <a class="right carousel-control" href="#carousel-example" data-slide="next">
+                    <span class="glyphicon glyphicon-chevron-right"></span>
+                </a>
+                <!-- End Carousel Controls -->
+            </div>
+            <!-- End Carousel Slideshow -->
+        </div>
+    </div>
+</div>
+<div class="container background-white">
+    <div class="row margin-vert-30">
+        <!-- Main Text -->
+        <div class="col-md-12">
+            <h2 class="text-center">Bienvenue sur le site du Ponthé</h2>
+            <p class="text-center">
+                Le club Tournage et Réalisations des Ponts
+            </p>
+            <p class="text-center">
+                Ici vous pourrez voir, télécharger et déposer des photos, des vidéos, et les films réalisés.
+            </p>
+        </div>
+        <!-- End Main Text -->
+    </div>
+</div>
+<div class="container background-gray-lighter">
+    <div class="row padding-vert-20">
+        <div class="col-md-1"></div>
+        <div class="col-md-10">
+            <!-- Portfolio -->
+            <ul class="portfolio-group">
+                <!-- //Portfolio Item// -->
+                <!-- Portfolio Item -->
+                <li class="portfolio-item col-sm-6 col-xs-6 padding-20">
+                    <a href={{url_for('private.archives_categorie', cat = 'sports')}}>
+                        <figure class="animate fadeInLeft">
+                            <img alt="image5" src="static/img/frontpage/pom.jpg">
+                            <figcaption>
+                                <h3>Sport</h3>
+                                <span>Tout sur la vie sportive : tournois, show pom pom, évènements ..  </span>
+                            </figcaption>
+                        </figure>
+                    </a>
+                </li>
+                <!-- //Portfolio Item// -->
+                <!-- Portfolio Item -->
+                <li class="portfolio-item col-sm-6 col-xs-6 padding-20">
+                    <a href={{url_for('private.archives_categorie', cat = 'vie-associative')}}>
+                        <figure class="animate fadeInRight">
+                            <img alt="image6" src="static/img/frontpage/font2.jpg">
+                            <figcaption>
+                                <h3>Vie associative</h3>
+                                <span>WEI, NDLR, Campagnes, Soirées et autres festivités ! </span>
+                            </figcaption>
+                        </figure>
+                    </a>
+                </li>
+                <!-- //Portfolio Item// -->
+                <!-- Portfolio Item -->
+                <li class="portfolio-item col-sm-6 col-xs-6 padding-20">
+                    <a href={{url_for('private.archives_categorie', cat = 'voyages')}}>
+                        <figure class="animate fadeInRight">
+                            <img alt="image6" src="static/img/frontpage/dam.jpg">
+                            <figcaption>
+                                <h3>Voyages</h3>
+                                <span>Les Ponts autour du monde </span>
+                            </figcaption>
+                        </figure>
+                    </a>
+                </li>
+                <!-- //Portfolio Item// -->
+                <!-- Portfolio Item -->
+                <li class="portfolio-item col-sm-6 col-xs-6 padding-20">
+                    <a href={{url_for('private.archives_categorie', cat = 'films')}}>
+                        <figure class="animate fadeInRight">
+                            <img alt="image4" src="static/img/frontpage/voyage1.jpg">
+                            <figcaption>
+                                <h3>Films</h3>
+                                <span>Réalisations du club : films admissibles, de voyage, de tournois, de campagnes and more</span>
+                            </figcaption>
+                        </figure>
+                    </a>
+                </li>
+                <!-- //Portfolio Item// -->
+            </ul>
+            <!-- End Portfolio -->
+        </div>
+        <div class="col-md-1"></div>
+    </div>
+</div>
+<!-- === END CONTENT === -->
+{% endblock %}

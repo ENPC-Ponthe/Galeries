@@ -1,0 +1,30 @@
+version: "3.1"
+
+services:
+    db:
+        image: mysql
+        ports:
+            - 7501:3306
+        volumes:
+            - db-data:/var/lib/mysql
+
+        environment:
+            - MYSQL_RANDOM_ROOT_PASSWORD=yes
+            - MYSQL_DATABASE=${DATABASE_NAME}
+            - MYSQL_USER=${DATABASE_USER}
+            - MYSQL_PASSWORD=${DATABASE_PASSWORD}
+        restart: always
+
+    phpmyadmin:
+        image: phpmyadmin/phpmyadmin
+        ports:
+            - 7500:80
+        depends_on:
+            - db
+        environment:
+            - MYSQL_ROOT_PASSWORD=bogus
+        restart: always
+
+volumes:
+    db-data:
+        driver: local
