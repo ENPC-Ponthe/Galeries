@@ -1,0 +1,37 @@
+{% extends "layout/layout.html" %}
+{% block content %}
+    <div class="container background-white">
+        <div class="row margin-vert-30">
+            <!-- Main Column -->
+            <div class="col-md-9">
+                <!-- Main Content -->
+                <div class="headline">
+                    <h2>Ajouter vos photos!!!</h2>
+                    {# on affiche les messages d'erreur puis les messages de succes #}
+                    {% for categorie in ['error', 'success'] %}
+                        {% with msgs = get_flashed_messages(category_filter=[categorie]) %}
+                            {% if msgs %}
+                                <div class="alert alert-{{ 'danger' if categorie == 'error' else 'success' }}">
+                                    <ul>
+                                        {% for m in msgs %}
+                                            <li>{{ m | safe }}</li>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                            {% endif %}
+                        {% endwith %}
+                    {% endfor %}
+
+                    <h1>Choisissez une image à Uploader :</h1>
+
+                    <form method="POST" enctype="multipart/form-data">
+                        <label for="fic">Fichier</label>
+                        <input type="file" name="photos" multiple>
+                        <input type="submit" value="Submit">
+                    </form>
+                </div>
+                <!-- End Main Content -->
+            </div>
+        </div>
+    </div>
+{% endblock %}

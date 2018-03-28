@@ -1,0 +1,38 @@
+{% extends "layout/layout.html" %}
+
+{% block content %}
+    <div class="container background-white">
+        <div class="row margin-vert-30">
+            <!-- Main Column -->
+            <div class="col-md-9">
+                <!-- Main Content -->
+                <div class="headline">
+                    <h2>Créer une nouvelle année</h2>
+                    <!-- Contact Form -->
+                    <form action="" method="post">
+                        <label>Entrer la nouvelle année</label>
+                        {% with msgs = get_flashed_messages(category_filter=['error']) %}
+                            {% if msgs %}
+                                <div class="alert alert-danger">
+                                    <ul>
+                                        {% for m in msgs %}
+                                            <li>{{ m | safe }}</li>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                            {% endif %}
+                        {% endwith %}
+                        <div class="row margin-bottom-20">
+                            <div class="col-md-6 col-md-offset-0">
+                                <input type="text" class="form-control" name="new_annee" id="new_annee">
+                            </div>
+                        </div>
+                        <p>
+                            <button type="submit" class="btn btn-primary" value="Envoyer">Ajouter Nouvelle Année</button>
+                        </p>
+                    </form>
+                <!-- End Main Content -->
+            </div>
+        </div>
+    </div>
+{% endblock %}

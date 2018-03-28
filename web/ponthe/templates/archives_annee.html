@@ -1,0 +1,32 @@
+{% extends "layout/layout.html" %}
+
+{% block content %}
+    <div class="container background-white">
+        <div class="row margin-vert-30">
+            <div class="col-md-12">
+                <h2> Bonjour </h2>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12 portfolio-group no-padding">
+                {% for event in events_annee %}
+                <!-- Portfolio Item -->
+                <div class="col-md-3 portfolio-item margin-bottom-40 design">
+                    <div>
+                        <a href= {{url_for('archives_evenement', annee = annee, event =event)}} >
+                            <figure>
+                                <img src="{{ url_for('static', filename='uploads/') }}{{annee}}/{{event}}/{{events_annee[event]}}">
+                                <figcaption>
+                                    <h3 class="margin-top-20">{{event}}</h3>
+                                    <span>Description de l'événement </span>
+                                </figcaption>
+                            </figure>
+                        </a>
+                    </div>
+                </div>
+                {% endfor %}
+                <!-- End Portfolio Item -->
+            </div>
+        </div>
+    </div>
+{% endblock %}

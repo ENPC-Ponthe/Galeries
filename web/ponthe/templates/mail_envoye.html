@@ -1,0 +1,22 @@
+{% extends "layout/layout.html" %}
+
+{% block content %}
+    <div class="container background-white">
+        <div class="row margin-vert-30">
+            <!-- Main Column -->
+            <div class="col-md-9">
+                <!-- Main Content -->
+                <div class="headline">
+                    <h2>Mail envoyé</h2>
+                    <p>
+                        Félicitation {{ firstname }} {{ lastname }}, votre mail a été correctement envoyé !
+                    </p>
+                </div>
+            </div>
+            <!-- End Main Column -->
+        </div>
+    </div>
+    <div class="logo">
+        <a href="index.html" title="PONTHE">Retour à la page d'accueil</a>
+    </div>
+{% endblock %}
