@@ -19,7 +19,7 @@ from ponthe.public.views import public
 from ponthe.private.views import private
 
 from . import models
-
+from . import views
 # register the blueprints
 app.register_blueprint(public)
 app.register_blueprint(private)

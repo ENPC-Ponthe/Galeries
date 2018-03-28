@@ -1,22 +1,21 @@
 <!-- === BEGIN HEADER === -->
 <!DOCTYPE html>
-<!--[if IE 8]> <html lang="en" class="ie8"> <![endif]-->
-<!--[if IE 9]> <html lang="en" class="ie9"> <![endif]-->
+<!--[if IE 8]> <html lang="fr" class="ie8"> <![endif]-->
+<!--[if IE 9]> <html lang="fr" class="ie9"> <![endif]-->
 <!--[if !IE]><!-->
-<html lang="en" style="height: 100%">
+<html lang="fr" style="height: 100%;">
     <!--<![endif]-->
     <head>
         <!-- Title -->
-
         <title>Ponthe ENPC</title>
         <!-- Meta -->
         <meta http-equiv="content-type" content="text/html; charset=utf-8" />
-        <meta name="description" content="">
-        <meta name="author" content="">
+        <meta name="description" content="Galeries Ponthé">
+        <meta name="author" content="Ponthé">
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
 
         <!-- Favicon -->
-        <link rel="icon" type="image/png" href="logoP.png">
+        <link rel="icon" type="image/png" href="{{url_for('static', filename = 'img/logo.jpg' ) }}">
         <!-- Bootstrap Core CSS -->
         <link rel="stylesheet" href="{{url_for('static', filename = 'css/bootstrap.css' ) }}" rel="stylesheet">
         <!-- Template CSS -->
@@ -31,16 +30,14 @@
         <link href="http://fonts.googleapis.com/css?family=Roboto:400,300" rel="stylesheet" type="text/css">
     </head>
 
-    <body style="height: 100%">
-
+    <body style="height: 100%;">
         <div id="body-bg">
-
             <div id="header">
                 <div class="container">
                     <div class="row">
                         <!-- Logo -->
                         <div class="logo">
-                            <a href="index.html" title="PONTHE">
+                            <a href="{{ url_for('private.index') }}" title="PONTHE">
                                 CLUB PONTHÉ-ENPC
                             </a>
                         </div>
@@ -49,7 +46,7 @@
                 </div>
             </div>
 
-
+            {% if current_user.is_authenticated %}
             <!-- Top Menu -->
             <div id="hornav" class="container no-padding">
                 <div class="row">
@@ -57,39 +54,38 @@
                         <div class="text-center visible-lg">
                             <ul id="hornavmenu" class="nav navbar-nav">
                                 <li>
-                                    <a href='/index' class="fa-home">Accueil</a>
+                                    <a href="{{ url_for('private.index') }}" class="fa-home">Accueil</a>
                                 </li>
                                 <li>
                                     <span class="fa-th">Archives</span>
                                     <ul>
                                         <li>
-
-                                                {% for annee in dict_events %}
+                                            {% for annee in dict_events %}
+                                            <li>
+                                                <a href="{{ url_for('private.archives_annee', annee=annee) }}" class="parent">{{ annee }}</a>
+                                                <ul>
+                                                    {% for event in dict_events[annee] %}
                                                 <li>
-                                                    <a href= {{url_for('private.archives_annee', annee = annee)}} class="parent"> {{annee}} </a>
-                                                    <ul>
-                                                        {% for event in dict_events[annee] %}
-                                                    <li>
-                                                        <a href= {{url_for('private.archives_evenement', annee = annee, event =event)}} class="fa-group"> {{event}} </a>
-                                                    </li>
-                                                     {% endfor %}
-                                                     </ul>
+                                                    <a href="{{ url_for('private.archives_evenement', annee=annee, event=event) }}" class="fa-group">{{ event }}</a>
                                                 </li>
-                                                {% endfor %}
+                                                 {% endfor %}
+                                                 </ul>
+                                            </li>
+                                            {% endfor %}
                                         </li>
                                     </ul>
                                 </li>
                                 <li>
-                                    <a href='/depotfichiers' class="fa-copy">Dépôt fichiers</a>
+                                    <a href="{{ url_for('private.depot_fichiers') }}" class="fa-copy">Dépôt fichiers</a>
                                 </li>
                                 <li>
-                                    <a href= {{url_for('private.getResource', name = "membres")}} class="fa-group">Membres</a>
+                                    <a href="{{ url_for('private.membres') }}" class="fa-group">Membres</a>
                                 </li>
                                 <li>
-                                    <a href='/materiel' class="fa-cogs">Matériel</a>
+                                    <a href="{{ url_for('private.materiel') }}" class="fa-cogs">Matériel</a>
                                 </li>
                                 <li>
-                                    <a href="/logout" class="fa-sign-out">Déconnexion</a>
+                                    <a href="{{ url_for('private.logout') }}" class="fa-sign-out">Déconnexion</a>
                                 </li>
                             </ul>
                         </div>
@@ -97,22 +93,19 @@
                 </div>
             </div>
             <!-- End Top Menu -->
-
-            <div id="content-top-border" class="container">
-            </div>
+            {% endif %}
             <!-- === END HEADER === -->
 
-
-
-            {% block content %}
-
-
-            {% endblock %}
-
-
+            <!-- === BEGIN CONTENT === -->
+            <div id="content-top-border" class="container"></div>
+            <div id="content">
+                {% block content %}
+                {% endblock %}
+            </div>
+            <div id="content-bottom-border" class="container"></div>
+            <!-- === END CONTENT === -->
 
            <!-- === BEGIN FOOTER === -->
-
             <!-- Footer Menu -->
             <div id = "footer">
                 <div class="container">
@@ -126,7 +119,7 @@
                                     <a href="https://www.facebook.com/clubtournageponthe" target="_blank"><li>Facebook</li></a>
                                 </li>
                                 <li>
-                                    <a href="mailto:ponthe@liste.enpc.fr" target="_blank"><li>Email</li></a>
+                                    <a href="https://m.me/clubtournageponthe" target="_blank"><li>Messenger</li></a>
                                 </li>
                             </ul>
                         </div>
@@ -134,26 +127,26 @@
                     </div>
                 </div>
             </div>
-            <!-- End Footer Menu -->
+        </div>
+        <!-- End Footer Menu -->
 
-            <!-- JS -->
-            <script type="text/javascript" src="static/js/jquery.min.js" type="text/javascript"></script>
-            <script type="text/javascript" src="static/js/bootstrap.min.js" type="text/javascript"></script>
-            <script type="text/javascript" src="static/js/scripts.js"></script>
-            <!-- Isotope - Portfolio Sorting -->
-            <script type="text/javascript" src="static/js/jquery.isotope.js" type="text/javascript"></script>
-            <!-- Mobile Menu - Slicknav -->
-            <script type="text/javascript" src="static/js/jquery.slicknav.js" type="text/javascript"></script>
-            <!-- Animate on Scroll-->
-            <script type="text/javascript" src="static/js/jquery.visible.js" charset="utf-8"></script>
-            <!-- Sticky Div -->
-            <script type="text/javascript" src="static/js/jquery.sticky.js" charset="utf-8"></script>
-            <!-- Slimbox2-->
-            <script type="text/javascript" src="static/js/slimbox2.js" charset="utf-8"></script>
-            <!-- Modernizr -->
-            <script src="static/js/modernizr.custom.js" type="text/javascript"></script>
-
-            <!-- End JS -->
+        <!-- JS -->
+        <script type="text/javascript" src="{{ url_for('static', filename = 'js/jquery.min.js') }}"></script>
+        <script type="text/javascript" src="{{ url_for('static', filename = 'js/bootstrap.min.js') }}"></script>
+        <script type="text/javascript" src="{{ url_for('static', filename = 'js/scripts.js') }}"></script>
+        <!-- Isotope - Portfolio Sorting -->
+        <script type="text/javascript" src="{{ url_for('static', filename = 'js/jquery.isotope.js') }}"></script>
+        <!-- Mobile Menu - Slicknav -->
+        <script type="text/javascript" src="{{ url_for('static', filename = 'js/jquery.slicknav.js') }}"></script>
+        <!-- Animate on Scroll-->
+        <script type="text/javascript" src="{{ url_for('static', filename = 'js/jquery.visible.js') }}"></script>
+        <!-- Sticky Div -->
+        <script type="text/javascript" src="{{ url_for('static', filename = 'js/jquery.sticky.js') }}"></script>
+        <!-- Slimbox2-->
+        <script type="text/javascript" src="{{ url_for('static', filename = 'js/slimbox2.js') }}"></script>
+        <!-- Modernizr -->
+        <script type="text/javascript" src="{{ url_for('static', filename = 'js/modernizr.custom.js') }}"></script>
+        <!-- End JS -->
     </body>
 </html>
 <!-- === END FOOTER === -->

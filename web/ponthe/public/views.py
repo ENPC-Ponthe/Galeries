@@ -4,6 +4,7 @@
 
 from flask import Flask,render_template,request, flash, redirect, url_for, jsonify, Blueprint
 from werkzeug import secure_filename
+from urllib.parse import urlparse, urljoin
 from flask_mail import Mail,Message
 import os
 from flask_login import LoginManager, login_user, logout_user, current_user, login_required
@@ -11,9 +12,7 @@ import mysql.connector
 from itsdangerous import URLSafeTimedSerializer, SignatureExpired
 import string
 import random
-from flask_sqlalchemy import SQLAlchemy
-from flask_migrate import Migrate
-from .. import app, login_manager
+from .. import app, db, login_manager
 from ..models import User
 
 dbconnexion = mysql.connector.connect(host="localhost", port="3306", \
@@ -26,10 +25,21 @@ public = Blueprint('public', __name__)
 
 user= User()
 
-@public.route('/')
-@login_required
 def getHome():
-    return redirect('/index')
+    return redirect('index')
+
+def is_safe_url(target):    #    empêche les redirections malicieuses
+    ref_url = urlparse(request.host_url)
+    test_url = urlparse(urljoin(request.host_url, target))
+    return test_url.scheme in ('http', 'https') and \
+           ref_url.netloc == test_url.netloc
+
+def get_redirect_target():
+    for target in request.values.get('next'), request.referrer:
+        if not target:
+            continue
+        if is_safe_url(target):
+            return target
 
 @login_manager.user_loader
 def user_loader(email):
@@ -54,7 +64,7 @@ def user_loader(email):
 
 
 @login_manager.request_loader
-def request_loader(request):
+def request_loader(request):    #   sert à quoi ???
     users = {}
     cursor = dbconnexion.cursor()
     cursor.execute("SELECT * FROM Admin")
@@ -77,8 +87,17 @@ def request_loader(request):
     else:
         return
 
+def getLoginPage():
+    return render_template('login.html')
+
 @public.route('/login', methods=['GET', 'POST'])
 def login():
+    if request.method == 'GET':
+        if current_user.is_authenticated:
+            return getHome()
+        else:
+            return getLoginPage()
+
     users = {}
     cursor = dbconnexion.cursor()
     cursor.execute("SELECT * FROM Admin")
@@ -92,19 +111,23 @@ def login():
             'password': admin[4]}
         users[str(admin[3])] = empDict
     cursor.close()
-    if request.method == 'GET':
-        return getLoginPage()
+
     email = request.form['email']
-    if request.form['password'] == users[email]['password']:
-        user.id = email
-        login_user(user)
-        return getHome()
+    password = request.form['password']
+    for admin in liste_admin:
+        if email == admin[3] and password == admin[4]:
+            user.id = email
+            login_user(user)
+            next = get_redirect_target()
+            return redirect(next) if next and urlparse(next).path!='/logout' else getHome()
+
+    flash("Identifiants incorrectes", "error")
     return getLoginPage()
 
 
-@public.route('/creation-compte', methods=['GET', 'POST'])
-def creation():
-    if request.method == 'POST' :
+@public.route('/creation_compte', methods=['GET', 'POST'])
+def creation_compte():
+    if request.method == 'POST':
         user.nom = request.form['nom']
         user.prenom = request.form['prenom']
         user.id = request.form['email']
@@ -112,17 +135,17 @@ def creation():
         user.CMDP = request.form['confirmation_password']
         if user.MDP == user.CMDP :
             token = s.dumps(user.id)
-            msg = Message('Confirm Email', sender = 'clubpontheenpc@gmail.com',recipients = [user.id] )
-            link = url_for('confirm_email', token = token,  _external = True)
+            msg = Message('Confirm Email', sender = 'clubpontheenpc@gmail.com', recipients = [user.id] )
+            link = url_for('confirm_email', token = token, _external = True)
             msg.body = 'Votre lien est {}'.format(link)
             mail.send(msg)
-            return render_template('mail_confirmation.html', m = user.id,)
-        else :
-            flash(u'Les deux mots de passe ne concordent pas', "error_password")
-    return render_template('creation-compte.html')
+            return render_template('mail_confirmation.html', email = user.id,)
+        else:
+            flash("Les deux mots de passe ne concordent pas", "error")
+    return render_template('creation_compte.html')
 
-@public.route('/reset-password', methods =['GET','POST'])
-def reset():
+@public.route('/reset_password', methods =['GET','POST'])
+def reset_password():
     if request.method == 'POST' :
         user.id = request.form['email']
         user.MDP = request.form['password']
@@ -131,13 +154,13 @@ def reset():
         link = url_for('reset_email', token = token, _external =True )
         msg.body = 'Votre lien est {}'.format(link)
         mail.send(msg)
-        return render_template('mail_confirmation.html', m = user.id)
-    return render_template('reset-password.html')
+        return render_template('mail_confirmation.html', email = user.id)
+    return render_template('reset_password.html')
 
 @public.route('/reset_email/<token>')
 def reset_email(token):
     try :
-        email = serializer.loads(token, max_age = 300 )
+        email = s.loads(token, max_age = 300 )
         cursor = dbconnexion.cursor()
         reset_admin = "UPDATE Admin SET password = '%s' WHERE email = '%s' " % (user.MDP, user.id)
         cursor.execute(reset_admin)
@@ -150,7 +173,7 @@ def reset_email(token):
 @public.route('/confirm_email/<token>')
 def confirm_email(token):
     try :
-        email = serializer.loads(token, max_age = 300 )
+        email = s.loads(token, max_age = 300 )
         cursor = dbconnexion.cursor()
         add_admin = "INSERT INTO Admin(lastname, firstname, email, password) VALUES('%s', '%s', '%s', '%s')" % (user.nom, user.prenom , user.id, user.MDP )
         cursor.execute(add_admin)
@@ -159,20 +182,3 @@ def confirm_email(token):
     except SignatureExpired :
         return '<h1> The token is expired </h1> '
     return getLoginPage()
-
-
-@public.route('/logout')
-def logout():
-    logout_user()
-    return getHome()
-
-# handle login failed
-@public.errorhandler(401)
-def handleError(e):
-    print("Erreur lors de l'authentification : ", e)
-    return login()
-
-# Authoriser la page de login
-@public.route('/login')
-def getLoginPage():
-    return render_template('login.html')

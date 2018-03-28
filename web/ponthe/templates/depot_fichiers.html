@@ -1,0 +1,76 @@
+{% extends "layout/layout.html" %}
+
+{% block content %}
+    <div class="container background-white">
+        <div class="row margin-vert-30">
+            <!-- Main Column -->
+            <div class="col-md-9">
+                <!-- Main Content -->
+                <div class="headline">
+                    <h2>Description obligatoire</h2>
+                    <br>
+                    <!-- Contact Form -->
+                    <form action="" method="post">
+                        <label>Evenement</label>
+                        {% with msgs = get_flashed_messages(category_filter=['error']) %}
+                            {% if msgs %}
+                                <div class="alert alert-danger">
+                                    <ul>
+                                        {% for m in msgs %}
+                                            <li>{{ m | safe }}</li>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                            {% endif %}
+                        {% endwith %}
+                        <div class="row margin-bottom-20">
+                            <div class="col-md-12 col-md-offset-0">
+                                <select name="evenement">
+  								                  {% for i in liste_events %}
+                                      <option value={{ i }}>{{ i }}</option>
+                                    {% endfor %}
+    				                    </select>
+                            </div>
+                        </div>
+                        <p>
+                            <button type="submit" class="btn btn-primary" name="Envoyer" value="create_event">Créer un évenement</button>
+                        </p>
+                        <label>Date</label>
+                        {% with msgs = get_flashed_messages(category_filter=['error']) %}
+                            {% if msgs %}
+                                <div class="alert alert-danger">
+                                    <ul>
+                                        {% for m in msgs %}
+                                            <li>{{ m | safe }}</li>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                            {% endif %}
+                        {% endwith %}
+                        <div class="row margin-bottom-20">
+                            <div class="col-md-12 col-md-offset-0">
+            										<select name="annee">
+                									  {% for i in liste_annees %}
+                                        <option value={{ i }}>{{ i }}</option>
+                                    {% endfor %}
+            										</select>
+                            </div>
+                        </div>
+                        <p>
+                            <button type="submit" class="btn btn-primary" name="Envoyer" value="create_annee">Créer une nouvelle année</button>
+                        </p>
+                        <div class="row margin-bottom-20">
+                            <div class="col-md-12 col-md-offset-0">
+                                <h2>Ajouter maintenant vos photos</h2>
+                            </div>
+                        </div>
+                        <p>
+                            <button type="submit" class="btn btn-primary" name="Envoyer" value="Envoyer">Suivant</button>
+                        </p>
+                    </form>
+                </div>
+            </div>
+            <!-- End Main Content -->
+        </div>
+    </div>
+{% endblock %}
