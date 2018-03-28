@@ -6,3 +6,6 @@ web/venv/
 
 # Instance Folder - used for configuration parameters
 # web/instance/
+
+# Pypi package installation
+web/Galeries_Ponthe.egg-info/

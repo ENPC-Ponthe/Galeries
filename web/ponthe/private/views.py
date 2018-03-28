@@ -18,6 +18,10 @@ liste_char=string.ascii_letters+string.digits
 #     user="enpc-ponthe",password="Ponthasm7gorique2017", \
 #     database="enpc-ponthe")
 
+dbconnexion = mysql.connector.connect(host="localhost", port="3306", \
+    user="ponthe",password="", \
+    database="ponthe")
+
 DOSSIER_UPS = './static/uploads/'
 directory2=DOSSIER_UPS
 
@@ -199,11 +203,6 @@ def upload(annee, event):
         if t1==False:
             flash(u'Ce fichier ne porte pas l extension png, jpg, jpeg, gif ou bmp !', 'error')
     return render_template('upload.html' , dict_events=dict_events)
-
-@private.route('/')
-@login_required
-def getHome():
-    return redirect('/index')
 
 @private.route('/<name>')
 @login_required

@@ -66,11 +66,11 @@
 
                                                 {% for annee in dict_events %}
                                                 <li>
-                                                    <a href= {{url_for('archives_annee', annee = annee)}} class="parent"> {{annee}} </a>
+                                                    <a href= {{url_for('private.archives_annee', annee = annee)}} class="parent"> {{annee}} </a>
                                                     <ul>
                                                         {% for event in dict_events[annee] %}
                                                     <li>
-                                                        <a href= {{url_for('archives_evenement', annee = annee, event =event)}} class="fa-group"> {{event}} </a>
+                                                        <a href= {{url_for('private.archives_evenement', annee = annee, event =event)}} class="fa-group"> {{event}} </a>
                                                     </li>
                                                      {% endfor %}
                                                      </ul>
@@ -83,7 +83,7 @@
                                     <a href='/depotfichiers' class="fa-copy">Dépôt fichiers</a>
                                 </li>
                                 <li>
-                                    <a href= {{url_for('getResource', name = "membres")}} class="fa-group">Membres</a>
+                                    <a href= {{url_for('private.getResource', name = "membres")}} class="fa-group">Membres</a>
                                 </li>
                                 <li>
                                     <a href='/materiel' class="fa-cogs">Matériel</a>
