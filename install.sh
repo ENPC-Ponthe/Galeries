@@ -1,6 +1,6 @@
 #!/bin/bash
 
-echo -e "\e[1m\e[34mBienvenue sur le script d'installation des Galleries Ponthé"
+echo -e "\e[1m\e[34mBienvenue sur le script d'installation des Galeries Ponthé"
 echo -e "Ce script est destiné aux distributions Ubuntu-like. \e[31mUn compte GitHub est nécessaire.\e[0m"
 read -p "Adresse mail du compte GitHub : " mail
 read -p "Prénom Nom : " name
