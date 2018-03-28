@@ -32,28 +32,28 @@
       events: 1
       filename: jUpIiqdBWQ9VpXVMzgjV8cWiN6w0YBHMaklyjt8WrxlnBoMNzMTCFG.bmp
       couv: True
-      cat: admissibles
+      cat: vie-associative
     - id: 2
       annees: 1
       events: 1
       filename: t3dn23iQCa4aEDu7nNXBBg9IyLZCzMSsmHHDHgCdB2b0eGI3sBOXhj.jpg
       couv: False
-      cat: admissibles
+      cat: vie-associative
     - id: 3
       annees: 1
       events: 1
       filename: XbcoWxBD5PPzc941hXVMX1miFr5VSC6DuUtgGJRNARAYqn1tR38AoL.jpg
       couv: False
-      cat: admissibles
+      cat: vie-associative
     - id: 4
       annees: 2
       events: 2
       filename: EKMRZkewtLHvD01TQXrUmtwshEn0TJQLPZN3foQXPPLsP6DMcVOacN.bmp
       couv: True
-      cat: sport
+      cat: sports
     - id: 5
       annees: 2
       events: 2
       filename: 8WsJH3V5D2nY3JxvkEJY8Xuv6RwJGS0AYaWipbp9vDB1zW69A5PR2n.bmp
       couv: False
-      cat: sport
+      cat: sports

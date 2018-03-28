@@ -50,3 +50,4 @@ ponthe/manager.py load_fixtures
 * http://flask.pocoo.org/docs/0.12/tutorial/introduction/
 * http://www.patricksoftwareblog.com/flask-tutorial/
 * https://jeffknupp.com/blog/2014/01/29/productionizing-a-flask-application/
+* http://freemiumdownload.com/downloads/lifestyle-blog-free-bootstrap-template/
