@@ -1,4 +1,4 @@
-# Galleries Ponthé
+# Galeries Ponthé
 
 ### Installation
 
