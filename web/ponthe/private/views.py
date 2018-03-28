@@ -11,6 +11,7 @@ import mysql.connector
 from itsdangerous import URLSafeTimedSerializer, SignatureExpired
 import string
 import random
+from .. import db
 
 liste_char=string.ascii_letters+string.digits
 
@@ -27,34 +28,60 @@ directory2=DOSSIER_UPS
 
 private = Blueprint('private', __name__)
 
-def connexion(dict_events) :
+@private.before_request     # login nécessaire pour tout le blueprint
+@login_required
+def before_request():
+    pass
+    # if g.user.role != ROLE_ADMIN:     # code pour restreindr un blueprint aux admins ;)
+    #     abort(401)
+
+def extension_ok(nomfic):
+    """ Renvoie True si le fichier possede une extension d'image valide. """
+    return '.' in nomfic and nomfic.rsplit('.', 1)[1] in ('png', 'jpg', 'jpeg', 'gif', 'bmp')
+
+def createFolder(directory):
+    try:
+        if not os.path.exists(directory):
+            os.makedirs(directory)
+    except OSError:
+        print ('Error: Creating directory. '+directory)
+
+def render_events_template(template, **kwargs):
+    dict_events = {}
     cursor = dbconnexion.cursor()
-    cursor.execute("SELECT DISTINCT annees FROM Dossier")
+    cursor.execute ( "SELECT DISTINCT annees FROM Dossier")
     liste_annees = cursor.fetchall()
-    for annee in liste_annees:
-        cursor.execute(" SELECT DISTINCT events FROM Dossier WHERE annees = '%s' " % (annee[0]))
+    for annee in liste_annees :
+        cursor.execute(" SELECT DISTINCT events FROM Dossier WHERE annees =  '%s' " % (annee[0]))
         liste_events = cursor.fetchall()
-        dict_events[annee[0]] = []
-        for event in liste_events :
-            dict_events[annee[0]].append(event[0])
+        dict_events[annee[0]] = [event[0] for event in liste_events]
     cursor.close()
+    return render_template(template, dict_events=dict_events, **kwargs)
+
+
+@private.route('/')
+def getHome():
+    return redirect('/index')
+
+@private.route('/index')
+def index():
+    return render_events_template('index.html')
+
+@private.route('/logout')
+def logout():
+    logout_user()
+    return redirect('/login')
 
 @private.route('/materiel',methods=['GET','POST'])
-@login_required
-def reservation() :
-    dict_events = {}
-    connexion(dict_events)
+def materiel() :
     if request.method == 'POST':
         msg = Message(request.form['message'],sender= 'clubpontheenpc@gmail.com', recipients= 'clubpontheenpc@gmail.com', events = liste_ev)
         mail.send(msg)
-        return render_template("mail_envoye.html" , p=request.form['prenom'], n=request.form['nom'])
-    return render_template('materiel.html', dict_events = dict_events)
+        return render_template("mail_envoye.html" , firstname=request.form['prenom'], lastname=request.form['nom'])
+    return render_events_template('materiel.html')
 
-@private.route('/depotfichiers', methods=['GET', 'POST'])
-@login_required
-def depotfichiers():
-    dict_events = {}
-    connexion(dict_events)
+@private.route('/depot_fichiers', methods=['GET', 'POST'])
+def depot_fichiers():
     if request.method == 'POST':
         evenement=request.form['evenement']
         annee=request.form['annee']
@@ -65,11 +92,11 @@ def depotfichiers():
                     createFolder(directory)
                     directory2=directory+evenement+'/'
                     createFolder(directory2)
-                    return redirect(url_for('upload', annee = annee, event = evenement))
+                    return redirect(url_for('upload', annee=annee, event=evenement))
                 else:
-                    flash(u"Veuillez indiquer la date de l'evenement","error_date")
+                    flash("Veuillez indiquer la date de l'événement","error")
             else:
-                flash(u"Veuillez indiquer le nom de l'evenement","error_event")
+                flash("Veuillez indiquer le nom de l'événement","error")
         if request.form['Envoyer']=='create_event':
             return redirect('/create_event')
         if request.form['Envoyer']=='create_annee':
@@ -86,29 +113,23 @@ def depotfichiers():
     for annee in var :
         liste_annees.append(annee[0])
     cursor.close()
-    ev=sorted(liste_events)
-    an=sorted(liste_annees)
-    return render_template('depotfichiers.html', dict_event=ev, dict_annee=an, dict_events=dict_events)
+    liste_events.sort()
+    liste_annees.sort()
+    return render_events_template('depot_fichiers.html', liste_events=liste_events, liste_annees=liste_annees)
 
 
 @private.route ('/archives/<cat>')
-@login_required
 def archives_categorie(cat):
-    dict_events = {}
-    connexion(dict_events)
     cursor = dbconnexion.cursor()
-    selection = "SELECT events, annees, filename FROM Dossier WHERE (couv = '%s' AND cat ='%s' )" % (1,cat)
+    selection = " SELECT events, annees, filename FROM Dossier WHERE (couv = '%s' AND cat ='%s' )" % (1,cat)
     cursor.execute(selection)
     liste_events_annees = cursor.fetchall()
     cursor.close()
-    return render_template('archives_categorie.html', liste_events_annees = liste_events_annees, dict_events = dict_events )
+    return render_events_template('archives_categorie.html', liste_events_annees=liste_events_annees)
 
 
 @private.route('/archive/<annee>')
-@login_required
 def archives_annee(annee):
-    dict_events = {}
-    connexion(dict_events)
     dict_events_annee = {}
     cursor = dbconnexion.cursor()
     selection = " SELECT events,filename FROM Dossier WHERE (couv = '%s' AND annees = '%s' )" % (1,annee)
@@ -116,13 +137,10 @@ def archives_annee(annee):
     events = cursor.fetchall()
     for event in events:
         dict_events_annee[event[0]] = event[1]
-    return render_template('archives_annee.html', annee = annee, events_annee = dict_events_annee, dict_events=dict_events )
+    return render_events_template('archives_annee.html', annee=annee, events_annee=dict_events_annee)
 
 @private.route('/archives/<annee>/<event>')
-@login_required
 def archives_evenement(annee,event):
-    dict_events = {}
-    connexion(dict_events)
     liste_filename = []
     cursor = dbconnexion.cursor()
     selection = "SELECT filename FROM Dossier WHERE (events = '%s' AND annees ='%s') " % (event,annee)
@@ -131,13 +149,14 @@ def archives_evenement(annee,event):
     cursor.close()
     for filename in var :
         liste_filename.append(filename[0])
-    return render_template('archives_evenement.html', annee = annee, event = event, dict_events=dict_events, filename = liste_filename)
+    return render_events_template('archives_evenement.html', annee=annee, event=event, filename=liste_filename)
 
 @private.route('/create_event', methods=['GET', 'POST'])
-@login_required
 def create_event():
-    dict_events = {}
-    connexion(dict_events)
+    cursor = dbconnexion.cursor()
+    cursor.execute ( "SELECT DISTINCT annees FROM Dossier")
+    liste_annees = cursor.fetchall()
+
     if request.method == 'POST':
         new_event=request.form['new_event']
         if new_event:
@@ -146,16 +165,13 @@ def create_event():
             cursor.execute(add_event)
             dbconnexion.commit()
             cursor.close()
-            return redirect('/depotfichiers')
+            return redirect('/depot_fichiers')
         else:
-            flash(u"Veuillez indiquer le nom du nouvel evenement","error_new_event")
-    return render_template('create_event.html', dict_events=dict_events)
+            flash("Veuillez indiquer le nom du nouvel événement","error")
+    return render_events_template('create_event.html', liste_annees=liste_annees)
 
 @private.route('/create_annee', methods=['GET', 'POST'])
-@login_required
 def create_annee():
-    dict_events = {}
-    connexion(dict_events)
     if request.method == 'POST':
         new_annee = request.form['new_annee']
         if new_annee:
@@ -164,16 +180,13 @@ def create_annee():
             cursor.execute(add_annee)
             dbconnexion.commit()
             cursor.close()
-            return redirect('depotfichiers')
+            return redirect('depot_fichiers')
     else:
-        flash(u"Veuillez indiquer la nouvelle annee","error_new_annee")
-    return render_template('create_annee.html', dict_events=dict_events)
+        flash("Veuillez indiquer la nouvelle année","error")
+    return render_events_template('create_annee.html')
 
 @private.route('/upload/<annee>/<event>', methods=['GET', 'POST'])
-@login_required
 def upload(annee, event):
-    dict_events = {}
-    connexion(dict_events)
     t1=True
     t2=True
     if request.method == 'POST':
@@ -197,27 +210,13 @@ def upload(annee, event):
                 t2=False
         if t1==True:
             if t2==True:
-                flash(u'Bravo! Vos images ont ete envoyees! :)','succes')
+                flash("Bravo! Vos images ont été envoyées! :)","success")
             else:
-                flash(u'Vous avez oublie le fichier !', 'error')
+                flash("Vous avez oublié le fichier !", "error")
         if t1==False:
-            flash(u'Ce fichier ne porte pas l extension png, jpg, jpeg, gif ou bmp !', 'error')
-    return render_template('upload.html' , dict_events=dict_events)
+            flash("Ce fichier ne porte pas l'extension png, jpg, jpeg, gif ou bmp !", "error")
+    return render_events_template('upload.html')
 
-@private.route('/<name>')
-@login_required
-def getResource(name):
-    dict_events = {}
-    connexion(dict_events)
-    return render_template(name+'.html', dict_events = dict_events )
-
-def extension_ok(nomfic):
-    """ Renvoie True si le fichier possede une extension d'image valide. """
-    return '.' in nomfic and nomfic.rsplit('.', 1)[1] in ('png', 'jpg', 'jpeg', 'gif', 'bmp')
-
-def createFolder(directory):
-    try:
-        if not os.path.exists(directory):
-            os.makedirs(directory)
-    except OSError:
-        print ('Error: Creating directory. ' + directory)
+@private.route('/membres')
+def membres():
+    return render_events_template('/membres.html')

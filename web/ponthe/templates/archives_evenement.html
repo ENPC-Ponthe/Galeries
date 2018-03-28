@@ -1,7 +1,6 @@
 {% extends "layout/layout.html" %}
+
 {% block content %}
-<!-- === BEGIN CONTENT === -->
-<div id="content">
     <div class="container background-white">
         <div class="row margin-vert-30">
             <div class="col-md-12">
@@ -14,11 +13,11 @@
                 <!-- Portfolio Item -->
                 <div class="col-md-3 portfolio-item margin-bottom-40 design">
                     <div>
-                            <figure >
-                                <a href = "{{ url_for('static', filename='uploads/') }}{{annee}}/{{event}}/{{file}}"  >
-                                <img src="{{ url_for('static', filename='uploads/') }}{{annee}}/{{event}}/{{file}}" >
+                        <figure>
+                            <a href = "{{ url_for('static', filename='uploads/') }}{{annee}}/{{event}}/{{file}}">
+                                <img src="{{ url_for('static', filename='uploads/') }}{{annee}}/{{event}}/{{file}}">
                             </a>
-                            </figure>
+                        </figure>
                     </div>
                 </div>
                 {% endfor %}
@@ -26,21 +25,4 @@
             </div>
         </div>
     </div>
-</div>
-<!-- === END CONTENT === -->
-<!-- === BEGIN FOOTER === -->
-<div id="content-bottom-border" class="container">
-</div>
-<div id="base">
-
-        <div class="row">
-            <!-- Contact Details -->
-
-            <!-- End Contact Details -->
-
-
-            <div class="clearfix"></div>
-        </div>
-
-</div>
 {% endblock %}
