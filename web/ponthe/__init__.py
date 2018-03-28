@@ -13,7 +13,7 @@ migrate = Migrate(app, db)
 login_manager = LoginManager()
 login_manager.init_app(app)
 
-# mail=Mail(app)
+mail=Mail(app)
 
 from ponthe.public.views import public
 from ponthe.private.views import private

@@ -6,7 +6,7 @@ from flask import Flask,render_template,request, flash, redirect, url_for, jsoni
 from werkzeug import secure_filename
 from flask_mail import Mail,Message
 import os
-from flask_login import LoginManager, UserMixin, login_user , logout_user , current_user , login_required
+from flask_login import LoginManager, login_user, logout_user, current_user, login_required
 import mysql.connector
 from itsdangerous import URLSafeTimedSerializer, SignatureExpired
 import string
@@ -14,6 +14,7 @@ import random
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from .. import app, login_manager
+from ..models import User
 
 dbconnexion = mysql.connector.connect(host="localhost", port="3306", \
     user="ponthe",password="", \
@@ -23,10 +24,12 @@ serializer=URLSafeTimedSerializer(app.secret_key)
 
 public = Blueprint('public', __name__)
 
-class User(UserMixin):
-    pass
+user= User()
 
-user = User()
+@public.route('/')
+@login_required
+def getHome():
+    return redirect('/index')
 
 @login_manager.user_loader
 def user_loader(email):

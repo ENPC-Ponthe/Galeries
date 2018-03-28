@@ -1,4 +1,5 @@
-from ponthe import db
+from . import db
+from flask_login import UserMixin
 
 class Admin(db.Model):
 
@@ -12,6 +13,9 @@ class Admin(db.Model):
 
     def __repr__(self):
         return '<Admin {0}>'.format("{} {}".format(self.firstname, self.lastname))
+
+class User(UserMixin):
+    pass
 
 class Dossier(db.Model):
 
