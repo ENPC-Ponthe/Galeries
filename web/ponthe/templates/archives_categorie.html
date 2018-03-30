@@ -1,7 +1,7 @@
 {% extends "layout/layout.html" %}
 
 {% block content %}
-    </div>
+    <div class="container background-white">
         <div class="row margin-vert-30">
             <div class="col-md-12">
                 <h2>{{cat}} </h2>
@@ -13,11 +13,11 @@
                 <!-- Portfolio Item -->
                 <div class="col-md-3 portfolio-item margin-bottom-40 design">
                     <div>
-                        <a href= {{url_for('archives_evenement', annee = event[1], event =event[0])}} >
+                        <a href= {{ url_for('private.archives_evenement', annee=event[1], event=event[0]) }} >
                             <figure>
-                                <img src="{{ url_for('static', filename='uploads/') }}{{event[1]}}/{{event[0]}}/{{event[2]}}">
+                                <img src="{{ url_for('uploads', filename='{}/{}/{}'.format(event[1], event[0], event[2])) }}">
                                 <figcaption>
-                                    <h3 class="margin-top-20">{{event[0]}} - {{event[1]}}</h3>
+                                    <h3 class="margin-top-20">{{ event[0] }} - {{ event[1] }}</h3>
                                 </figcaption>
                             </figure>
                         </a>

@@ -11,7 +11,8 @@ import mysql.connector
 from itsdangerous import URLSafeTimedSerializer, SignatureExpired
 import string
 import random
-from .. import db
+from .. import app, db
+impor os
 
 liste_char=string.ascii_letters+string.digits
 
@@ -23,7 +24,7 @@ dbconnexion = mysql.connector.connect(host="localhost", port="3306", \
     user="ponthe",password="", \
     database="ponthe")
 
-DOSSIER_UPS = './static/uploads/'
+DOSSIER_UPS = os.path.join(app.instance_path, 'uploads')
 directory2=DOSSIER_UPS
 
 private = Blueprint('private', __name__)
@@ -49,12 +50,12 @@ def createFolder(directory):
 def render_events_template(template, **kwargs):
     dict_events = {}
     cursor = dbconnexion.cursor()
-    cursor.execute ( "SELECT DISTINCT annees FROM Dossier")
+    cursor.execute ( "SELECT DISTINCT id, annees FROM Annees")
     liste_annees = cursor.fetchall()
     for annee in liste_annees :
-        cursor.execute(" SELECT DISTINCT events FROM Dossier WHERE annees =  '%s' " % (annee[0]))
+        cursor.execute("SELECT DISTINCT events FROM (SELECT events AS e FROM Dossier WHERE annees = '%s') AS D INNER JOIN Events ON D.e = Events.id" % (annee[0]))
         liste_events = cursor.fetchall()
-        dict_events[annee[0]] = [event[0] for event in liste_events]
+        dict_events[annee[1]] = [event[0] for event in liste_events]
     cursor.close()
     return render_template(template, dict_events=dict_events, **kwargs)
 
@@ -143,7 +144,7 @@ def archives_annee(annee):
 def archives_evenement(annee,event):
     liste_filename = []
     cursor = dbconnexion.cursor()
-    selection = "SELECT filename FROM Dossier WHERE (events = '%s' AND annees ='%s') " % (event,annee)
+    selection = "SELECT filename FROM Dossier INNER JOIN ((SELECT id AS id_e FROM Events WHERE events = '%s') AS E CROSS JOIN ((SELECT id AS id_a FROM Annees WHERE annees ='%s') AS A)) ON (E.id_e = Dossier.events AND A.id_a = Dossier.annees)" % (event,annee)
     cursor.execute(selection)
     var = cursor.fetchall()
     cursor.close()
