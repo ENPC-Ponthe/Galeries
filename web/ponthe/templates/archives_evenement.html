@@ -14,8 +14,8 @@
                 <div class="col-md-3 portfolio-item margin-bottom-40 design">
                     <div>
                         <figure>
-                            <a href = "{{ url_for('static', filename='uploads/') }}{{annee}}/{{event}}/{{file}}">
-                                <img src="{{ url_for('static', filename='uploads/') }}{{annee}}/{{event}}/{{file}}">
+                            <a href = "{{ url_for('uploads', filename='{}/{}/{}'.format(annee, event, file)) }}">
+                                <img src="{{ url_for('uploads', filename='{}/{}/{}'.format(annee, event, file)) }}">
                             </a>
                         </figure>
                     </div>
