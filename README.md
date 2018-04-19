@@ -51,3 +51,11 @@ ponthe/manager.py load_fixtures
 * http://www.patricksoftwareblog.com/flask-tutorial/
 * https://jeffknupp.com/blog/2014/01/29/productionizing-a-flask-application/
 * http://freemiumdownload.com/downloads/lifestyle-blog-free-bootstrap-template/
+
+## SQLAlchemy
+On utilise un modèle de "joined table inheritance"
+* http://flask-sqlalchemy.pocoo.org/2.3/customizing/
+On pourrait rendre implicite les ids en prolongeant le modèle de SLQAlchemy
+* http://docs.sqlalchemy.org/en/latest/orm/inheritance.html
+Ambigüités de jointure dûs à l'héritage :
+* http://docs.sqlalchemy.org/en/latest/orm/join_conditions.html

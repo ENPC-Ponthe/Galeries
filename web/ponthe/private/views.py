@@ -12,7 +12,7 @@ from itsdangerous import URLSafeTimedSerializer, SignatureExpired
 import string
 import random
 from .. import app, db
-impor os
+import os
 
 liste_char=string.ascii_letters+string.digits
 
