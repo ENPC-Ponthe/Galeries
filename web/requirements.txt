@@ -2,8 +2,7 @@ Flask
 Werkzeug
 Flask_Mail
 Flask-Login
-Flask-MySQLdb
-mysql-connector-python
+SQLAlchemy
 Flask-SQLAlchemy
 Flask-Migrate
 nose2 # test runner
