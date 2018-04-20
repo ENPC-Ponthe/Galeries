@@ -1,10 +1,12 @@
 {% extends "layout/layout.html" %}
 
 {% block content %}
+<div id="content-top-border" class="container"></div>
+<div id="content">
     <div class="container background-white">
         <div class="row margin-vert-30">
             <div class="col-md-12">
-                <h2>{{year_slug}} - {{event_name}} </h2>
+                <h2>{{ year_slug }} - {{ event_name }} </h2>
             </div>
         </div>
         <div class="row">
@@ -25,4 +27,6 @@
             </div>
         </div>
     </div>
+</div>
+<div id="content-bottom-border" class="container"></div>
 {% endblock %}
