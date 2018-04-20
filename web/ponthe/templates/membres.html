@@ -1,6 +1,8 @@
 {% extends "layout/layout.html" %}
 
 {% block content %}
+<div id="content-top-border" class="container"></div>
+<div id="content">
     <div class="container background-white">
         <h2 class="margin-vert-20">Membres</h2>
         <div class="row margin-bottom-30">
@@ -8,22 +10,29 @@
                 <!-- Person Details -->
                 <div class="col-md-3 col-sm-4 person-details margin-bottom-30">
                     <figure>
-                        <img src="{{ url_for('static', filename='img/theteam/image1.jpg') }}" alt="Photo Ponthé 020">
                         <figcaption>
                             <h3 class="margin-bottom-10">Ponthé 020</h3>
                             <p>
-                                Thomas Chabal : Président
+                                <span style="color: orange;" class="animate fadeIn">Thomas Chabal</span> : Président<br/>
+                                Nathan Godey<br/>
+                                Alexandre Perez<br/>
+                                Philippe d'Harcourt<br/>
+                                Wissam Alami<br/>
+                                Candice Pichon<br/>
+                                Jeffrey Mahou<br/>
+                                Quentin Spinat<br/>
+                                Martin Graive
                             </p>
                         </figcaption>
                     </figure>
                 </div>
                 <div class="col-md-3 col-sm-4 person-details margin-bottom-30">
                     <figure>
-                        <img src="{{ url_for('static', filename='img/theteam/019.png') }}" alt="image1">
+                        <img src="{{ url_for('static', filename='img/theteam/019.png') }}" alt="Photo 019">
                         <figcaption>
                             <h3 class="margin-bottom-10">Ponthé 019</h3>
                             <p>
-                                <span style="color: orange;" class="animate fadeIn">Inès Tazi : prez</span><br/>
+                                <span style="color: orange;" class="animate fadeIn">Inès Tazi</span> : Présidente<br/>
                                 Philippe Ferreira De Sousa<br/>
                                 Francesca Carreiro<br/>
                                 Victor Noisette<br/>
@@ -31,18 +40,17 @@
                                 Stephane Allado<br/>
                                 Hugo Sénetaire<br/>
                                 Anaïs Chopin<br/>
-                                Louis Dumont<br/>
+                                Louis Dumont
                             </p>
                         </figcaption>
                     </figure>
                 </div>
                 <div class="col-md-3 col-sm-4 person-details margin-bottom-30">
                     <figure>
-                        <img src="{{ url_for('static', filename='img/theteam/image2.jpg') }}" alt="image2">
                         <figcaption>
                             <h3 class="margin-bottom-10">Ponthé 018</h3>
                             <p>
-                              Lucien Mauffret :	Président<br/>
+                              <span style="color: orange;" class="animate fadeIn">Lucien Mauffret</span> :	Président<br/>
                               Augustin Joncheray : Vice-Président<br/>
                               Anatole Parre	: Secrétaire général<br/>
                               Victor Marchais :	Photon<br/>
@@ -57,24 +65,22 @@
                 </div>
                 <div class="col-md-3 col-sm-4 person-details margin-bottom-30">
                     <figure>
-                        <img src="{{ url_for('static', filename='img/theteam/image3.jpg') }}" alt="image3">
                         <figcaption>
                             <h3 class="margin-bottom-10">Ponthé 017
                             </h3>
                             <p>
-                                Alban Berrube : Président
+                                <span style="color: orange;" class="animate fadeIn">Alban Berrube</span> : Président
                             </p>
                         </figcaption>
                     </figure>
                 </div>
                 <div class="col-md-3 col-sm-4 person-details margin-bottom-30">
                     <figure>
-                        <img src="{{ url_for('static', filename='img/theteam/image3.jpg') }}" alt="image3">
                         <figcaption>
                             <h3 class="margin-bottom-10">Ponthé 016
                             </h3>
                             <p>
-                                Omar Mounir Alaoui : Président<br/>
+                                <span style="color: orange;" class="animate fadeIn">Omar Mounir Alaoui</span> : Président<br/>
                                 Eliot Andres : Réalisateur
                             </p>
                         </figcaption>
@@ -82,12 +88,11 @@
                 </div>
                 <div class="col-md-3 col-sm-4 person-details margin-bottom-30">
                     <figure>
-                        <img src="{{ url_for('static', filename='img/theteam/image3.jpg') }}" alt="image3">
                         <figcaption>
                             <h3 class="margin-bottom-10">Ponthé 015
                             </h3>
                             <p>
-                                Geoffroy Gallier : Président<br/>
+                                <span style="color: orange;" class="animate fadeIn">Geoffroy Gallier</span> : Président<br/>
                                 Mathieu Ramananarivo<br/>
                                 Mickael Bergem<br/>
                                 Chanh-Nghi Lam<br/>
@@ -100,4 +105,6 @@
             </div>
         </div>
     </div>
+</div>
+<div id="content-bottom-border" class="container"></div>
 {% endblock %}

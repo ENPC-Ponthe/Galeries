@@ -60,13 +60,13 @@
                                     <span class="fa-th">Archives</span>
                                     <ul>
                                         <li>
-                                            {% for annee in dict_events %}
+                                            {% for year, events in dict_events.items() %}
                                             <li>
-                                                <a href="{{ url_for('private.archives_annee', annee=annee) }}" class="parent">{{ annee }}</a>
+                                                <a href="{{ url_for('private.archives_annee', year=year.slug) }}" class="parent">{{ year.value }}</a>
                                                 <ul>
-                                                    {% for event in dict_events[annee] %}
+                                                    {% for event in events %}
                                                 <li>
-                                                    <a href="{{ url_for('private.archives_evenement', annee=annee, event=event) }}" class="fa-group">{{ event }}</a>
+                                                    <a href="{{ url_for('private.archives_evenement', year=year.slug, event=event.slug) }}" class="fa-group">{{ event.name }}</a>
                                                 </li>
                                                  {% endfor %}
                                                  </ul>
@@ -97,12 +97,8 @@
             <!-- === END HEADER === -->
 
             <!-- === BEGIN CONTENT === -->
-            <div id="content-top-border" class="container"></div>
-            <div id="content">
-                {% block content %}
-                {% endblock %}
-            </div>
-            <div id="content-bottom-border" class="container"></div>
+            {% block content %}
+            {% endblock %}
             <!-- === END CONTENT === -->
 
            <!-- === BEGIN FOOTER === -->
