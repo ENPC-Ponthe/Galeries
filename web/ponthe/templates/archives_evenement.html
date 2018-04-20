@@ -1,21 +1,23 @@
 {% extends "layout/layout.html" %}
 
 {% block content %}
+<div id="content-top-border" class="container"></div>
+<div id="content">
     <div class="container background-white">
         <div class="row margin-vert-30">
             <div class="col-md-12">
-                <h2>{{annee}} - {{event}} </h2>
+                <h2>{{ year_slug }} - {{ event_name }} </h2>
             </div>
         </div>
         <div class="row">
             <div class="col-md-12 portfolio-group no-padding">
-                {% for file in filename %}
+                {% for filename in filenames %}
                 <!-- Portfolio Item -->
                 <div class="col-md-3 portfolio-item margin-bottom-40 design">
                     <div>
                         <figure>
-                            <a href = "{{ url_for('static', filename='uploads/') }}{{annee}}/{{event}}/{{file}}">
-                                <img src="{{ url_for('static', filename='uploads/') }}{{annee}}/{{event}}/{{file}}">
+                            <a href = "{{ url_for('tests', filename='{}/{}/{}'.format(year_slug, event_name, filename)) }}">
+                                <img src="{{ url_for('tests', filename='{}/{}/{}'.format(year_slug, event_name, filename)) }}">
                             </a>
                         </figure>
                     </div>
@@ -25,4 +27,6 @@
             </div>
         </div>
     </div>
+</div>
+<div id="content-bottom-border" class="container"></div>
 {% endblock %}

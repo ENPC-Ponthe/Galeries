@@ -1,6 +1,25 @@
 from flask import render_template, redirect
 from . import app
 from .private.views import render_events_template
+import os
+from flask import send_from_directory
+from flask_login import login_required
+
+@app.route('/uploads/<path:filename>')
+@login_required
+def uploads(filename):
+    return send_from_directory(
+        os.path.join(app.instance_path, 'uploads'),
+        filename
+    )
+
+@app.route('/tests/<path:filename>')
+@login_required
+def tests(filename):
+    return send_from_directory(
+        os.path.join(app.instance_path, 'tests'),
+        filename
+    )
 
 # handle login failed
 @app.errorhandler(401)
