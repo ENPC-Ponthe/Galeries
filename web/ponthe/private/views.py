@@ -7,11 +7,12 @@ from werkzeug import secure_filename
 from flask_mail import Message
 import os
 from flask_login import UserMixin, login_user , logout_user , current_user , login_required
-import mysql.connector
 from itsdangerous import URLSafeTimedSerializer, SignatureExpired
 import string
 import random
-from .. import db
+from .. import app, db
+from ..models import Year, Event, File
+import os
 
 liste_char=string.ascii_letters+string.digits
 
@@ -19,11 +20,7 @@ liste_char=string.ascii_letters+string.digits
 #     user="enpc-ponthe",password="Ponthasm7gorique2017", \
 #     database="enpc-ponthe")
 
-dbconnexion = mysql.connector.connect(host="localhost", port="3306", \
-    user="ponthe",password="", \
-    database="ponthe")
-
-DOSSIER_UPS = './static/uploads/'
+DOSSIER_UPS = os.path.join(app.instance_path, 'uploads')
 directory2=DOSSIER_UPS
 
 private = Blueprint('private', __name__)
@@ -47,15 +44,7 @@ def createFolder(directory):
         print ('Error: Creating directory. '+directory)
 
 def render_events_template(template, **kwargs):
-    dict_events = {}
-    cursor = dbconnexion.cursor()
-    cursor.execute ( "SELECT DISTINCT annees FROM Dossier")
-    liste_annees = cursor.fetchall()
-    for annee in liste_annees :
-        cursor.execute(" SELECT DISTINCT events FROM Dossier WHERE annees =  '%s' " % (annee[0]))
-        liste_events = cursor.fetchall()
-        dict_events[annee[0]] = [event[0] for event in liste_events]
-    cursor.close()
+    dict_events = { year: Event.query.filter(File.query.filter_by(year=year, event_id=Event.id).exists()).all() for year in Year.query.order_by(Year.value).all() }
     return render_template(template, dict_events=dict_events, **kwargs)
 
 
@@ -101,70 +90,45 @@ def depot_fichiers():
             return redirect('/create_event')
         if request.form['Envoyer']=='create_annee':
             return redirect('/create_annee')
-    cursor = dbconnexion.cursor()
-    liste_events = []
-    cursor.execute("SELECT DISTINCT events FROM Events")
-    var = cursor.fetchall()
-    for event in var :
-        liste_events.append(event[0])
-    liste_annees = []
-    cursor.execute("SELECT DISTINCT annees FROM Annees")
-    var = cursor.fetchall()
-    for annee in var :
-        liste_annees.append(annee[0])
-    cursor.close()
-    liste_events.sort()
-    liste_annees.sort()
-    return render_events_template('depot_fichiers.html', liste_events=liste_events, liste_annees=liste_annees)
+    list_events = [event.name for event in Event.query.all()]
+    list_years = [year.value for year in Year.query.order_by(Year.value).all()]
+
+    return render_events_template('depot_fichiers.html', liste_events=list_events, liste_annees=list_years)
 
 
 @private.route ('/archives/<cat>')
 def archives_categorie(cat):
-    cursor = dbconnexion.cursor()
-    selection = " SELECT events, annees, filename FROM Dossier WHERE (couv = '%s' AND cat ='%s' )" % (1,cat)
-    cursor.execute(selection)
-    liste_events_annees = cursor.fetchall()
-    cursor.close()
+    events_from_cat = Event.query.all()
+    files_from_cat = File.query.join(File.event).join(Event.category).filter_by(slug=cat).all()
+    galleries = { (file.year, file.event) for file in files_from_cat }
+    liste_events_annees = [[event, year.slug, event.cover_image.filename if event.cover_image is not None else File.query.filter_by(event=event).first().filename] for (year, event) in galleries]    # A changer
     return render_events_template('archives_categorie.html', liste_events_annees=liste_events_annees)
 
 
-@private.route('/archive/<annee>')
-def archives_annee(annee):
-    dict_events_annee = {}
-    cursor = dbconnexion.cursor()
-    selection = " SELECT events,filename FROM Dossier WHERE (couv = '%s' AND annees = '%s' )" % (1,annee)
-    cursor.execute(selection)
-    events = cursor.fetchall()
-    for event in events:
-        dict_events_annee[event[0]] = event[1]
-    return render_events_template('archives_annee.html', annee=annee, events_annee=dict_events_annee)
+@private.route('/archive/<year>')
+def archives_annee(year):
+    queried_year = Year.query.filter_by(slug=year).one()
+    events_from_year = Event.query.filter(File.query.filter_by(year=queried_year, event_id=Event.id).exists()).all()
+    dict_events_annee = { event: event.cover_image.filename if event.cover_image is not None else File.query.filter_by(event=event).first().filename for event in events_from_year }
+    return render_events_template('archives_annee.html', year_slug=year, events_annee=dict_events_annee)
 
-@private.route('/archives/<annee>/<event>')
-def archives_evenement(annee,event):
-    liste_filename = []
-    cursor = dbconnexion.cursor()
-    selection = "SELECT filename FROM Dossier WHERE (events = '%s' AND annees ='%s') " % (event,annee)
-    cursor.execute(selection)
-    var = cursor.fetchall()
-    cursor.close()
-    for filename in var :
-        liste_filename.append(filename[0])
-    return render_events_template('archives_evenement.html', annee=annee, event=event, filename=liste_filename)
+@private.route('/archives/<year>/<event>')
+def archives_evenement(year,event):
+    files = File.query.join(File.year).join(File.event).filter(Year.slug == year, Event.slug == event).all() # à remplacer par les slugs
+    filenames = [file.filename for file in files]
+    event_name = Event.query.filter_by(slug=event).one().name
+    return render_events_template('archives_evenement.html', year_slug=year, event_name=event_name, filenames=filenames)
 
 @private.route('/create_event', methods=['GET', 'POST'])
 def create_event():
-    cursor = dbconnexion.cursor()
-    cursor.execute ( "SELECT DISTINCT annees FROM Dossier")
-    liste_annees = cursor.fetchall()
+    liste_annees = [year.value for year in Year.query.all()]
 
     if request.method == 'POST':
-        new_event=request.form['new_event']
-        if new_event:
-            cursor = dbconnexion.cursor()
-            add_event = "INSERT INTO Events (events) VALUES('%s')" % (new_event)
-            cursor.execute(add_event)
-            dbconnexion.commit()
-            cursor.close()
+        new_event_name=request.form['new_event']
+        if new_event_name:
+            new_event = Event(name=new_event_name)
+            db.session.add(new_event)
+            db.session.commit()
             return redirect('/depot_fichiers')
         else:
             flash("Veuillez indiquer le nom du nouvel événement","error")
@@ -173,13 +137,11 @@ def create_event():
 @private.route('/create_annee', methods=['GET', 'POST'])
 def create_annee():
     if request.method == 'POST':
-        new_annee = request.form['new_annee']
-        if new_annee:
-            cursor = dbconnexion.cursor()
-            add_annee = "INSERT INTO Annees (annees) VALUES('%s')" % (new_annee)
-            cursor.execute(add_annee)
-            dbconnexion.commit()
-            cursor.close()
+        new_year_value = request.form['new_annee']
+        if new_year_value:
+            new_year = Event(name=new_year_value)
+            db.session.add(new_year)
+            db.session.commit()
             return redirect('depot_fichiers')
     else:
         flash("Veuillez indiquer la nouvelle année","error")
@@ -199,11 +161,11 @@ def upload(annee, event):
                         filename += liste_char[random.randint(0,len(liste_char)-1)]
                     filename= filename + ext
                     f.save( DOSSIER_UPS + annee + '/' + event + '/' + filename)
-                    cursor = dbconnexion.cursor()
-                    add_lien = "INSERT INTO Dossier (events,annees,filename) VALUES ('%s','%s','%s')" % (event,annee,filename)
-                    cursor.execute(add_lien)
-                    dbconnexion.commit()
-                    cursor.close()
+                    event = Event.query.filter_by(name=event).one()
+                    year = Year.query.filter_by(value=annee).one()
+                    new_file = File(event=event, year=year, filename=filename)
+                    db.session.add(new_file)
+                    db.session.commit()
                 else:
                     t1=False
             else:

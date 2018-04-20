@@ -1,23 +1,25 @@
 {% extends "layout/layout.html" %}
 
 {% block content %}
-    </div>
+<div id="content-top-border" class="container"></div>
+<div id="content">
+    <div class="container background-white">
         <div class="row margin-vert-30">
             <div class="col-md-12">
-                <h2>{{cat}} </h2>
+                <h2>{{ cat }} </h2>
             </div>
         </div>
         <div class="row">
             <div class="col-md-12 portfolio-group no-padding">
-                {% for event in liste_events_annees %}
+                {% for event, year_slug, filename in liste_events_annees %}
                 <!-- Portfolio Item -->
                 <div class="col-md-3 portfolio-item margin-bottom-40 design">
                     <div>
-                        <a href= {{url_for('archives_evenement', annee = event[1], event =event[0])}} >
+                        <a href= {{ url_for('private.archives_evenement', year=year_slug, event=event.slug) }} >
                             <figure>
-                                <img src="{{ url_for('static', filename='uploads/') }}{{event[1]}}/{{event[0]}}/{{event[2]}}">
+                                <img src="{{ url_for('tests', filename='{}/{}/{}'.format(year_slug, event.name, filename)) }}">
                                 <figcaption>
-                                    <h3 class="margin-top-20">{{event[0]}} - {{event[1]}}</h3>
+                                    <h3 class="margin-top-20">{{ event.name }} - {{ year_slug }}</h3>
                                 </figcaption>
                             </figure>
                         </a>
@@ -28,4 +30,6 @@
             </div>
         </div>
     </div>
+</div>
+<div id="content-bottom-border" class="container"></div>
 {% endblock %}
