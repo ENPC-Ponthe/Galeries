@@ -1,59 +1,108 @@
-- model: ponthe.models.Admin
+- model: ponthe.models.User
   records:
     - id: 1
-      lastname: Ferreira De Sousa
       firstname: Philippe
+      lastname: Ferreira De Sousa
+      username: philippe.ferreira-de-sousa
+      password: password
       email: philippe.ferreira-de-sousa@eleves.enpc.fr
-      password: password
     - id: 2
-      lastname: Moreau
       firstname: Maël
-      email: mael.moreau@eleves.enpc.fr
+      lastname: Moreau
+      username: mael.moreau
       password: password
+      email: mael.moreau@eleves.enpc.fr
 
-- model: ponthe.models.Events
+- model: ponthe.models.Category
   records:
     - id: 1
-      events: Admissibles
+      slug: sports
+      name: Sports
+      author_id: 1
+      description: Le sport c'est la vie
     - id: 2
-      events: Coupe-de-l-X
-
-- model: ponthe.models.Annees
-  records:
-    - id: 1
-      annees: 2016
-    - id: 2
-      annees: 2017
-
-- model: ponthe.models.Dossier
-  records:
-    - id: 1
-      annees: 1
-      events: 1
-      filename: jUpIiqdBWQ9VpXVMzgjV8cWiN6w0YBHMaklyjt8WrxlnBoMNzMTCFG.bmp
-      couv: True
-      cat: vie-associative
-    - id: 2
-      annees: 1
-      events: 1
-      filename: t3dn23iQCa4aEDu7nNXBBg9IyLZCzMSsmHHDHgCdB2b0eGI3sBOXhj.jpg
-      couv: False
-      cat: vie-associative
+      slug: vie-associative
+      name: Vie associative
+      author_id: 1
+      description: La meilleure vie associative de l'Est parisien !
     - id: 3
-      annees: 1
-      events: 1
-      filename: XbcoWxBD5PPzc941hXVMX1miFr5VSC6DuUtgGJRNARAYqn1tR38AoL.jpg
-      couv: False
-      cat: vie-associative
+      slug: films
+      name: Films
+      author_id: 1
+      description: Tous plein de films ! Pour vous en mettre plein les yeux !
     - id: 4
-      annees: 2
-      events: 2
-      filename: EKMRZkewtLHvD01TQXrUmtwshEn0TJQLPZN3foQXPPLsP6DMcVOacN.bmp
-      couv: True
-      cat: sports
+      slug: voyages
+      name: Voyages
+      author_id: 1
+      description: Des voyages de oufs !
+
+- model: ponthe.models.Event
+  records:
     - id: 5
-      annees: 2
-      events: 2
+      slug: admissibles
+      name: Admissibles
+      author_id: 1
+      category_id: 2
+      private: False
+    - id: 6
+      slug: coupe-de-l-x
+      name: Coupe de l'X
+      author_id: 2
+      category_id: 1
+      private: False
+
+- model: ponthe.models.Year
+  records:
+    - id: 7
+      slug: 2016
+      name: Une année riche en victoires !
+      author_id: 1
+      value: 2016
+    - id: 8
+      slug: 2017
+      name: Une année de folie !
+      author_id: 1
+      value: 2017
+
+- model: ponthe.models.File
+  records:
+    - id: 9
+      type: IMAGE
+      slug: jUpIiqdBWQ9VpXVMzgjV8cWiN6w0YBHMaklyjt8WrxlnBoMNzMTCFG
+      name: Hey !
+      author_id: 1
+      year_id: 7
+      event_id: 5
+      filename: jUpIiqdBWQ9VpXVMzgjV8cWiN6w0YBHMaklyjt8WrxlnBoMNzMTCFG.bmp
+    - id: 10
+      type: IMAGE
+      slug: t3dn23iQCa4aEDu7nNXBBg9IyLZCzMSsmHHDHgCdB2b0eGI3sBOXhj
+      name: Keur
+      author_id: 1
+      year_id: 7
+      event_id: 5
+      filename: t3dn23iQCa4aEDu7nNXBBg9IyLZCzMSsmHHDHgCdB2b0eGI3sBOXhj.jpg
+    - id: 11
+      type: IMAGE
+      slug: XbcoWxBD5PPzc941hXVMX1miFr5VSC6DuUtgGJRNARAYqn1tR38AoL
+      name: Champions du monde !
+      author_id: 1
+      year_id: 7
+      event_id: 5
+      filename: XbcoWxBD5PPzc941hXVMX1miFr5VSC6DuUtgGJRNARAYqn1tR38AoL.jpg
+    - id: 12
+      type: IMAGE
+      slug: EKMRZkewtLHvD01TQXrUmtwshEn0TJQLPZN3foQXPPLsP6DMcVOacN
+      name: null
+      author_id: 1
+      year_id: 8
+      event_id: 6
+      filename: EKMRZkewtLHvD01TQXrUmtwshEn0TJQLPZN3foQXPPLsP6DMcVOacN.bmp
+    - id: 13
+      type: IMAGE
+      slug: 8WsJH3V5D2nY3JxvkEJY8Xuv6RwJGS0AYaWipbp9vDB1zW69A5PR2n
+      name: Oh !
+      author_id: 1
+      year_id: 8
+      event_id: 6
       filename: 8WsJH3V5D2nY3JxvkEJY8Xuv6RwJGS0AYaWipbp9vDB1zW69A5PR2n.bmp
-      couv: False
-      cat: sports

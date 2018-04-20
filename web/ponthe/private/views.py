@@ -44,8 +44,7 @@ def createFolder(directory):
         print ('Error: Creating directory. '+directory)
 
 def render_events_template(template, **kwargs):
-    dict_events = { year.value: [event.name for event in Event.query.filter_by(year=year).all()] for year in Year.query.order_by(Year.value).all() }
-
+    dict_events = { year: Event.query.filter(File.query.filter_by(year=year, event_id=Event.id).exists()).all() for year in Year.query.order_by(Year.value).all() }
     return render_template(template, dict_events=dict_events, **kwargs)
 
 
@@ -92,31 +91,33 @@ def depot_fichiers():
         if request.form['Envoyer']=='create_annee':
             return redirect('/create_annee')
     list_events = [event.name for event in Event.query.all()]
-    list_years = [year.value for year in Year.order_by(Year.value).query.all()]
+    list_years = [year.value for year in Year.query.order_by(Year.value).all()]
 
     return render_events_template('depot_fichiers.html', liste_events=list_events, liste_annees=list_years)
 
 
 @private.route ('/archives/<cat>')
 def archives_categorie(cat):
-    cursor = dbconnexion.cursor()
     events_from_cat = Event.query.all()
-    files_from_cat = [file for file in File.query.all() if file.event.category == cat]
+    files_from_cat = File.query.join(File.event).join(Event.category).filter_by(slug=cat).all()
     galleries = { (file.year, file.event) for file in files_from_cat }
-    liste_events_annees = [[event.name, year.value, event.cover_image.filename] for (year, event) in galleries]    # A changer
+    liste_events_annees = [[event, year.slug, event.cover_image.filename if event.cover_image is not None else File.query.filter_by(event=event).first().filename] for (year, event) in galleries]    # A changer
     return render_events_template('archives_categorie.html', liste_events_annees=liste_events_annees)
 
 
-@private.route('/archive/<annee>')
-def archives_annee(annee):
-    events_from_year = Event.query(event).filter(event.year.value == annee).all()
-    dict_events_annee = { event.name: event.cover_image.filename for event in events_from_year }
-    return render_events_template('archives_annee.html', annee=annee, events_annee=dict_events_annee)
+@private.route('/archive/<year>')
+def archives_annee(year):
+    queried_year = Year.query.filter_by(slug=year).one()
+    events_from_year = Event.query.filter(File.query.filter_by(year=queried_year, event_id=Event.id).exists()).all()
+    dict_events_annee = { event: event.cover_image.filename if event.cover_image is not None else File.query.filter_by(event=event).first().filename for event in events_from_year }
+    return render_events_template('archives_annee.html', year_slug=year, events_annee=dict_events_annee)
 
-@private.route('/archives/<annee>/<event>')
-def archives_evenement(annee,event):
-    filenames = File.query(file).filter(and_(file.year.value == annee, file.event.name == event)).all() # à remplacer par les slugs
-    return render_events_template('archives_evenement.html', annee=annee, event=event, filename=filenames)
+@private.route('/archives/<year>/<event>')
+def archives_evenement(year,event):
+    files = File.query.join(File.year).join(File.event).filter(Year.slug == year, Event.slug == event).all() # à remplacer par les slugs
+    filenames = [file.filename for file in files]
+    event_name = Event.query.filter_by(slug=event).one().name
+    return render_events_template('archives_evenement.html', year_slug=year, event_name=event_name, filenames=filenames)
 
 @private.route('/create_event', methods=['GET', 'POST'])
 def create_event():
