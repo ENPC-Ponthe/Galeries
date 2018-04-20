@@ -71,12 +71,13 @@ def login():
     logging_user = User.query.filter_by(email=email, password=password).first()
 
     if logging_user is not None:
-        login_user(user)
+        login_user(logging_user)
+        print(logging_user)
         next = get_redirect_target()
         return redirect(next) if next and urlparse(next).path!='/logout' else getHome()
-
-    flash("Identifiants incorrectes", "error")
-    return getLoginPage()
+    else:
+        flash("Identifiants incorrectes", "error")
+        return getLoginPage()
 
 
 @public.route('/creation_compte', methods=['GET', 'POST'])
