@@ -1,0 +1,12 @@
+Flask
+Werkzeug
+Flask_Mail
+Flask-Login
+SQLAlchemy
+Flask-SQLAlchemy
+mysqlclient
+Flask-Migrate
+nose2
+Flask-Fixtures
+PyYAML
+Flask-Script

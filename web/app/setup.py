@@ -10,9 +10,9 @@
 from setuptools import setup
 from os.path import join, dirname
 
-def readme():
-    with open('../README.md') as f:
-        return f.read()
+#def readme():
+#    with open('../README.md') as f:
+#        return f.read()
 
 with open(join(dirname(__file__), 'ponthe/version.py'), 'r') as f:
     exec(f.read())
@@ -24,7 +24,7 @@ setup(
     name='Galeries Ponthe',
     version=__version__,
     description='Site du Ponthé',
-    long_description=readme(),
+#    long_description=readme(),
     keywords='ponthé club cinéma audivisuel',
     #url='http://github.com',
     author=['Ines Tazi', 'Faibien Lespagnol', 'Alexandre Pacaud', 'Arnaud Sadaca', 'Philippe Ferreira De Sousa'],
