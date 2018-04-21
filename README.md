@@ -64,6 +64,10 @@ sudo certbot --nginx --noninteractive --agree-tos --email root@clubinfo.enpc.fr 
 sudo systemctl reload nginx
 ```
 
+Charger les fixtures dans le container :
+```
+docker run -it pontheenpcorg_web python ponthe/manager.py load_fixtures   # not working :'(
+```
 
 ## TODO
 
