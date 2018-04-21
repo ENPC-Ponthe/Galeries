@@ -5,7 +5,7 @@
 web/venv/
 
 # Instance Folder - used for configuration parameters and uploads / fixtures files
-# web/instance/uploads
+# web/instance/club_folder/
 
 # Pypi package installation
 web/Galeries_Ponthe.egg-info/

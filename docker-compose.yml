@@ -9,17 +9,18 @@ services:
 #      - source: web-flask
 #        target: /app/instance/ponthe.cfg
     volumes:
-     - web-uploads:/app/instance/uploads
+     - club_folder:/app/instance/club_folder
     depends_on:
       - db
+      - sshd  # necessary for the first time : the volume must be created with the content of the mounting point in sshd first and not the fixtures data of the web container !
     restart: always
 
-  ssh:
-    image: rastasheep/ubuntu-sshd
+  sshd:
+    build: ./sshd
     ports:
       - "7502:22"
     volumes:
-     - web-uploads:/root/uploads
+     - club_folder:/home/ponthe
     restart: always
 
   db:
@@ -49,7 +50,7 @@ services:
 volumes:
   db-data:
     driver: local
-  web-uploads:
+  club_folder:
     driver: local
 
 #configs:
