@@ -38,6 +38,18 @@ cd web
 ponthe/manager.py load_fixtures
 ```
 
+## docker
+
+A la racine faire :
+```
+docker build -t myimage .
+docker run -d --name mycontainer -p 7000:80 myimage
+```
+ou avec docker-compose :
+```
+docker-compose up --build
+```
+
 ## TODO
 
 * SQLAlchemy example : https://jeffknupp.com/blog/2014/01/29/productionizing-a-flask-application/
