@@ -15,8 +15,8 @@ login_manager.init_app(app)
 
 mail=Mail(app)
 
-from ponthe.public.views import public
-from ponthe.private.views import private
+from .public.views import public
+from .private.views import private
 
 from . import models
 from . import views

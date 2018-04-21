@@ -11,7 +11,7 @@ from itsdangerous import URLSafeTimedSerializer, SignatureExpired
 import string
 import random
 from .. import app, db
-from ..models import Year, Event, File
+from ..models import Year, Event, File, Category
 import os
 
 liste_char=string.ascii_letters+string.digits
@@ -96,13 +96,14 @@ def depot_fichiers():
     return render_events_template('depot_fichiers.html', liste_events=list_events, liste_annees=list_years)
 
 
-@private.route ('/archives/<cat>')
-def archives_categorie(cat):
+@private.route ('/archives/<category_slug>')
+def archives_categorie(category_slug):
+    category = Category.query.filter_by(slug=category_slug).one()
     events_from_cat = Event.query.all()
-    files_from_cat = File.query.join(File.event).join(Event.category).filter_by(slug=cat).all()
+    files_from_cat = File.query.join(File.event).join(Event.category).filter_by(slug=category_slug).all()
     galleries = { (file.year, file.event) for file in files_from_cat }
     liste_events_annees = [[event, year.slug, event.cover_image.filename if event.cover_image is not None else File.query.filter_by(event=event).first().filename] for (year, event) in galleries]    # A changer
-    return render_events_template('archives_categorie.html', liste_events_annees=liste_events_annees)
+    return render_events_template('archives_categorie.html', category=category, liste_events_annees=liste_events_annees)
 
 
 @private.route('/archive/<year>')
