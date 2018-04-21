@@ -13,14 +13,6 @@ def uploads(filename):
         filename
     )
 
-@app.route('/tests/<path:filename>')
-@login_required
-def tests(filename):
-    return send_from_directory(
-        os.path.join(app.instance_path, 'tests'),
-        filename
-    )
-
 # handle login failed
 @app.errorhandler(401)
 def handleError(e):
