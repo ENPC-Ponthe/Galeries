@@ -1,24 +1,32 @@
-version: "3.3"
+version: "3.1"
 
 services:
   web:
     build: ./web
     ports:
       - 7000:80
-    configs:
-      - source: web-flask
-        target: /app/instance/ponthe.cfg
+#    configs:
+#      - source: web-flask
+#        target: /app/instance/ponthe.cfg
     volumes:
      - web-uploads:/app/instance/uploads
     depends_on:
       - db
     restart: always
 
+  ssh:
+    image: rastasheep/ubuntu-sshd
+    ports:
+      - "7502:22"
+    volumes:
+     - web-uploads:/root/uploads
+    restart: always
+
   db:
     image: mysql
-    # command: mysqld --default-authentication-plugin=mysql_native_password # à tester sans
+    command: mysqld --default-authentication-plugin=mysql_native_password # Sinon "Authentication plugin 'caching_sha2_password' cannot be loaded
     ports:
-      - 7501:3306
+      - "7501:3306"
     volumes:
      - db-data:/var/lib/mysql
     environment:
@@ -31,7 +39,7 @@ services:
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
     ports:
-      - 7500:80
+      - "7500:80"
     depends_on:
       - db
     environment:
@@ -44,6 +52,6 @@ volumes:
   web-uploads:
     driver: local
 
-configs:
-  web-flask:
-    file: ./web/ponthe.prod.cfg
+#configs:
+#  web-flask:
+#    file: ./web/ponthe.prod.cfg
