@@ -38,17 +38,32 @@ cd web
 ponthe/manager.py load_fixtures
 ```
 
-## docker
+## Mettre en production
 
-A la racine faire :
+Depuis la racine faire :
 ```
-docker build -t myimage .
-docker run -d --name mycontainer -p 7000:80 myimage
+docker-compose up
 ```
-ou avec docker-compose :
+
+Pour rebuild l'image web après modification des fichiers copiés :
 ```
 docker-compose up --build
 ```
+
+Après modification du .env :
+```
+docker-compose rm db
+docker-compose up
+```
+
+Configurer le proxy pass du VPS vers le container docker :
+```
+sudo cp nginx/ponthe.enpc.org.conf /etc/nginx/sites-available/ponthe.enpc.org
+sudo ln -s /etc/nginx/sites-available/ponthe.enpc.org /etc/nginx/sites-enabled/ponthe.enpc.org
+sudo certbot --nginx --noninteractive --agree-tos --email root@clubinfo.enpc.fr -d ponthe.enpc.org
+sudo systemctl reload nginx
+```
+
 
 ## TODO
 
