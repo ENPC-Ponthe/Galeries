@@ -4,8 +4,9 @@ Flask_Mail
 Flask-Login
 SQLAlchemy
 Flask-SQLAlchemy
+mysqlclient
 Flask-Migrate
-nose2 # test runner
+# nose2 # test runner
 Flask-Fixtures
 PyYAML
 Flask-Script
