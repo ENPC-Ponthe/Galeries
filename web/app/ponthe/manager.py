@@ -4,8 +4,8 @@ from flask import Flask
 from flask import jsonify
 from flask_script import Manager
 
-from . import app
-from . import db
+from ponthe import app
+from ponthe import db
 
 manager = Manager(app)
 
