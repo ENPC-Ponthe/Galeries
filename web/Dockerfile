@@ -5,5 +5,6 @@ ENV STATIC_PATH /app/ponthe/static
 ENV FLASK_APP=ponthe
 
 COPY ./app /app
+COPY ./ponthe.prod.cfg /app/instance/ponthe.cfg
 
 RUN pip install /app

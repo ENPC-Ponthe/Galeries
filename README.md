@@ -69,6 +69,20 @@ Charger les fixtures dans le container :
 docker run -it pontheenpcorg_web python ponthe/manager.py load_fixtures   # not working :'(
 ```
 
+## Ajouter des fichiers aux galeries :
+
+Les consulter :
+```
+ssh root@localhost -p 7502
+```
+Mot de passe : *root*
+
+En ajouter :
+```
+scp -P 7502 myfile root@localhost:uploads/
+```
+Mot de passe : *root*
+
 ## TODO
 
 * SQLAlchemy example : https://jeffknupp.com/blog/2014/01/29/productionizing-a-flask-application/
