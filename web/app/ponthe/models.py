@@ -1,7 +1,20 @@
 from flask_login import UserMixin
 from datetime import datetime
+from werkzeug.security import generate_password_hash, check_password_hash
 import enum
 from . import db
+import re
+
+_punct_re = re.compile(r'[\t !"#$%&\'()*\-/<=>?@\[\\\]^_`{|},.]+')  #   Les slug DSI enlève les ' au lieu de les remplacer par un -
+
+def slugify(text, delim=u'-'):
+    """Generates an ASCII-only slug."""
+    result = []
+    for word in _punct_re.split(text.lower()):
+        word = word.encode('translit/long')
+        if word:
+            result.append(word)
+    return unicode(delim.join(result))
 
 class ReactionEnum(enum.Enum):
     LIKE = 1
@@ -27,9 +40,27 @@ class User(UserMixin, db.Model):
     firstname = db.Column(db.String(64), nullable=False)
     lastname = db.Column(db.String(64), nullable=False)
     username = db.Column(db.String(64), unique=True, nullable=False)
-    password = db.Column(db.String(64), nullable=False)  # type mot de passe qui gère le hashage derrière
+    password = db.Column(db.String(128), nullable=False)  # type mot de passe qui gère le hashage derrière
     email = db.Column(db.String(64), unique=True, nullable=False)
     groups = db.relationship('Group', secondary=membership, lazy='subquery', backref=db.backref('members', lazy=True))
+
+    def __init__(self, username, firstname, lastname, password, id=None, email=None):
+        if id:
+            self.id = id
+        self.username = username
+        self.firstname = firstname
+        self.lastname = lastname
+        if email:
+            self.email = email
+
+        self.email = "{}@eleves.enpc.fr".format(username)
+        self.set_password(password)
+
+    def set_password(self, password):
+        self.password = generate_password_hash(password)
+
+    def check_password(self, password):
+        return check_password_hash(self.password, password)
 
     def __repr__(self):
         return '<User {} {}>'.format(self.firstname, self.lastname)
@@ -53,6 +84,21 @@ class Resource(TimestampMixin, db.Model):
         'polymorphic_identity': 'resources',
         'polymorphic_on': resource_type
     }
+
+    def __init__(self, name, author, id=None, slug=None, author_id=None):   # fixtures need initializing with ids
+        if id:
+            self.id = id
+        if slug:
+            self.slug = slug
+        else:
+            set_slug(name)
+        if author_id:
+            self.author_id = author_id
+        else:
+            self.author = author
+
+    def set_slug(self, name):
+        self.slug = slugify(name)
 
     def __repr__(self):
         return '<Resource {}>'.format(self.name)
