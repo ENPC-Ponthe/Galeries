@@ -9,6 +9,7 @@ RUN mkdir /var/run/sshd
 RUN useradd -ms /bin/bash ponthe
 RUN echo 'ponthe:Ponthasm7gorique2017' | chpasswd
 RUN mkdir /home/ponthe/uploads/ /home/ponthe/waiting_zone/
+RUN chown -R ponthe:ponthe /home/ponthe
 
 RUN sed -ri 's/^PermitRootLogin\s+.*/PermitRootLogin no/' /etc/ssh/sshd_config
 
