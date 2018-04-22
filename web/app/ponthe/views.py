@@ -9,15 +9,7 @@ from flask_login import login_required
 @login_required
 def uploads(filename):
     return send_from_directory(
-        os.path.join(app.instance_path, 'uploads'),
-        filename
-    )
-
-@app.route('/tests/<path:filename>')
-@login_required
-def tests(filename):
-    return send_from_directory(
-        os.path.join(app.instance_path, 'tests'),
+        os.path.join(app.instance_path, 'club_folder', 'uploads'),
         filename
     )
 

@@ -64,6 +64,26 @@ sudo certbot --nginx --noninteractive --agree-tos --email root@clubinfo.enpc.fr 
 sudo systemctl reload nginx
 ```
 
+Charger les fixtures dans le container :
+```
+docker run -it pontheenpcorg_web python ponthe/manager.py load_fixtures   # not working :'(
+```
+
+## Ajouter des fichiers aux galeries :
+
+Les consulter :
+```
+ssh ponthe@localhost -p 7502
+```
+Mot de passe : *Ponthasm7gorique2017*
+
+En ajouter l'event TOSS à l'année 2018 :
+```
+scp -P 7502 -r TOSS ponthe@localhost:waiting_zone/2018/
+```
+où TOSS est un répertoire de photos et vidéos
+
+Mot de passe : *Ponthasm7gorique2017*
 
 ## TODO
 
