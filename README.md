@@ -73,15 +73,17 @@ docker run -it pontheenpcorg_web python ponthe/manager.py load_fixtures   # not 
 
 Les consulter :
 ```
-ssh root@localhost -p 7502
+ssh ponthe@localhost -p 7502
 ```
-Mot de passe : *root*
+Mot de passe : *Ponthasm7gorique2017*
 
-En ajouter :
+En ajouter l'event TOSS à l'année 2018 :
 ```
-scp -P 7502 myfile root@localhost:uploads/
+scp -P 7502 -r TOSS ponthe@localhost:waiting_zone/2018/
 ```
-Mot de passe : *root*
+où TOSS est un répertoire de photos et vidéos
+
+Mot de passe : *Ponthasm7gorique2017*
 
 ## TODO
 
