@@ -7,11 +7,11 @@
       password: password
       email: philippe.ferreira-de-sousa@eleves.enpc.fr
     - id: 2
-      firstname: Maël
-      lastname: Moreau
-      username: mael.moreau
+      firstname: Ponthe
+      lastname: ENPC
+      username: ponthe.enpc
       password: password
-      email: mael.moreau@eleves.enpc.fr
+      email: ponthe@liste.enpc.fr
 
 - model: ponthe.models.Category
   records:

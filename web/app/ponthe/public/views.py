@@ -16,8 +16,6 @@ serializer=URLSafeTimedSerializer(app.secret_key)
 
 public = Blueprint('public', __name__)
 
-user= User()
-
 def getHome():
     return redirect('index')
 
@@ -68,9 +66,9 @@ def login():
 
     email = request.form['email']
     password = request.form['password']
-    logging_user = User.query.filter_by(email=email, password=password).first()
+    logging_user = User.query.filter_by(email=email).first()
 
-    if logging_user is not None:
+    if logging_user is not None and logging_user.check_password(password):
         login_user(logging_user)
         print(logging_user)
         next = get_redirect_target()
@@ -83,12 +81,14 @@ def login():
 @public.route('/creation_compte', methods=['GET', 'POST'])
 def creation_compte():
     if request.method == 'POST':
-        user.lastname = request.form['nom']
-        user.firstname = request.form['prenom']
-        user.email = request.form['email']
-        user.password = request.form['password']
-        user.CMDP = request.form['confirmation_password']
-        if user.password == user.CMDP :
+        user= User(
+            lastname = request.form['nom']
+            firstname = request.form['prenom']
+            email = request.form['email']
+            password = request.form['password']
+        )
+        confirmation_password = request.form['confirmation_password']
+        if user.password == confirmation_password :
             token = serializer.dumps(user.email)
             msg = Message('Confirm Email', sender='clubpontheenpc@gmail.com', recipients=[user.email] )
             link = url_for('confirm_email', token=token, _external=True)
@@ -107,6 +107,7 @@ def reset_password():
         token = serializer.dumps(user.email)
         msg = Message('Reset Email' , sender='clubpontheenpc@gmail.com', recipients=[user.email])
         link = url_for('reset_email', token=token, _external=True)
+        # put token to user entity to retrive it in confirm_email route
         msg.body = 'Votre lien est {}'.format(link)
         mail.send(msg)
         return render_template('mail_confirmation.html', email=user.email)
@@ -126,6 +127,7 @@ def reset_email(token):
 
 @public.route('/confirm_email/<token>')  # Never finished
 def confirm_email(token):
+    # user not defined : it must be retrieved from database by token : add token field to model
     try :
         email = serializer.loads(token, max_age=300)    # what !?
         new_user = User(id=user.id, firstname=user.firstname, lastname=user.lastname, password=user.password)
