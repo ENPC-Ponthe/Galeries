@@ -17,7 +17,7 @@
                     <div>
                         <a href={{ url_for('private.archives_evenement', year=year_slug, event=event.slug) }} >
                             <figure>
-                                <img src="{{ url_for('static', filename='tests/') }}{{ year }}/{{ event.name }}/{{ filename }}">
+                                <img src="{{ url_for('static', filename='uploads/') }}{{ year }}/{{ event.name }}/{{ filename }}">
                                 <figcaption>
                                     <h3 class="margin-top-20">{{ event.name }}</h3>
                                     <span>Description de l'événement</span>

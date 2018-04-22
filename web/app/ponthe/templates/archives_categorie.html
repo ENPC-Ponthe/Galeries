@@ -20,7 +20,7 @@
                     <div>
                         <a href= {{ url_for('private.archives_evenement', year=year_slug, event=event.slug) }} >
                             <figure>
-                                <img src="{{ url_for('tests', filename='{}/{}/{}'.format(year_slug, event.name, filename)) }}">
+                                <img src="{{ url_for('uploads', filename='{}/{}/{}'.format(year_slug, event.name, filename)) }}">
                                 <figcaption>
                                     <h3 class="margin-top-20">{{ event.name }} - {{ year_slug }}</h3>
                                 </figcaption>
