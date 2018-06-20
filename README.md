@@ -25,7 +25,7 @@ Pour le rendre disponible sur le réseau ajouter `--host=0.0.0.0` (écoute toute
 ### Migration
 Générer les migrations dans *web/migrations/versions* :
 ```
-cd web
+cd web/app
 export FLASK_APP=ponthe
 flask db migrate
 flask db upgrade
@@ -34,7 +34,7 @@ flask db upgrade
 ### Fixtures
 Supprimer la BDD et charges les fixtures de tous les fichiers YAML de *web/fixtures/* :
 ```
-cd web
+cd web/app
 ponthe/manager.py load_fixtures
 ```
 
@@ -98,6 +98,12 @@ Mot de passe : *Ponthasm7gorique2017*
 * http://www.patricksoftwareblog.com/flask-tutorial/
 * https://jeffknupp.com/blog/2014/01/29/productionizing-a-flask-application/
 * http://freemiumdownload.com/downloads/lifestyle-blog-free-bootstrap-template/
+Public domain code snippets :
+* http://flask.pocoo.org/snippets/
+Slugification :
+* http://flask.pocoo.org/snippets/5/
+Password salt hashing:
+* http://flask.pocoo.org/snippets/54/
 
 ## SQLAlchemy
 On utilise un modèle de "joined table inheritance"

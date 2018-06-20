@@ -7,6 +7,5 @@ Flask-SQLAlchemy
 mysqlclient
 Flask-Migrate
 # nose2 # test runner
-Flask-Fixtures
-PyYAML
 Flask-Script
+translitcodec # to slugify foreign letters like ü in ue
