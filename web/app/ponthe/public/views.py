@@ -82,10 +82,10 @@ def login():
 def creation_compte():
     if request.method == 'POST':
         user= User(
-            lastname = request.form['nom']
-            firstname = request.form['prenom']
-            email = request.form['email']
-            password = request.form['password']
+            lastname=request.form['nom'],
+            firstname=request.form['prenom'],
+            email=request.form['email'],
+            password=request.form['password']
         )
         confirmation_password = request.form['confirmation_password']
         if user.password == confirmation_password :
