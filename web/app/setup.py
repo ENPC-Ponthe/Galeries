@@ -27,7 +27,7 @@ setup(
 #    long_description=readme(),
     keywords='ponthé club cinéma audivisuel',
     #url='http://github.com',
-    author=['Ines Tazi', 'Faibien Lespagnol', 'Alexandre Pacaud', 'Arnaud Sadaca', 'Philippe Ferreira De Sousa'],
+    author=['Ines Tazi', 'Fabien Lespagnol', 'Alexandre Pacaud', 'Arnaud Sadaca', 'Philippe Ferreira De Sousa'],
     author_email='ines.tazi@eleves.enpc.fr',
     license='MIT',
     packages=['ponthe'],
