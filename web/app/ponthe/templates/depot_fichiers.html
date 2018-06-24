@@ -29,7 +29,7 @@
                             <div class="col-md-12 col-md-offset-0">
                                 <select name="evenement">
   								                  {% for i in liste_events %}
-                                      <option value={{ i }}>{{ i }}</option>
+                                      <option value="{{ i }}"">{{ i }}</option>
                                     {% endfor %}
     				                    </select>
                             </div>
@@ -53,7 +53,7 @@
                             <div class="col-md-12 col-md-offset-0">
             										<select name="annee">
                 									  {% for i in liste_annees %}
-                                        <option value={{ i }}>{{ i }}</option>
+                                        <option value="{{ i }}">{{ i }}</option>
                                     {% endfor %}
             										</select>
                             </div>

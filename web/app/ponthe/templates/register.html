@@ -9,31 +9,55 @@
             <div class="col-md-9">
                 <!-- Main Content -->
                 <div class="headline">
-                    <h2>Réinitialiser son mot de passe </h2>
+                    <h2>Créer un nouveau compte </h2>
                 </div>
                 <br>
                 <!-- Contact Form -->
                 <form action="" method="post">
-                    <label>Email </label>
-                        <span class="color-red">*</span>
-                    </label>
+                    <label>Nom</label>
                     <div class="row margin-bottom-20">
                         <div class="col-md-6 col-md-offset-0">
-                            <input class="form-control" type="text" name= "email" id="email">
+                            <input type="text" required class="form-control" name="lastname" id="lastname">
+                        </div>
+                    </div>
+                    <label>Prénom</label>
+                    <div class="row margin-bottom-20">
+                        <div class="col-md-6 col-md-offset-0">
+                            <input type="text" required class="form-control" name="firstname" id="firstname">
+                        </div>
+                    </div>
+                    <label>Email</label>
+                    <div class="row margin-bottom-20">
+                        <div class="col-md-6 col-md-offset-0">
+                            <input type="text" required class="form-control" style="display: inline; width: calc(100% - 110px);" name="local_email" id="local_email"> @eleves.enpc.fr
                         </div>
                     </div>
                     <label>Mot de passe </label>
                     <div class="row margin-bottom-20">
-                        <div class="col-md-8 col-md-offset-0">
-                            <input rows="8" type="password" class="form-control" name = "password" id="password">
+                        <div class="col-md-6 col-md-offset-0">
+                            <input required type="password" class="form-control" name ="password" id="password">
                         </div>
                     </div>
                     <label>Confirmer votre mot de passe </label>
                     <div class="row margin-bottom-20">
-                        <div class="col-md-8 col-md-offset-0">
-                            <input rows="8" type="password" class="form-control" name = "confirmation_password" id="confirmation_password">
+                        <div class="col-md-6 col-md-offset-0">
+                            <input required type="password" class="form-control" name="confirmation_password" id="confirmation_password">
                         </div>
                     </div>
+                    {# on affiche les messages d'erreur puis les messages de succes #}
+                    {% for categorie in ['error', 'success'] %}
+                        {% with msgs = get_flashed_messages(category_filter=[categorie]) %}
+                            {% if msgs %}
+                                <div class="alert alert-{{ 'danger' if categorie == 'error' else 'success' }}">
+                                    <ul>
+                                        {% for m in msgs %}
+                                            <li>{{ m | safe }}</li>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                            {% endif %}
+                        {% endwith %}
+                    {% endfor %}
                     <p>
                         <button type="submit" class="btn btn-primary" value="Envoyer">Confirmer la création du compte</button>
                     </p>
@@ -54,15 +78,12 @@
                             Pour des questions supplémentaires sur le club ou la réservation de matériel, vous pouvez contacter les membres du club Ponthé avec les informations ci-jointes
                         </p>
                         <li>
-                            <i class="fa-phone color-primary"></i>06 29 78 24 32
-                        </li>
-                        <li>
                             <i class="fa-envelope color-primary"></i>ponthe@liste.enpc.fr
                         </li>
                     </div>
                 </div>
+                <!-- End recent Posts -->
             </div>
-            <!-- End recent Posts -->
         </div>
     </div>
 </div>
