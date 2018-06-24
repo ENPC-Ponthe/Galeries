@@ -1,5 +1,3 @@
-
-
 # -- coding: utf-8 --"
 
 from flask import Flask,render_template,request, flash, redirect, url_for, jsonify, Blueprint
@@ -13,6 +11,7 @@ import random
 from .. import app, db
 from ..models import Year, Event, File, Category
 import os
+from flask_tus_ponthe import tus_manager
 
 liste_char=string.ascii_letters+string.digits
 
@@ -20,10 +19,49 @@ liste_char=string.ascii_letters+string.digits
 #     user="enpc-ponthe",password="Ponthasm7gorique2017", \
 #     database="enpc-ponthe")
 
-DOSSIER_UPS = os.path.join(app.instance_path, 'uploads')
-directory2=DOSSIER_UPS
+UPLOAD_FOLDER = os.path.join(app.instance_path, 'club_folder', 'upload')
+UPLOAD_TMP_FOLDER = os.path.join(app.instance_path, 'upload_tmp')
 
 private = Blueprint('private', __name__)
+
+tm = tus_manager(private, upload_url='/file-upload', upload_folder=UPLOAD_TMP_FOLDER)
+
+def is_image(filename):
+    """ Renvoie True si le fichier possede une extension d'image valide. """
+    return '.' in filename and filename.rsplit('.', 1)[-1] in ('png', 'jpg', 'jpeg', 'gif', 'bmp')
+
+def is_video(filename):
+    """ Renvoie True si le fichier possede une extension de vidéo valide. """
+    return '.' in filename and filename.rsplit('.', 1)[-1] in ('mp4', 'avi')
+
+def createFolder(directory):
+    try:
+        if not os.path.exists(directory):
+            os.makedirs(directory)
+    except OSError:
+        print('Error: Creating directory. {}'.format(directory))
+
+@tm.upload_file_handler
+def upload_file_hander(upload_file_path, raw_filename, year_value, event_name):
+    _, extension = raw_filename.rsplit('.', 1)
+    slug = "".join([liste_char[random.randint(0,len(liste_char)-1)] for i in range(20)])
+    filename = "{}.{}".format(slug, extension)
+    event = Event.query.filter_by(name=event_name).one()
+    year = Year.query.filter_by(value=year_value).one()
+    new_file = File(event=event, year=year, slug=slug, filename=filename, author=current_user, pending=True)
+
+    if is_image(filename):
+        new_file.type = "IMAGE"
+    elif is_video(filename):
+        new_file.type = "VIDEO"
+    else:
+        raise ValueError("File extension not supported")
+
+    gallery_folder = os.path.join(UPLOAD_FOLDER, str(year_value), str(event_name))
+    createFolder(gallery_folder)
+    os.rename(upload_file_path, os.path.join(gallery_folder, filename))
+    db.session.add(new_file)
+    db.session.commit()
 
 @private.before_request     # login nécessaire pour tout le blueprint
 @login_required
@@ -31,17 +69,6 @@ def before_request():
     pass
     # if g.user.role != ROLE_ADMIN:     # code pour restreindr un blueprint aux admins ;)
     #     abort(401)
-
-def extension_ok(nomfic):
-    """ Renvoie True si le fichier possede une extension d'image valide. """
-    return '.' in nomfic and nomfic.rsplit('.', 1)[1] in ('png', 'jpg', 'jpeg', 'gif', 'bmp')
-
-def createFolder(directory):
-    try:
-        if not os.path.exists(directory):
-            os.makedirs(directory)
-    except OSError:
-        print ('Error: Creating directory. '+directory)
 
 def render_events_template(template, **kwargs):
     dict_events = { year: Event.query.filter(File.query.filter_by(year=year, event_id=Event.id).exists()).all() for year in Year.query.order_by(Year.value).all() }
@@ -72,16 +99,12 @@ def materiel() :
 @private.route('/depot_fichiers', methods=['GET', 'POST'])
 def depot_fichiers():
     if request.method == 'POST':
-        evenement=request.form['evenement']
-        annee=request.form['annee']
+        event=request.form['evenement']
+        year=request.form['annee']
         if request.form['Envoyer']=='Envoyer':
-            if evenement: # on verifie que evenement est non vide
-                if annee: # on verifie que date est non vide
-                    directory=DOSSIER_UPS+annee+'/'
-                    createFolder(directory)
-                    directory2=directory+evenement+'/'
-                    createFolder(directory2)
-                    return redirect(url_for('upload', annee=annee, event=evenement))
+            if event: # on verifie que evenement est non vide
+                if year: # on verifie que date est non vide
+                    return redirect(url_for('private.upload', year=year, event=event))
                 else:
                     flash("Veuillez indiquer la date de l'événement","error")
             else:
@@ -148,37 +171,9 @@ def create_annee():
         flash("Veuillez indiquer la nouvelle année","error")
     return render_events_template('create_annee.html')
 
-@private.route('/upload/<annee>/<event>', methods=['GET', 'POST'])
-def upload(annee, event):
-    t1=True
-    t2=True
-    if request.method == 'POST':
-        for f in request.files.getlist('photos'):
-            if f:
-                if extension_ok(f.filename.lower()): # on verifie que son extension est valide
-                    _, ext = os.path.splitext(f.filename)
-                    filename = ""
-                    for i in range(54):
-                        filename += liste_char[random.randint(0,len(liste_char)-1)]
-                    filename= filename + ext
-                    f.save( DOSSIER_UPS + annee + '/' + event + '/' + filename)
-                    event = Event.query.filter_by(name=event).one()
-                    year = Year.query.filter_by(value=annee).one()
-                    new_file = File(event=event, year=year, filename=filename)
-                    db.session.add(new_file)
-                    db.session.commit()
-                else:
-                    t1=False
-            else:
-                t2=False
-        if t1==True:
-            if t2==True:
-                flash("Bravo! Vos images ont été envoyées! :)","success")
-            else:
-                flash("Vous avez oublié le fichier !", "error")
-        if t1==False:
-            flash("Ce fichier ne porte pas l'extension png, jpg, jpeg, gif ou bmp !", "error")
-    return render_events_template('upload.html')
+@private.route('/upload/<year>/<event>')
+def upload(year, event):
+    return render_events_template('upload.html', year=year, event=event)
 
 @private.route('/membres')
 def membres():

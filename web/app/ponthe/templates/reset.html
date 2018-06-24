@@ -1,0 +1,69 @@
+{% extends "layout/layout.html" %}
+
+{% block content %}
+<div id="content-top-border" class="container"></div>
+<div id="content">
+    <div class="container background-white">
+        <div class="row margin-vert-30">
+            <!-- Main Column -->
+            <div class="col-md-9">
+                <!-- Main Content -->
+                <div class="headline">
+                    <h2>Réinitialiser son mot de passe </h2>
+                </div>
+                <br>
+                <!-- Contact Form -->
+                <form action="" method="post">
+                    <label>Email </label>
+                        <span class="color-red">*</span>
+                    </label>
+                    <div class="row margin-bottom-20">
+                        <div class="col-md-6 col-md-offset-0">
+                            <input required class="form-control" type="text" name= "email" id="email">
+                        </div>
+                    </div>
+                    {# on affiche les messages d'erreur puis les messages de succes #}
+                    {% for categorie in ['error', 'success'] %}
+                        {% with msgs = get_flashed_messages(category_filter=[categorie]) %}
+                            {% if msgs %}
+                                <div class="alert alert-{{ 'danger' if categorie == 'error' else 'success' }}">
+                                    <ul>
+                                        {% for m in msgs %}
+                                            <li>{{ m | safe }}</li>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                            {% endif %}
+                        {% endwith %}
+                    {% endfor %}
+                    <p>
+                        <button type="submit" class="btn btn-primary" value="Envoyer">Envoyer l'email de réinitialisation</button>
+                    </p>
+                </form>
+                <!-- End Contact Form -->
+                <!-- End Main Content -->
+            </div>
+            <!-- End Main Column -->
+            <!-- Side Column -->
+            <div class="col-md-3">
+                <!-- Recent Posts -->
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">Contact Info</h3>
+                    </div>
+                    <div class="panel-body">
+                        <p>
+                            Pour des questions supplémentaires sur le club ou la réservation de matériel, vous pouvez contacter les membres du club Ponthé avec les informations ci-jointes
+                        </p>
+                        <li>
+                            <i class="fa-envelope color-primary"></i>ponthe@liste.enpc.fr
+                        </li>
+                    </div>
+                </div>
+            </div>
+            <!-- End recent Posts -->
+        </div>
+    </div>
+</div>
+<div id="content-bottom-border" class="container"></div>
+{% endblock %}

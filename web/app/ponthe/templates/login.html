@@ -7,7 +7,7 @@
         <div class="col-md-6 col-md-offset-3 col-sm-offset-3">
             <form class="login-page" action="{{ url_for('public.login') }}" method='POST'>
                 <div class="login-header margin-bottom-30">
-                    <h2>Login to your account</h2>
+                    <h2>Connecte-toi !</h2>
                 </div>
                 <div class="input-group margin-bottom-20">
                     <span class="input-group-addon">
@@ -19,7 +19,7 @@
                     <span class="input-group-addon">
                         <i class="fa fa-lock"></i>
                     </span>
-                    <input class="form-control" type='password' name='password' id='password' placeholder='password'/>
+                    <input class="form-control" type='password' name='password' id='password' placeholder='mot de passe'/>
                 </div>
                 {% with msgs = get_flashed_messages(category_filter=['error']) %}
                     {% if msgs %}
@@ -35,21 +35,21 @@
                 <div class="row">
                     <div class="col-md-6">
                         <label class="checkbox">
-                            <input type="checkbox"> Stay signed in
+                            <input type="checkbox"> Rester connecter
                         </label>
                     </div>
                     <div class="col-md-6">
-                        <button class="btn btn-primary pull-right" type="submit">Login</button>
+                        <button class="btn btn-primary pull-right" type="submit">Se connecter</button>
                     </div>
                 </div>
                 <hr>
-                <h4>Forget your Password ?</h4>
+                <h4>Mot de passe oublié ?</h4>
                 <p>
-                    <a href="{{ url_for('public.reset_password') }}">Click here</a> to reset your password.
+                    <a href="{{ url_for('public.reset') }}">Clique ici</a> pour réinitialiser ton mot de passe.
                 </p>
-                <h4> Create a new count </h4>
+                <h4>Tu n'as pas de compte ?</h4>
                 <p>
-                <a href="{{ url_for('public.creation_compte') }}">Click here </a>to create a new count. </p>
+                <a href="{{ url_for('public.register') }}">Clique ici </a>pour t'enregistrer.</p>
             </form>
         </div>
         <!-- End Login Box -->
