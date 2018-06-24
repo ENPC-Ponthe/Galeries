@@ -45,8 +45,11 @@ class User(UserMixin, db.Model):
     password = db.Column(db.String(128), nullable=False)  # type mot de passe qui gère le hashage derrière
     email = db.Column(db.String(64), unique=True, nullable=False)
     groups = db.relationship('Group', secondary=membership, lazy='subquery', backref=db.backref('members', lazy=True))
+    admin = db.Column(db.Boolean, nullable=False, default=False)
+    email_confirmed = db.Column(db.Boolean, nullable=False, default=False)
+    created = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
 
-    def __init__(self, firstname=None, lastname=None, password=None, username=None, email=None, id=None):
+    def __init__(self, id=None, firstname=None, lastname=None, password=None, username=None, email=None, admin=None, email_confirmed=None):
         if id:
             self.id = id
         self.firstname = firstname
@@ -59,8 +62,12 @@ class User(UserMixin, db.Model):
             self.email = email
             if not username:
                 self.username = email.split("@")[0]
-
-        self.set_password(password)
+        if password:
+            self.set_password(password)
+        if admin:
+            self.admin = admin
+        if email_confirmed:
+            self.email_confirmed = email_confirmed
 
     def set_password(self, password):
         self.password = generate_password_hash(password)
@@ -218,8 +225,9 @@ class Event(Resource):
     cover_image_id = db.Column(db.Integer, db.ForeignKey('files.id', name='fk_events_file'), nullable=True)
     cover_image = db.relationship('File', backref='events', foreign_keys=[cover_image_id])
     private = db.Column(db.Boolean, nullable=False, default=False)
+    description = db.Column(db.String(1024), nullable=True)
 
-    def __init__(self, id=None, category=None, category_id=None, cover_image=None, cover_image_id=None, private=False, **kwargs):
+    def __init__(self, id=None, category=None, category_id=None, cover_image=None, cover_image_id=None, private=None, description=None, **kwargs):
         super().__init__(id=id, **kwargs)
         if category_id:
             self.category_id = category_id
@@ -229,8 +237,10 @@ class Event(Resource):
             self.cover_image_id = cover_image_id
         elif cover_image:
             self.cover_image = cover_image
-
-        self.private = private
+        if private:
+            self.private = private
+        if description:
+            self.description = description
 
     def __repr__(self):
         return '<Event {}>'.format(self.name)
@@ -276,9 +286,10 @@ class File(Resource):
     event_id = db.Column(db.Integer, db.ForeignKey('events.id', name='fk_files_event'), nullable=True)
     event = db.relationship('Event', backref='files', foreign_keys=[event_id])  # plusieurs files peuvent appartenir à l'event Campagne BDE mais d'années différentes
     filename = db.Column(db.String(64), unique=True, nullable=False)
+    pending = db.Column(db.Boolean, nullable=False, default=True)
     tags = db.relationship('Tag', secondary=file_tag, lazy='subquery', backref=db.backref('files', lazy=True))
 
-    def __init__(self, id=None, type=None, year=None, year_id=None, event=None, event_id=None, filename=None, tags=None, **kwargs):
+    def __init__(self, id=None, type=None, year=None, year_id=None, event=None, event_id=None, filename=None, pending=None, tags=None, **kwargs):
         super().__init__(id=id, **kwargs)
         self.type = type
         self.filename = filename
@@ -292,6 +303,8 @@ class File(Resource):
             self.event = event
         if tags:
             self.tags = tags
+        if pending:
+            self.pending = pending
 
     def __repr__(self):
         return '<File {}>'.format(self.filename)

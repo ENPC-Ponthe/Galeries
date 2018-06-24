@@ -9,3 +9,4 @@ Flask-Migrate
 # nose2 # test runner
 Flask-Script
 translitcodec # to slugify foreign letters like ü in ue
+git+git://github.com/PhilippeFerreiraDeSousa/Flask-Tus.git#egg=Flask-Tus-Ponthe

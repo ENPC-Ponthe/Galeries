@@ -7,30 +7,19 @@
             <!-- Main Column -->
             <div class="col-md-9">
                 <!-- Main Content -->
-                <div class="headline">
-                    <h2>Ajouter vos photos!!!</h2>
-                    {# on affiche les messages d'erreur puis les messages de succes #}
-                    {% for categorie in ['error', 'success'] %}
-                        {% with msgs = get_flashed_messages(category_filter=[categorie]) %}
-                            {% if msgs %}
-                                <div class="alert alert-{{ 'danger' if categorie == 'error' else 'success' }}">
-                                    <ul>
-                                        {% for m in msgs %}
-                                            <li>{{ m | safe }}</li>
-                                        {% endfor %}
-                                    </ul>
-                                </div>
-                            {% endif %}
-                        {% endwith %}
-                    {% endfor %}
+                <div>
+                  <div>
+                    <h1>Ajouter vos photos et vidéos !!!</h1>
+                    <h2>{{ year }} - {{ event }}</h2>
 
-                    <h1>Choisissez une image à Uploader :</h1>
+                    <!-- Target DOM node -->
+                    <div id="UppyDragDrop"></div>
 
-                    <form method="POST" enctype="multipart/form-data">
-                        <label for="fic">Fichier</label>
-                        <input type="file" name="photos" multiple>
-                        <input type="submit" value="Submit">
-                    </form>
+                    <!-- Progress bar -->
+                    <div class="UppyDragDrop-Progress"></div>
+
+                    <button class="UppyDragDrop-Upload">Upload</button>
+                  </div>
                 </div>
                 <!-- End Main Content -->
             </div>
@@ -38,4 +27,20 @@
     </div>
 </div>
 <div id="content-bottom-border" class="container"></div>
+<script src="https://transloadit.edgly.net/releases/uppy/v0.25.5/dist/uppy.min.js"></script>
+<script>
+    const uppyTwo = new Uppy.Core({debug: true, autoProceed: false})
+    uppyTwo
+      .use(Uppy.DragDrop, {target: '#UppyDragDrop'})
+      .use(Uppy.Tus, {endpoint: '{{ url_for('private.file-upload', year=year, event=event) }}'})
+      .use(Uppy.ProgressBar, {target: '.UppyDragDrop-Progress', hideAfterFinish: false})
+
+    var uploadBtn = document.querySelector('.UppyDragDrop-Upload')
+    uploadBtn.addEventListener('click', function () {
+      uppyTwo.upload()
+    })
+    uppy.on('complete', (result) => {
+      console.log(`Upload complete! We’ve uploaded these files: ${result.successful}`)
+    })
+</script>
 {% endblock %}
