@@ -1,19 +1,19 @@
 # -- coding: utf-8 --"
 
-from flask import Flask,render_template,request, flash, redirect, url_for, jsonify, Blueprint
+from . import private
+from flask import Flask,render_template,request, flash, redirect, url_for, jsonify
 from werkzeug import secure_filename
 from flask_mail import Message
 import os
-from flask_login import UserMixin, login_user , logout_user , current_user , login_required
+from flask_login import UserMixin, login_user, logout_user, current_user, login_required
 from itsdangerous import URLSafeTimedSerializer, SignatureExpired
 import string
 import random
 from .. import app, db
 from ..models import Year, Event, File, Category
+from ..file_helper import create_folder, is_image, is_video, ext
 import os
 from flask_tus_ponthe import tus_manager
-
-liste_char=string.ascii_letters+string.digits
 
 # dbconnexion = mysql.connector.connect(host="vps.enpc.org", port="7501", \
 #     user="enpc-ponthe",password="Ponthasm7gorique2017", \
@@ -22,33 +22,13 @@ liste_char=string.ascii_letters+string.digits
 UPLOAD_FOLDER = os.path.join(app.instance_path, 'club_folder', 'upload')
 UPLOAD_TMP_FOLDER = os.path.join(app.instance_path, 'upload_tmp')
 
-private = Blueprint('private', __name__)
-
 tm = tus_manager(private, upload_url='/file-upload', upload_folder=UPLOAD_TMP_FOLDER)
 
-def is_image(filename):
-    """ Renvoie True si le fichier possede une extension d'image valide. """
-    return '.' in filename and filename.rsplit('.', 1)[-1] in ('png', 'jpg', 'jpeg', 'gif', 'bmp')
-
-def is_video(filename):
-    """ Renvoie True si le fichier possede une extension de vidéo valide. """
-    return '.' in filename and filename.rsplit('.', 1)[-1] in ('mp4', 'avi')
-
-def createFolder(directory):
-    try:
-        if not os.path.exists(directory):
-            os.makedirs(directory)
-    except OSError:
-        print('Error: Creating directory. {}'.format(directory))
-
 @tm.upload_file_handler
-def upload_file_hander(upload_file_path, raw_filename, year_value, event_name):
-    _, extension = raw_filename.rsplit('.', 1)
-    slug = "".join([liste_char[random.randint(0,len(liste_char)-1)] for i in range(20)])
-    filename = "{}.{}".format(slug, extension)
+def upload_file_hander(upload_file_path, filename, year_value, event_name):
     event = Event.query.filter_by(name=event_name).one()
     year = Year.query.filter_by(value=year_value).one()
-    new_file = File(event=event, year=year, slug=slug, filename=filename, author=current_user, pending=True)
+    new_file = File(event=event, year=year, extension=ext(filename), author=current_user, pending=True)
 
     if is_image(filename):
         new_file.type = "IMAGE"
@@ -58,7 +38,7 @@ def upload_file_hander(upload_file_path, raw_filename, year_value, event_name):
         raise ValueError("File extension not supported")
 
     gallery_folder = os.path.join(UPLOAD_FOLDER, str(year_value), str(event_name))
-    createFolder(gallery_folder)
+    create_folder(gallery_folder)
     os.rename(upload_file_path, os.path.join(gallery_folder, filename))
     db.session.add(new_file)
     db.session.commit()
@@ -67,8 +47,6 @@ def upload_file_hander(upload_file_path, raw_filename, year_value, event_name):
 @login_required
 def before_request():
     pass
-    # if g.user.role != ROLE_ADMIN:     # code pour restreindr un blueprint aux admins ;)
-    #     abort(401)
 
 def render_events_template(template, **kwargs):
     dict_events = { year: Event.query.filter(File.query.filter_by(year=year, event_id=Event.id).exists()).all() for year in Year.query.order_by(Year.value).all() }

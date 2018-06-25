@@ -9,18 +9,22 @@ services:
 #      - source: web-flask
 #        target: /app/instance/ponthe.cfg
     volumes:
-     - club_folder:/app/instance/club_folder
+     - club-folder:/app/instance/club_folder
     depends_on:
       - db
       - sshd  # necessary for the first time : the volume must be created with the content of the mounting point in sshd first and not the fixtures data of the web container !
     restart: always
 
   sshd:
-    build: ./sshd
+    build:
+      context: ./sshd
+      args:
+        - SSH_USERNAME
+        - SSH_PASSWORD
     ports:
       - "7502:22"
     volumes:
-     - club_folder:/home/ponthe
+     - club-folder:/home/ponthe
     restart: always
 
   db:
@@ -31,6 +35,7 @@ services:
     volumes:
      - db-data:/var/lib/mysql
     environment:
+      - DATA_PATH_HOST=/var/lib/mysql
       - MYSQL_RANDOM_ROOT_PASSWORD=yes
       - MYSQL_DATABASE=${DATABASE_NAME}
       - MYSQL_USER=${DATABASE_USER}
@@ -43,14 +48,12 @@ services:
       - "7500:80"
     depends_on:
       - db
-    environment:
-      - MYSQL_ROOT_PASSWORD=bogus
     restart: always
 
 volumes:
   db-data:
     driver: local
-  club_folder:
+  club-folder:
     driver: local
 
 #configs:
