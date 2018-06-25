@@ -1,4 +1,4 @@
-from flask_login import UserMixin
+from flask_login import UserMixin, current_user
 from datetime import datetime
 from werkzeug.security import generate_password_hash, check_password_hash
 import translitcodec
@@ -6,8 +6,10 @@ import codecs
 import enum
 from . import db
 import re
+import string, random
 
 _punct_re = re.compile(r'[\t !"#$%&\'()*\-/<=>?@\[\\\]^_`{|},.]+')  #   Les slug DSI enlève les ' au lieu de les remplacer par un -
+liste_char=string.ascii_letters+string.digits
 
 def slugify(text, delim=u'-'):
     """Generates an ASCII-only slug."""
@@ -108,8 +110,10 @@ class Resource(TimestampMixin, db.Model):
             self.set_slug(name)
         if author_id:
             self.author_id = author_id
-        else:
+        elif author:
             self.author = author
+        #elif current_user is not None and current_user.is_authenticated:
+        #    self.author = current_user
 
     def set_slug(self, name):
         self.slug = slugify(name)
@@ -219,7 +223,7 @@ class Event(Resource):
     # exemple de nom de l'event : Campagne BDE qui peut être sur plusieurs années
 
     id = db.Column(db.Integer, db.ForeignKey('resources.id', onupdate="CASCADE", ondelete="CASCADE"), primary_key=True)
-    category_id = db.Column(db.Integer, db.ForeignKey('categories.id', name='fk_events_category'), nullable=False)
+    category_id = db.Column(db.Integer, db.ForeignKey('categories.id', name='fk_events_category'), nullable=True)
     category = db.relationship('Category', backref='events', foreign_keys=[category_id])
     # dépendance circulaire entre table à migrer séparemment
     cover_image_id = db.Column(db.Integer, db.ForeignKey('files.id', name='fk_events_file'), nullable=True)
@@ -258,6 +262,8 @@ class Year(Resource):
     cover_image = db.relationship('File', backref='years', foreign_keys=[cover_image_id])
 
     def __init__(self, value=None, id=None, cover_image=None, cover_image_id=None, **kwargs):
+        if "slug" not in kwargs:
+            kwargs["slug"] = str(value)
         super().__init__(id=id, **kwargs)
         self.value = value
         if cover_image_id:
@@ -273,7 +279,7 @@ file_tag = db.Table('file_tag',
     db.Column('file_id', db.Integer, db.ForeignKey('files.id', name='fk_file_tags_file'), primary_key=True)
 )
 
-class File(Resource):
+class File(Resource):   # the default slug is a 20-letter-string, just specify filename or extension
     __tablename__ = 'files'
     __mapper_args__ = {
         'polymorphic_identity': 'file'
@@ -289,10 +295,15 @@ class File(Resource):
     pending = db.Column(db.Boolean, nullable=False, default=True)
     tags = db.relationship('Tag', secondary=file_tag, lazy='subquery', backref=db.backref('files', lazy=True))
 
-    def __init__(self, id=None, type=None, year=None, year_id=None, event=None, event_id=None, filename=None, pending=None, tags=None, **kwargs):
+    def __init__(self, id=None, type=None, year=None, year_id=None, event=None, event_id=None, filename=None, extension=None, pending=None, tags=None, **kwargs):
+        if "slug" not in kwargs:
+            kwargs["slug"] = "".join([liste_char[random.randint(0,len(liste_char)-1)] for i in range(20)])
         super().__init__(id=id, **kwargs)
         self.type = type
-        self.filename = filename
+        if filename:
+            self.filename = filename
+        elif extension:
+            self.filename = "{}.{}".format(self.slug, extension)
         if year_id:
             self.year_id = year_id
         elif year:

@@ -7,6 +7,7 @@ from flask_script import Manager
 from ponthe import app
 from ponthe import db
 from ponthe.models import *
+from ponthe.admin import views as admin_views
 import subprocess, os
 
 manager = Manager(app)
@@ -68,7 +69,7 @@ class Fixtures():
         author=user_ponthe,
         category=category_sports,
         private=False,
-        description="Tournois sportif majeur de la vie des écoles d'ingénieur ! Et les Ponts ont fait pas mal de perf' !"
+        description="Tournoi sportif majeur de la vie des écoles d'ingénieur ! Et les Ponts ont fait pas mal de perf' !"
     )
 
     year_2016 = Year(
@@ -121,7 +122,7 @@ class Fixtures():
         author=user_philippe,
         year=year_2017,
         event=event_coupe_de_l_X,
-        filename="EKMRZkewtLHvD01TQXrU.bmp",
+        filename="EKMRZkewtLHvD01TQXrU.jpg",
         pending=False
     )
     file5 = File(
@@ -131,11 +132,21 @@ class Fixtures():
         author=user_philippe,
         year=year_2017,
         event=event_coupe_de_l_X,
-        filename="8WsJH3V5D2nY3JxvkEJY.bmp",
+        filename="8WsJH3V5D2nY3JxvkEJY.png",
+        pending=True
+    )
+    file5 = File(
+        type="IMAGE",
+        slug="b4iryeMgCfPsN7Egq8Z9",
+        name="Bouilla !",
+        author=user_ponthe,
+        year=year_2017,
+        event=event_coupe_de_l_X,
+        filename="b4iryeMgCfPsN7Egq8Z9.jpg",
         pending=True
     )
 
-@manager.command
+@manager.command    # ponthe/manager.py load_fixtures
 def load_fixtures():
     print("NEVER DO THIS IN PRODUCTION !!!")
     if input("Are you sure ? The database and the files will be erased ! [y/N] ") in {"y", "Y", "yes", "Yes"}:
@@ -148,12 +159,15 @@ def load_fixtures():
             db.session.commit()
         print("Overwriting files...")
         os.chdir(os.path.dirname(os.path.abspath(__file__)))
-        subprocess.call(["mkdir", "-p", "../instance/club_folder/uploads"])
-        subprocess.call(["rm", "-R", "../instance/club_folder/uploads"])
-        subprocess.call(["cp", "-Ru", "../instance/test/", "../instance/club_folder/uploads"])
+        subprocess.call(["rm", "-R", "../instance/club_folder"])
+        subprocess.call(["cp", "-R", "../instance/test/", "../instance/club_folder"])
 
     else:
         print("Exiting")
+
+@manager.command    # ponthe/manager.py batch_upload
+def batch_upload():
+    admin_views.batch_upload()
 
 
 if __name__ == "__main__":
