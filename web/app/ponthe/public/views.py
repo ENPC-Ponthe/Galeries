@@ -1,7 +1,7 @@
 # -- coding: utf-8 --"
 
-from flask import Flask,render_template,request, flash, redirect, url_for, jsonify, Blueprint, abort
-from werkzeug import secure_filename
+from . import public
+from flask import Flask, render_template, request, flash, redirect, url_for, abort
 from urllib.parse import urlparse, urljoin
 from flask_mail import Message
 import os
@@ -15,8 +15,6 @@ from datetime import datetime
 from sqlalchemy.exc import IntegrityError
 
 serializer=URLSafeTimedSerializer(app.secret_key)
-
-public = Blueprint('public', __name__)
 
 def getHome():
     return redirect('index')
