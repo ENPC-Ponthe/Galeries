@@ -6,6 +6,7 @@ from flask_script import Manager
 
 from ponthe import app
 from ponthe import db
+from ponthe.file_helper import create_folder, delete_folder, copy_folder
 from ponthe.models import *
 from ponthe.admin import views as admin_views
 import subprocess, os
@@ -32,8 +33,8 @@ class Fixtures():
         username="ponthe.enpc",
         password="password",
         email="ponthe@liste.enpc.fr",
-        admin=True,
-        email_confirmed=False
+        admin=False,
+        email_confirmed=True
     )
 
     category_sports = Category(
@@ -159,11 +160,15 @@ def load_fixtures():
             db.session.commit()
         print("Overwriting files...")
         os.chdir(os.path.dirname(os.path.abspath(__file__)))
-        subprocess.call(["rm", "-R", "../instance/club_folder"])
-        subprocess.call(["cp", "-R", "../instance/test/", "../instance/club_folder"])
-
+        # Can't rm club_folder in docker because a volume is mounted on it : busy
+        create_folder("../instance/club_folder")
+        create_folder("../instance/upload_tmp")
+        delete_folder("../instance/club_folder/waiting_zone")
+        delete_folder("../instance/club_folder/uploads")
+        copy_folder("../instance/test/waiting_zone", "../instance/club_folder/waiting_zone")
+        copy_folder("../instance/test/uploads", "../instance/club_folder/uploads")
     else:
-        print("Exiting")
+        print("Abandon, exiting")
 
 @manager.command    # ponthe/manager.py batch_upload
 def batch_upload():
