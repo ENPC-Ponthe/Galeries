@@ -32,7 +32,7 @@ flask db upgrade
 ```
 
 ### Fixtures
-Supprimer la BDD et charges les fixtures de tous les fichiers YAML de *web/fixtures/* :
+Supprimer la BDD, les images / photos et charger les fixtures :
 ```
 cd web/app
 ponthe/manager.py load_fixtures
@@ -66,7 +66,7 @@ sudo systemctl reload nginx
 
 Charger les fixtures dans le container :
 ```
-docker run -it pontheenpcorg_web python ponthe/manager.py load_fixtures   # not working :'(
+docker run -it pontheenpcorg_web_1 python ponthe/manager.py load_fixtures   # not working :'(
 ```
 
 ## Ajouter des fichiers aux galeries :

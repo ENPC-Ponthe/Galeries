@@ -6,20 +6,26 @@
     <div class="container background-white">
         <div class="row margin-vert-30">
             <div class="col-md-12">
-                <h2>{{ year_slug }} - {{ event_name }} </h2>
+                <h2>{{ category.name }}</h2>
+                <p>
+                    {{ category.description }}
+                </p>
             </div>
         </div>
         <div class="row">
             <div class="col-md-12 portfolio-group no-padding">
-                {% for filename in filenames %}
+                {% for event, year_slug, filename in liste_events_annees %}
                 <!-- Portfolio Item -->
                 <div class="col-md-3 portfolio-item margin-bottom-40 design">
                     <div>
-                        <figure>
-                            <a href="{{ url_for('uploads', filename='{}/{}/{}'.format(year_slug, event_name, filename)) }}">
-                                <img src="{{ url_for('uploads', filename='{}/{}/{}'.format(year_slug, event_name, filename)) }}">
-                            </a>
-                        </figure>
+                        <a href= {{ url_for('private.event_gallery', year_slug=year_slug, event_slug=event.slug) }} >
+                            <figure>
+                                <img src="{{ url_for('uploads', filename='{}/{}/{}'.format(year_slug, event.name, filename)) }}">
+                                <figcaption>
+                                    <h3 class="margin-top-20">{{ event.name }} - {{ year_slug }}</h3>
+                                </figcaption>
+                            </figure>
+                        </a>
                     </div>
                 </div>
                 {% endfor %}

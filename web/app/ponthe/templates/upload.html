@@ -4,24 +4,12 @@
 <div id="content">
     <div class="container background-white">
         <div class="row margin-vert-30">
-            <!-- Main Column -->
-            <div class="col-md-9">
-                <!-- Main Content -->
-                <div>
-                  <div>
-                    <h1>Ajouter vos photos et vidéos !!!</h1>
-                    <h2>{{ year }} - {{ event }}</h2>
-
-                    <!-- Target DOM node -->
-                    <div id="UppyDragDrop"></div>
-
-                    <!-- Progress bar -->
-                    <div class="UppyDragDrop-Progress"></div>
-
-                    <button class="UppyDragDrop-Upload">Upload</button>
-                  </div>
-                </div>
-                <!-- End Main Content -->
+            <div class="headline">
+                <h1>Ajouter vos photos et vidéos !!!</h1>
+                <h2>{{ year }} - {{ event }}</h2>
+            </div>
+            <div class="col-md-12">
+                <div id="UppyDashboard"></div>
             </div>
         </div>
     </div>
@@ -29,18 +17,30 @@
 <div id="content-bottom-border" class="container"></div>
 <script src="https://transloadit.edgly.net/releases/uppy/v0.25.5/dist/uppy.min.js"></script>
 <script>
-    const uppyTwo = new Uppy.Core({debug: true, autoProceed: false})
+    const uppyTwo = new Uppy.Core({
+        debug: true,
+        autoProceed: false,
+        restrictions: {
+            maxFileSize: 1000000000,
+            maxNumberOfFiles: 10,
+            minNumberOfFiles: 1,
+            allowedFileTypes: ['image/*', 'video/*']
+        }
+    });
     uppyTwo
-      .use(Uppy.DragDrop, {target: '#UppyDragDrop'})
-      .use(Uppy.Tus, {endpoint: '{{ url_for('private.file-upload', year=year, event=event) }}'})
-      .use(Uppy.ProgressBar, {target: '.UppyDragDrop-Progress', hideAfterFinish: false})
-
-    var uploadBtn = document.querySelector('.UppyDragDrop-Upload')
-    uploadBtn.addEventListener('click', function () {
-      uppyTwo.upload()
-    })
-    uppy.on('complete', (result) => {
-      console.log(`Upload complete! We’ve uploaded these files: ${result.successful}`)
-    })
+      .use(Uppy.Dashboard, {
+          inline: true,
+          target: '#UppyDashboard',
+          replaceTargetContent: true,
+          showProgressDetails: true,
+          note: "Images et videos seulement, 1–10 fichiers, jusqu'à 1 GB",
+          height: 470,
+          metaFields: [
+              { id: 'name', name: 'Nom', placeholder: 'Match de hand' },
+              { id: 'caption', name: 'Légende', placeholder: "Description du contenu"}
+          ],
+          browserBackButtonClose: true
+      })
+      .use(Uppy.Tus, { endpoint: '{{ url_for('private.file-upload', year=year, event=event) }}' });
 </script>
 {% endblock %}
