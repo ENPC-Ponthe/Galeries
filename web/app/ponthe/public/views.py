@@ -151,7 +151,7 @@ def registering(token):
     db.session.commit()
     return render_template('mail_confirmation.html',
         title="Compte validé",
-        body='Rend toi sur vite sur la <a href="{}">page de connexion</a> !'.format(url_for('public.login'))
+        body='Rend toi vite sur la <a href="{}">page de connexion</a> !'.format(url_for('public.login'))
     )
 
 @public.route('/reset', methods=['GET','POST'])
