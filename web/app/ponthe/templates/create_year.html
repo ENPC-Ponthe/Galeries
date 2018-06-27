@@ -12,7 +12,7 @@
                     <h2>Créer une nouvelle année</h2>
                     <!-- Contact Form -->
                     <form action="" method="post">
-                        <label>Entrer la nouvelle année</label>
+                        <label>Nouvelle année</label>
                         {% with msgs = get_flashed_messages(category_filter=['error']) %}
                             {% if msgs %}
                                 <div class="alert alert-danger">
@@ -26,11 +26,11 @@
                         {% endwith %}
                         <div class="row margin-bottom-20">
                             <div class="col-md-6 col-md-offset-0">
-                                <input type="text" class="form-control" name="new_annee" id="new_annee">
+                                <input required type="text" class="form-control" name="value">
                             </div>
                         </div>
                         <p>
-                            <button type="submit" class="btn btn-primary" value="Envoyer">Ajouter Nouvelle Année</button>
+                            <button type="submit" class="btn btn-primary">Ajouter l'année</button>
                         </p>
                     </form>
                 <!-- End Main Content -->

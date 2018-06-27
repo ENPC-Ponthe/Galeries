@@ -44,7 +44,7 @@ class User(UserMixin, db.Model):
     firstname = db.Column(db.String(64), nullable=False)
     lastname = db.Column(db.String(64), nullable=False)
     username = db.Column(db.String(64), unique=True, nullable=False)
-    password = db.Column(db.String(128), nullable=False)  # type mot de passe qui gère le hashage derrière
+    password = db.Column(db.String(128), nullable=False)
     email = db.Column(db.String(64), unique=True, nullable=False)
     groups = db.relationship('Group', secondary=membership, lazy='subquery', backref=db.backref('members', lazy=True))
     admin = db.Column(db.Boolean, nullable=False, default=False)
