@@ -7,55 +7,30 @@
         <div class="row margin-vert-30">
             <!-- Main Column -->
             <div class="col-md-9">
-                <!-- Main Content -->
                 <div class="headline">
                     <h2>Réserver du matériel</h2>
                 </div>
-                <p> Formulaire de réservation </p>
                 <br>
-                <!-- Contact Form -->
                 <form action="" method="post">
-                    <label>Nom</label>
+                    <label>Matériel à emprunter</label>
                     <div class="row margin-bottom-20">
                         <div class="col-md-6 col-md-offset-0">
-                            <input type="text" class="form-control" name="nom" id="nom" >
-                        </div>
-                    </div>
-                    <label>Prénom</label>
-                    <div class="row margin-bottom-20">
-                        <div class="col-md-6 col-md-offset-0">
-                            <input type="text" class="form-control" name="prenom" id="prenom" >
-                        </div>
-                    </div>
-                    <label>Email
-                        <span class="color-red">*</span>
-                    </label>
-                    <div class="row margin-bottom-20">
-                        <div class="col-md-6 col-md-offset-0">
-                            <input class="form-control" type="text" name= "email" id="email">
-                        </div>
-                    </div>
-                    <label> Matériel à emprunter </label>
-                    <div class="row margin-bottom-20">
-                        <div class="col-md-6 col-md-offset-0">
-                            <SELECT name="nom" size="1">
-                                <OPTION>Appareil photo</OPTION>
-                                <OPTION>Trépied</OPTION>
-                            </SELECT>
+                            <select name="object" class="form-control" size="1">
+                                <option>Appareil photo</option>
+                                <option>Trépied</option>
+                            </select>
                         </div>
                     </div>
                     <label>Message</label>
                     <div class="row margin-bottom-20">
                         <div class="col-md-8 col-md-offset-0">
-                            <textarea rows="8" class="form-control" name = "message" id="message"></textarea>
+                            <textarea rows="8" class="form-control" name="message" id="message"></textarea>
                         </div>
                     </div>
                     <p>
-                        <button type="submit" class="btn btn-primary" value="Envoyer">Send Message</button>
+                        <button type="submit" class="btn btn-primary" value="Envoyer">Envoyer</button>
                     </p>
                 </form>
-                <!-- End Contact Form -->
-                <!-- End Main Content -->
             </div>
             <!-- End Main Column -->
             <!-- Side Column -->
