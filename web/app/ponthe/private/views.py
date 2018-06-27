@@ -26,11 +26,11 @@ UPLOAD_TMP_FOLDER = os.path.join(app.instance_path, 'upload_tmp')
 tm = tus_manager(private, upload_url='/file-upload', upload_folder=UPLOAD_TMP_FOLDER)
 
 def get_filenames(year_slug, event_slug):
-    files = File.query.join(File.year).join(File.event).filter(Year.slug == year_slug, Event.slug == event_slug).all() # à remplacer par les slugs
+    files = File.query.join(File.year).join(File.event).filter(Year.slug == year_slug, Event.slug == event_slug).all()
     return [file.filename for file in files]
 
 def get_moderation_filenames(year_slug, event_slug):    # retourne la liste des fichiers non-modérés et la liste des fichiers modérés
-    files = File.query.join(File.year).join(File.event).filter(Year.slug == year_slug, Event.slug == event_slug).all() # à remplacer par les slugs
+    files = File.query.join(File.year).join(File.event).filter(Year.slug == year_slug, Event.slug == event_slug).all()
     return [file.filename for file in files if file.pending], [file.filename for file in files if not file.pending]
 
 @tm.upload_file_handler
@@ -139,7 +139,7 @@ def create_event():
         name = request.form['name']
         category_name = request.form['category_name']
         if name:
-            new_event = Event(name=name)
+            new_event = Event(name=name, author=current_user)
             if category_name:
                 new_event.category = Category.query.filter_by(name=category_name).one()
             db.session.add(new_event)
@@ -156,7 +156,7 @@ def create_annee():
     if request.method == 'POST':
         value = request.form['value']
         if new_year_value:
-            new_year = Event(value=value)
+            new_year = Event(value=value, author=current_user)
             db.session.add(new_year)
             db.session.commit()
             return redirect('/create-event')

@@ -66,9 +66,9 @@ class User(UserMixin, db.Model):
                 self.username = email.split("@")[0]
         if password:
             self.set_password(password)
-        if admin:
+        if admin is not None:
             self.admin = admin
-        if email_confirmed:
+        if email_confirmed is not None:
             self.email_confirmed = email_confirmed
 
     def set_password(self, password):
@@ -112,7 +112,7 @@ class Resource(TimestampMixin, db.Model):
             self.author_id = author_id
         elif author:
             self.author = author
-        #elif current_user is not None and current_user.is_authenticated:
+        #elif current_user is not None and current_user.is_authenticated:   # doesn't work
         #    self.author = current_user
 
     def set_slug(self, name):
@@ -241,7 +241,7 @@ class Event(Resource):
             self.cover_image_id = cover_image_id
         elif cover_image:
             self.cover_image = cover_image
-        if private:
+        if private is not None:
             self.private = private
         if description:
             self.description = description
@@ -314,7 +314,7 @@ class File(Resource):   # the default slug is a 20-letter-string, just specify f
             self.event = event
         if tags:
             self.tags = tags
-        if pending:
+        if pending is not None:
             self.pending = pending
 
     def __repr__(self):
