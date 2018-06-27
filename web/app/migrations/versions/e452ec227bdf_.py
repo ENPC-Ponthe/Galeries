@@ -22,10 +22,6 @@ def upgrade():
                existing_type=mysql.TINYINT(display_width=1),
                type_=sa.Boolean(),
                existing_nullable=False)
-    op.alter_column('users', 'password',
-               existing_type=sa.String(length=64),
-               type_=sa.Boolean(128),
-               existing_nullable=False)
     op.create_foreign_key(None, 'groups', 'resources', ['id'], ['id'], onupdate='CASCADE', ondelete='CASCADE')
     # ### end Alembic commands ###
 
@@ -36,9 +32,5 @@ def downgrade():
     op.alter_column('events', 'private',
                existing_type=sa.Boolean(),
                type_=mysql.TINYINT(display_width=1),
-               existing_nullable=False)
-    op.alter_column('users', 'password',
-               existing_type=sa.String(length=128),
-               type_=sa.Boolean(64),
                existing_nullable=False)
     # ### end Alembic commands ###

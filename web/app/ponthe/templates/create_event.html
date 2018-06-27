@@ -13,6 +13,24 @@
                     <!-- Contact Form -->
                     <form action="" method="post">
                         <label>Nom</label>
+                        <div class="row margin-bottom-20">
+                            <div class="col-md-6 col-md-offset-0">
+                                <input required type="text" class="form-control" name="name">
+                            </div>
+                        </div>
+                        <label>Categorie</label>
+                        <div class="row margin-bottom-20">
+                            <div class="col-md-6 col-md-offset-0">
+                                <select name="category_name">
+                                    {% for category_name in categories %}
+                                        <option value="{{ category_name }}">{{ category_name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <p>
+                            <button type="submit" class="btn btn-primary">Ajouter l'événement</button>
+                        </p>
                         {% with msgs = get_flashed_messages(category_filter=['error']) %}
                             {% if msgs %}
                                 <div class="alert alert-danger">
@@ -24,24 +42,6 @@
                                 </div>
                             {% endif %}
                         {% endwith %}
-                        <div class="row margin-bottom-20">
-                            <div class="col-md-6 col-md-offset-0">
-                                <input type="text" class="form-control" name="new_event" id="new_event">
-                            </div>
-                        </div>
-                        <label>Categorie</label>
-                        <div class="row margin-bottom-20">
-                            <div class="col-md-6 col-md-offset-0">
-                                <select name="categorie">
-                                    {% for i in liste_annees %}
-                                        <option value={{ i[0] }}>{{ i[0] }}</option>
-                                    {% endfor %}
-                                </select>
-                            </div>
-                        </div>
-                        <p>
-                            <button type="submit" class="btn btn-primary" value="Envoyer">Ajouter Evenement</button>
-                        </p>
                     </form>
                 </div>
             </div>

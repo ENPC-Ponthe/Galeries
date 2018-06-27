@@ -4,15 +4,12 @@ services:
   web:
     build: ./web
     ports:
-      - 7000:80
-#    configs:
-#      - source: web-flask
-#        target: /app/instance/ponthe.cfg
+      - "127.0.0.1:7000:80"
     volumes:
      - club-folder:/app/instance/club_folder
     depends_on:
       - db
-      - sshd  # necessary for the first time : the volume must be created with the content of the mounting point in sshd first and not the fixtures data of the web container !
+      - sshd
     restart: always
 
   sshd:
@@ -32,13 +29,11 @@ services:
     env_file: .env
     image: mysql
     command: mysqld --default-authentication-plugin=mysql_native_password # Sinon "Authentication plugin 'caching_sha2_password' cannot be loaded
-    ports:
-      - "7501:3306"
     volumes:
      - db-data:/var/lib/mysql
     environment:
       - DATA_PATH_HOST=/var/lib/mysql
-      - MYSQL_RANDOM_ROOT_PASSWORD=yes
+      - MYSQL_ROOT_PASSWORD=${DATABASE_ROOT_PASSWORD}
       - MYSQL_DATABASE=${DATABASE_NAME}
       - MYSQL_USER=${DATABASE_USER}
       - MYSQL_PASSWORD=${DATABASE_PASSWORD}

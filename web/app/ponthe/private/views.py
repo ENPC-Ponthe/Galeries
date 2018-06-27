@@ -1,7 +1,7 @@
 # -- coding: utf-8 --"
 
 from . import private
-from flask import Flask,render_template,request, flash, redirect, url_for, jsonify
+from flask import Flask, render_template, request, flash, redirect, url_for, jsonify
 from werkzeug import secure_filename
 from flask_mail import Message
 import os
@@ -85,9 +85,9 @@ def materiel() :    # TODO
 def dashboard():
     if request.method == 'POST':
         if request.form['option']=='create_event':
-            return redirect('/create_event')
+            return redirect('/create-event')
         if request.form['option']=='create_year':
-            return redirect('/create_year')
+            return redirect('/create-year')
         if request.form['option']=='batch_upload':
             if current_user.admin:
                 batch_upload()
@@ -136,28 +136,33 @@ def create_event():
     liste_annees = [year.value for year in Year.query.all()]
 
     if request.method == 'POST':
-        new_event_name=request.form['new_event']
-        if new_event_name:
-            new_event = Event(name=new_event_name)
+        name = request.form['name']
+        category_name = request.form['category_name']
+        if name:
+            new_event = Event(name=name)
+            if category_name:
+                new_event.category = Category.query.filter_by(name=category_name).one()
             db.session.add(new_event)
             db.session.commit()
             return redirect('/dashboard')
         else:
             flash("Veuillez indiquer le nom du nouvel événement","error")
-    return render_events_template('create_event.html', liste_annees=liste_annees)
+
+    categories = [category.name for category in Category.query.all()]
+    return render_events_template('create_event.html', categories=categories)
 
 @private.route('/create-year', methods=['GET', 'POST'])
 def create_annee():
     if request.method == 'POST':
-        new_year_value = request.form['new_annee']
+        value = request.form['value']
         if new_year_value:
-            new_year = Event(name=new_year_value)
+            new_year = Event(value=value)
             db.session.add(new_year)
             db.session.commit()
-            return redirect('/dashboard')
+            return redirect('/create-event')
     else:
         flash("Veuillez indiquer la nouvelle année","error")
-    return render_events_template('create_annee.html')
+    return render_events_template('create_year.html')
 
 @private.route('/membres')
 def membres():
