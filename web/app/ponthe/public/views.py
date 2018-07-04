@@ -1,22 +1,20 @@
 # -- coding: utf-8 --"
 
-from flask import Flask,render_template,request, flash, redirect, url_for, jsonify, Blueprint
-from werkzeug import secure_filename
+from . import public
+from flask import Flask, render_template, request, flash, redirect, url_for, abort
 from urllib.parse import urlparse, urljoin
-from flask_mail import Mail, Message
+from flask_mail import Message
 import os
 from flask_login import LoginManager, login_user, logout_user, current_user, login_required
-from itsdangerous import URLSafeTimedSerializer, SignatureExpired
+from itsdangerous import URLSafeTimedSerializer, SignatureExpired, BadSignature
 import string
 import random
-from .. import app, db, login_manager
+from .. import app, db, login_manager, mail
 from ..models import User
+from datetime import datetime
+from sqlalchemy.exc import IntegrityError
 
 serializer=URLSafeTimedSerializer(app.secret_key)
-
-public = Blueprint('public', __name__)
-
-user= User()
 
 def getHome():
     return redirect('index')
@@ -68,11 +66,21 @@ def login():
 
     email = request.form['email']
     password = request.form['password']
-    logging_user = User.query.filter_by(email=email, password=password).first()
+    logging_user = User.query.filter_by(email=email).first()
 
-    if logging_user is not None:
+    if logging_user is None:
+        flash("Identifiants incorrectes", "error")
+        return getLoginPage()
+    if not logging_user.email_confirmed:
+        if (datetime.utcnow()-logging_user.created).total_seconds() > 3600:
+            db.session.delete(logging_user)
+            db.session.commit()
+        else:
+            flash("Compte en attente de confirmation par email", "error")
+            return getLoginPage()
+    if logging_user.check_password(password):
         login_user(logging_user)
-        print(logging_user)
+        print("Logging user :", logging_user)
         next = get_redirect_target()
         return redirect(next) if next and urlparse(next).path!='/logout' else getHome()
     else:
@@ -80,57 +88,114 @@ def login():
         return getLoginPage()
 
 
-@public.route('/creation_compte', methods=['GET', 'POST'])
-def creation_compte():
+@public.route('/register', methods=['GET', 'POST'])
+def register():
     if request.method == 'POST':
-        user.lastname = request.form['nom']
-        user.firstname = request.form['prenom']
-        user.email = request.form['email']
-        user.password = request.form['password']
-        user.CMDP = request.form['confirmation_password']
-        if user.password == user.CMDP :
-            token = serializer.dumps(user.email)
-            msg = Message('Confirm Email', sender='clubpontheenpc@gmail.com', recipients=[user.email] )
-            link = url_for('confirm_email', token=token, _external=True)
-            msg.body = 'Votre lien est {}'.format(link)
-            mail.send(msg)
-            return render_template('mail_confirmation.html', email=user.email)
+        if request.form['password'] != request.form['confirmation_password']:
+            flash("Les deux mots de passe ne correspondent pas", "error")
         else:
-            flash("Les deux mots de passe ne concordent pas", "error")
-    return render_template('creation_compte.html')
+            new_user=User(
+                lastname=request.form['lastname'],
+                firstname=request.form['firstname'],
+                username=request.form['local_email'],
+                password=request.form['password'],
+                admin=False,
+                email_confirmed=False
+            )
+            db.session.add(new_user)
+            try:
+                db.session.commit()
+            except IntegrityError:
+                db.session.rollback()
+                existing_user = User.query.filter_by(username=new_user.username).first()
 
-@public.route('/reset_password', methods =['GET','POST'])
-def reset_password():
+                if (datetime.utcnow()-existing_user.created).total_seconds() > 3600:
+                    db.session.delete(existing_user)
+                    db.session.commit()
+                    db.session.add(new_user)
+                    db.session.commit()
+                else:
+                    flash("Il existe déjà un compte pour cet adresse email", "error")
+                    return render_template('creation_compte.html')
+            token = serializer.dumps(new_user.id)
+            msg = Message('Confirme la validation de ton compte Ponthé', sender='Ponthé <no-reply@ponthe.enpc.org>', recipients=[new_user.email] )
+            link = url_for('public.registering', token=token, _external=True)
+            print(link)
+            msg.body = 'Clique sur le lien de confirmation suivant sous 24h pour activer ton compte : {}'.format(link)
+            mail.send(msg)
+
+            flash("Email de confirmation envoyé à {}".format(new_user.email), "success")
+
+    return render_template('register.html')
+
+
+@public.route('/register/<token>')
+def registering(token):
+    try :
+        user_id = serializer.loads(token, max_age=3600)
+    except BadSignature:
+        abort(404)
+    except SignatureExpired :
+        return render_template('mail_confirmation.html',
+            title="Erreur",
+            body='Le token est expiré. Tu as dépassé le délai de 24h.'
+        )
+
+    user = User.query.get(user_id)
+    if user is None:
+        return render_template('mail_confirmation.html',
+            title="Erreur - Aucun utilisateur correspondant",
+            body='Réitère la procédure de création de compte.'
+        )
+    user.email_confirmed = True
+    db.session.commit()
+    return render_template('mail_confirmation.html',
+        title="Compte validé",
+        body='Rend toi vite sur la <a href="{}">page de connexion</a> !'.format(url_for('public.login'))
+    )
+
+@public.route('/reset', methods=['GET','POST'])
+def reset():
     if request.method == 'POST' :
-        user.email = request.form['email']
-        user.password = request.form['password']
-        token = serializer.dumps(user.email)
-        msg = Message('Reset Email' , sender='clubpontheenpc@gmail.com', recipients=[user.email])
-        link = url_for('reset_email', token=token, _external=True)
-        msg.body = 'Votre lien est {}'.format(link)
-        mail.send(msg)
-        return render_template('mail_confirmation.html', email=user.email)
-    return render_template('reset_password.html')
+        email = request.form['email']
+        user = User.query.filter_by(email=email).first()
+        if user is not None and user.email_confirmed:
+            token = serializer.dumps(user.id)
+            msg = Message('Réinitialise ton mot de passe Ponthé' , sender='Ponthé <no-reply@ponthe.enpc.org>', recipients=[email])
+            link = url_for('public.resetting', token=token, _external=True)
+            # put token to user entity to retrive it in confirm_email route
+            msg.body = 'Pour réinitialiser ton mot de passe, clique sur le lien suivant : {}'.format(link)
+            mail.send(msg)
+        flash("Si un compte est associé à cette adresse email, un email t'as été envoyé", "success")
+    return render_template('reset.html')
 
-@public.route('/reset_email/<token>')   # Never finished
-def reset_email(token):
+@public.route('/reset/<token>', methods=['GET','POST'])
+def resetting(token):
     try :
-        email = serializer.loads(token, max_age=300)    # what !?
-        reset_user = User.query.filter_by(email=email)
-        reset_user.password = user.password
-        db.session.commit()
-
+        user_id = serializer.loads(token, max_age=3600)
+    except BadSignature:
+        abort(404)
     except SignatureExpired :
-        return '<h1> The token is expired </h1> '
-    return getLoginPage()
+        return render_template('mail_confirmation.html',
+            title="Erreur",
+            body='Le token est expiré. Tu as dépassé le délai de 24h.'
+        )
 
-@public.route('/confirm_email/<token>')  # Never finished
-def confirm_email(token):
-    try :
-        email = serializer.loads(token, max_age=300)    # what !?
-        new_user = User(id=user.id, firstname=user.firstname, lastname=user.lastname, password=user.password)
-        db.session.add(new_user)
-        db.session.commit()
-    except SignatureExpired :
-        return '<h1> The token is expired </h1> '
-    return getLoginPage()
+    user = User.query.get(user_id)
+    if user is None:
+        return render_template('mail_confirmation.html',
+            title="Erreur - Aucun utilisateur correspondant",
+            body="Le compte associé n'existe plus."
+        )
+
+    if request.method == 'POST':
+        new_password = request.form['new_password']
+        if new_password != request.form['confirmation_password']:
+            flash("Les deux mots de passe ne correspondent pas", "error")
+        else:
+            user.set_password(new_password)
+            db.session.add(user)
+            db.session.commit()
+            flash("Mot de passe réinitialisé avec succès", "success")
+
+    return render_template('resetting.html', firstname=user.firstname)

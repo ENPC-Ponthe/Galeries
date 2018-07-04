@@ -17,9 +17,11 @@ mail=Mail(app)
 
 from .public.views import public
 from .private.views import private
+from .admin.views import admin
 
 from . import models
 from . import views
 # register the blueprints
 app.register_blueprint(public)
 app.register_blueprint(private)
+app.register_blueprint(admin)

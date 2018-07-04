@@ -25,16 +25,16 @@ Pour le rendre disponible sur le réseau ajouter `--host=0.0.0.0` (écoute toute
 ### Migration
 Générer les migrations dans *web/migrations/versions* :
 ```
-cd web
+cd web/app
 export FLASK_APP=ponthe
 flask db migrate
 flask db upgrade
 ```
 
 ### Fixtures
-Supprimer la BDD et charges les fixtures de tous les fichiers YAML de *web/fixtures/* :
+Supprimer la BDD, les images / photos et charger les fixtures :
 ```
-cd web
+cd web/app
 ponthe/manager.py load_fixtures
 ```
 
@@ -66,7 +66,7 @@ sudo systemctl reload nginx
 
 Charger les fixtures dans le container :
 ```
-docker run -it pontheenpcorg_web python ponthe/manager.py load_fixtures   # not working :'(
+docker run -it pontheenpcorg_web_1 python ponthe/manager.py load_fixtures   # not working :'(
 ```
 
 ## Ajouter des fichiers aux galeries :
@@ -98,6 +98,12 @@ Mot de passe : *Ponthasm7gorique2017*
 * http://www.patricksoftwareblog.com/flask-tutorial/
 * https://jeffknupp.com/blog/2014/01/29/productionizing-a-flask-application/
 * http://freemiumdownload.com/downloads/lifestyle-blog-free-bootstrap-template/
+Public domain code snippets :
+* http://flask.pocoo.org/snippets/
+Slugification :
+* http://flask.pocoo.org/snippets/5/
+Password salt hashing:
+* http://flask.pocoo.org/snippets/54/
 
 ## SQLAlchemy
 On utilise un modèle de "joined table inheritance"
@@ -106,3 +112,21 @@ On pourrait rendre implicite les ids en prolongeant le modèle de SLQAlchemy
 * http://docs.sqlalchemy.org/en/latest/orm/inheritance.html
 Ambigüités de jointure dûs à l'héritage :
 * http://docs.sqlalchemy.org/en/latest/orm/join_conditions.html
+
+## TODO
+
+* Thumbnail : https://github.com/silentsokolov/flask-thumbnails
+* Map : https://developers.google.com/maps/documentation/javascript/tutorial
+* OpenId Connect : https://github.com/ory/hydra
+* Template de galerie
+* WTForm
+* Uppy : uppy-server et dashboard locales
+* Backup volumz in docker with cron
+* React Native
+  * Map : https://github.com/react-community/react-native-maps
+  * Firebase :
+https://medium.com/@salonikogta/beginners-guide-to-implementing-push-notifications-in-android-e896ef54b831
+https://firebase.google.com/pricing/
+https://firebase.google.com/docs/web/setup?authuser=0
+https://console.firebase.google.com/u/0/project/enpc-d6bbe/notification
+  * (Web notif https://developers.google.com/web/fundamentals/codelabs/push-notifications/)

@@ -1,7 +1,7 @@
 """empty message
 
 Revision ID: 2aba59ed46f8
-Revises: 
+Revises:
 Create Date: 2018-04-20 19:00:27.460081
 
 """
@@ -23,7 +23,7 @@ def upgrade():
     sa.Column('firstname', sa.String(length=64), nullable=False),
     sa.Column('lastname', sa.String(length=64), nullable=False),
     sa.Column('username', sa.String(length=64), nullable=False),
-    sa.Column('password', sa.String(length=64), nullable=False),
+    sa.Column('password', sa.String(length=128), nullable=False),
     sa.Column('email', sa.String(length=64), nullable=False),
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('email'),

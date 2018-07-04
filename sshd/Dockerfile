@@ -1,13 +1,14 @@
-FROM       ubuntu:16.04
+FROM ubuntu:16.04
 MAINTAINER Philippe Ferreira De Sousa
 
-RUN apt-get update
+ARG SSH_USERNAME
+ARG SSH_PASSWORD
 
-RUN apt-get install -y openssh-server
+RUN apt-get update && apt-get install -y openssh-server
 RUN mkdir /var/run/sshd
 
 RUN useradd -ms /bin/bash ponthe
-RUN echo 'ponthe:Ponthasm7gorique2017' | chpasswd
+RUN echo "${SSH_USERNAME}:${SSH_PASSWORD}" | chpasswd
 RUN mkdir /home/ponthe/uploads/ /home/ponthe/waiting_zone/
 RUN chown -R ponthe:ponthe /home/ponthe
 
