@@ -33,12 +33,18 @@
           target: '#UppyDashboard',
           replaceTargetContent: true,
           showProgressDetails: true,
-          note: "Images et videos seulement, 1–10 fichiers, jusqu'à 1 GB",
+          note: "Images et vidéos seulement, 1–10 fichiers, jusqu'à 1 GB",
           height: 470,
           metaFields: [
               { id: 'name', name: 'Nom', placeholder: 'Match de hand' },
               { id: 'caption', name: 'Légende', placeholder: "Description du contenu"}
           ],
+          locale: {
+              strings: {
+                  dropPaste: 'Glisse tes fichiers ici ou %{browse}',
+                  browse: 'parcours'
+              }
+          },
           browserBackButtonClose: true
       })
       .use(Uppy.Tus, { endpoint: '{{ url_for('private.file-upload', year=year, event=event) }}' });

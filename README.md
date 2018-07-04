@@ -112,3 +112,21 @@ On pourrait rendre implicite les ids en prolongeant le modèle de SLQAlchemy
 * http://docs.sqlalchemy.org/en/latest/orm/inheritance.html
 Ambigüités de jointure dûs à l'héritage :
 * http://docs.sqlalchemy.org/en/latest/orm/join_conditions.html
+
+## TODO
+
+* Thumbnail : https://github.com/silentsokolov/flask-thumbnails
+* Map : https://developers.google.com/maps/documentation/javascript/tutorial
+* OpenId Connect : https://github.com/ory/hydra
+* Template de galerie
+* WTForm
+* Uppy : uppy-server et dashboard locales
+* Backup volumz in docker with cron
+* React Native
+  * Map : https://github.com/react-community/react-native-maps
+  * Firebase :
+https://medium.com/@salonikogta/beginners-guide-to-implementing-push-notifications-in-android-e896ef54b831
+https://firebase.google.com/pricing/
+https://firebase.google.com/docs/web/setup?authuser=0
+https://console.firebase.google.com/u/0/project/enpc-d6bbe/notification
+  * (Web notif https://developers.google.com/web/fundamentals/codelabs/push-notifications/)
