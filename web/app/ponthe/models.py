@@ -1,7 +1,24 @@
-from flask_login import UserMixin
+from flask_login import UserMixin, current_user
 from datetime import datetime
+from werkzeug.security import generate_password_hash, check_password_hash
+import translitcodec
+import codecs
 import enum
 from . import db
+import re
+import string, random
+
+_punct_re = re.compile(r'[\t !"#$%&\'()*\-/<=>?@\[\\\]^_`{|},.]+')  #   Les slug DSI enlève les ' au lieu de les remplacer par un -
+liste_char=string.ascii_letters+string.digits
+
+def slugify(text, delim=u'-'):
+    """Generates an ASCII-only slug."""
+    result = []
+    for word in _punct_re.split(text.lower()):
+        word = codecs.encode(word, 'translit/long')
+        if word:
+            result.append(word)
+    return str(delim.join(result))
 
 class ReactionEnum(enum.Enum):
     LIKE = 1
@@ -27,9 +44,38 @@ class User(UserMixin, db.Model):
     firstname = db.Column(db.String(64), nullable=False)
     lastname = db.Column(db.String(64), nullable=False)
     username = db.Column(db.String(64), unique=True, nullable=False)
-    password = db.Column(db.String(64), nullable=False)  # type mot de passe qui gère le hashage derrière
+    password = db.Column(db.String(128), nullable=False)
     email = db.Column(db.String(64), unique=True, nullable=False)
     groups = db.relationship('Group', secondary=membership, lazy='subquery', backref=db.backref('members', lazy=True))
+    admin = db.Column(db.Boolean, nullable=False, default=False)
+    email_confirmed = db.Column(db.Boolean, nullable=False, default=False)
+    created = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+
+    def __init__(self, id=None, firstname=None, lastname=None, password=None, username=None, email=None, admin=None, email_confirmed=None):
+        if id:
+            self.id = id
+        self.firstname = firstname
+        self.lastname = lastname
+        if username:
+            self.username = username
+            if not email:
+                self.email = "{}@eleves.enpc.fr".format(username)
+        if email:
+            self.email = email
+            if not username:
+                self.username = email.split("@")[0]
+        if password:
+            self.set_password(password)
+        if admin is not None:
+            self.admin = admin
+        if email_confirmed is not None:
+            self.email_confirmed = email_confirmed
+
+    def set_password(self, password):
+        self.password = generate_password_hash(password)
+
+    def check_password(self, password):
+        return check_password_hash(self.password, password)
 
     def __repr__(self):
         return '<User {} {}>'.format(self.firstname, self.lastname)
@@ -54,6 +100,24 @@ class Resource(TimestampMixin, db.Model):
         'polymorphic_on': resource_type
     }
 
+    def __init__(self, id=None, name=None, slug=None, author=None, author_id=None):   # fixtures need initializing with ids, **kwargs cause default __init__ of subclasses give all arguments to super i gues
+        self.name = name
+        if id:
+            self.id = id
+        if slug:
+            self.slug = slug
+        else:
+            self.set_slug(name)
+        if author_id:
+            self.author_id = author_id
+        elif author:
+            self.author = author
+        #elif current_user is not None and current_user.is_authenticated:   # doesn't work
+        #    self.author = current_user
+
+    def set_slug(self, name):
+        self.slug = slugify(name)
+
     def __repr__(self):
         return '<Resource {}>'.format(self.name)
 
@@ -71,6 +135,17 @@ class Group(Resource):
     event = db.relationship('Event', backref='groups', foreign_keys=[event_id])
     # pour les évenement d'attribut private = True
 
+    def __init__(self, id=None, year=None, year_id=None, event=None, event_id=None, **kwargs):
+        super().__init__(id=id, **kwargs)
+        if year_id:
+            self.year_id = year_id
+        elif year:
+            self.year = year
+        if event_id:
+            self.event_id = event_id
+        elif event:
+            self.event = event
+
 class Reaction(TimestampMixin, db.Model):   # relation many-to-many type Slack
     __tablename__ = 'reactions'
 
@@ -79,6 +154,18 @@ class Reaction(TimestampMixin, db.Model):   # relation many-to-many type Slack
     resource_id = db.Column(db.Integer, db.ForeignKey('resources.id', name='fk_reactions_resource'), primary_key=True)
     resource = db.relationship('Resource', backref='reactions', foreign_keys=[resource_id])
     type = db.Column(db.Enum(ReactionEnum), nullable=False)
+
+    def __init__(self, id=None, user=None, user_id=None, resource=None, resource_id=None, type=None, **kwargs):
+        super().__init__(id=id, **kwargs)
+        if user_id:
+            self.user_id = user_id
+        elif user:
+            self.user = user
+        if resource_id:
+            self.resource_id = resource_id
+        elif resource:
+            self.resource = resource
+        self.type = type
 
 class Comment(Resource):
     __tablename__ = 'comments'
@@ -95,6 +182,14 @@ class Comment(Resource):
         "inherit_condition": id == Resource.id
     }
 
+    def __init__(self, id=None, text=None,resource=None, resource_id=None, **kwargs):
+        super().__init__(id=id, **kwargs)
+        self.text = text
+        if resource_id:
+            self.resource_id = resource_id
+        elif resource:
+            self.resource = resource
+
     def __repr__(self):
         return '<Comment {}>'.format(self.id)
 
@@ -109,6 +204,17 @@ class Category(Resource):
     cover_image_id = db.Column(db.Integer, db.ForeignKey('files.id', name='fk_categories_file'), nullable=True)
     cover_image = db.relationship('File', backref='categories', foreign_keys=[cover_image_id])
 
+    def __init__(self, id=None, description=None, cover_image=None, cover_image_id=None, **kwargs):
+        super().__init__(id=id, **kwargs)
+        self.description = description
+        if cover_image_id:
+            self.cover_image_id = cover_image_id
+        elif cover_image:
+            self.cover_image = cover_image
+
+    def __repr__(self):
+        return '<Category {}>'.format(self.name)
+
 class Event(Resource):
     __tablename__ = 'events'
     __mapper_args__ = {
@@ -117,12 +223,28 @@ class Event(Resource):
     # exemple de nom de l'event : Campagne BDE qui peut être sur plusieurs années
 
     id = db.Column(db.Integer, db.ForeignKey('resources.id', onupdate="CASCADE", ondelete="CASCADE"), primary_key=True)
-    category_id = db.Column(db.Integer, db.ForeignKey('categories.id', name='fk_events_category'), nullable=False)
+    category_id = db.Column(db.Integer, db.ForeignKey('categories.id', name='fk_events_category'), nullable=True)
     category = db.relationship('Category', backref='events', foreign_keys=[category_id])
     # dépendance circulaire entre table à migrer séparemment
     cover_image_id = db.Column(db.Integer, db.ForeignKey('files.id', name='fk_events_file'), nullable=True)
     cover_image = db.relationship('File', backref='events', foreign_keys=[cover_image_id])
-    private = db.Column(db.Boolean, nullable=False)
+    private = db.Column(db.Boolean, nullable=False, default=False)
+    description = db.Column(db.String(1024), nullable=True)
+
+    def __init__(self, id=None, category=None, category_id=None, cover_image=None, cover_image_id=None, private=None, description=None, **kwargs):
+        super().__init__(id=id, **kwargs)
+        if category_id:
+            self.category_id = category_id
+        elif category:
+            self.category = category
+        if cover_image_id:
+            self.cover_image_id = cover_image_id
+        elif cover_image:
+            self.cover_image = cover_image
+        if private is not None:
+            self.private = private
+        if description:
+            self.description = description
 
     def __repr__(self):
         return '<Event {}>'.format(self.name)
@@ -139,6 +261,16 @@ class Year(Resource):
     cover_image_id = db.Column(db.Integer, db.ForeignKey('files.id', name='fk_years_file'), nullable=True)
     cover_image = db.relationship('File', backref='years', foreign_keys=[cover_image_id])
 
+    def __init__(self, value=None, id=None, cover_image=None, cover_image_id=None, **kwargs):
+        if "slug" not in kwargs:
+            kwargs["slug"] = str(value)
+        super().__init__(id=id, **kwargs)
+        self.value = value
+        if cover_image_id:
+            self.cover_image_id = cover_image_id
+        elif cover_image:
+            self.cover_image = cover_image
+
     def __repr__(self):
         return '<Year {}>'.format(self.value)
 
@@ -147,7 +279,7 @@ file_tag = db.Table('file_tag',
     db.Column('file_id', db.Integer, db.ForeignKey('files.id', name='fk_file_tags_file'), primary_key=True)
 )
 
-class File(Resource):
+class File(Resource):   # the default slug is a 20-letter-string, just specify filename or extension
     __tablename__ = 'files'
     __mapper_args__ = {
         'polymorphic_identity': 'file'
@@ -160,7 +292,30 @@ class File(Resource):
     event_id = db.Column(db.Integer, db.ForeignKey('events.id', name='fk_files_event'), nullable=True)
     event = db.relationship('Event', backref='files', foreign_keys=[event_id])  # plusieurs files peuvent appartenir à l'event Campagne BDE mais d'années différentes
     filename = db.Column(db.String(64), unique=True, nullable=False)
+    pending = db.Column(db.Boolean, nullable=False, default=True)
     tags = db.relationship('Tag', secondary=file_tag, lazy='subquery', backref=db.backref('files', lazy=True))
+
+    def __init__(self, id=None, type=None, year=None, year_id=None, event=None, event_id=None, filename=None, extension=None, pending=None, tags=None, **kwargs):
+        if "slug" not in kwargs:
+            kwargs["slug"] = "".join([liste_char[random.randint(0,len(liste_char)-1)] for i in range(20)])
+        super().__init__(id=id, **kwargs)
+        self.type = type
+        if filename:
+            self.filename = filename
+        elif extension:
+            self.filename = "{}.{}".format(self.slug, extension)
+        if year_id:
+            self.year_id = year_id
+        elif year:
+            self.year = year
+        if event_id:
+            self.event_id = event_id
+        elif event:
+            self.event = event
+        if tags:
+            self.tags = tags
+        if pending is not None:
+            self.pending = pending
 
     def __repr__(self):
         return '<File {}>'.format(self.filename)

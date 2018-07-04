@@ -7,7 +7,7 @@
     <!--<![endif]-->
     <head>
         <!-- Title -->
-        <title>Ponthé ENPC</title>
+        <title>Galeries Ponthé</title>
         <!-- Meta -->
         <meta http-equiv="content-type" content="text/html; charset=utf-8" />
         <meta name="description" content="Galeries Ponthé">
@@ -15,19 +15,20 @@
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
 
         <!-- Favicon -->
-        <link rel="icon" type="image/png" href="{{url_for('static', filename = 'img/logo.jpg' ) }}">
+        <link rel="icon" type="image/png" href="{{ url_for('static', filename='img/logo.jpg') }}">
         <!-- Bootstrap Core CSS -->
-        <link rel="stylesheet" href="{{url_for('static', filename = 'css/bootstrap.css' ) }}" rel="stylesheet">
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.css') }}" rel="stylesheet">
         <!-- Template CSS -->
-        <link rel="stylesheet" href="{{ url_for('static', filename = 'css/animate.css') }}" rel="stylesheet">
-        <link rel="stylesheet" href="{{ url_for('static', filename = 'css/font-awesome.css') }}" rel="stylesheet">
-        <link rel="stylesheet" href="{{ url_for('static', filename = 'css/nexus.css' ) }}" rel="stylesheet">
-        <link rel="stylesheet" href="{{ url_for('static', filename = 'css/responsive.css' ) }}" rel="stylesheet">
-        <link rel="stylesheet" href="{{ url_for('static', filename = 'css/custom.css' ) }}" rel="stylesheet">
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/animate.css') }}" rel="stylesheet">
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/font-awesome.css') }}" rel="stylesheet">
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/nexus.css') }}" rel="stylesheet">
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/responsive.css') }}" rel="stylesheet">
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/custom.css') }}" rel="stylesheet">
         <!-- Google Fonts-->
         <link href="http://fonts.googleapis.com/css?family=Roboto+Condensed:400,300" rel="stylesheet" type="text/css">
         <link href="http://fonts.googleapis.com/css?family=PT+Sans" type="text/css" rel="stylesheet">
         <link href="http://fonts.googleapis.com/css?family=Roboto:400,300" rel="stylesheet" type="text/css">
+        <link href="https://transloadit.edgly.net/releases/uppy/v0.25.5/dist/uppy.min.css" rel="stylesheet">
     </head>
 
     <body style="height: 100%;">
@@ -37,8 +38,8 @@
                     <div class="row">
                         <!-- Logo -->
                         <div class="logo">
-                            <a href="{{ url_for('private.index') }}" title="PONTHE">
-                                CLUB PONTHÉ-ENPC
+                            <a href="{{ url_for('private.index') }}" title="Ponthé">
+                                <span style="margin: 10px; font-size:30px;">Galeries Ponthé - Club d'audiovisuel des Ponts ParisTech</span>
                             </a>
                         </div>
                         <!-- End Logo -->
@@ -57,16 +58,16 @@
                                     <a href="{{ url_for('private.index') }}" class="fa-home">Accueil</a>
                                 </li>
                                 <li>
-                                    <span class="fa-th">Archives</span>
+                                    <span class="fa-th">Galeries</span>
                                     <ul>
                                         <li>
                                             {% for year, events in dict_events.items() %}
                                             <li>
-                                                <a href="{{ url_for('private.archives_annee', year=year.slug) }}" class="parent">{{ year.value }}</a>
+                                                <a href="{{ url_for('private.year_gallery', year_slug=year.slug) }}" class="parent">{{ year.value }}</a>
                                                 <ul>
                                                     {% for event in events %}
                                                 <li>
-                                                    <a href="{{ url_for('private.archives_evenement', year=year.slug, event=event.slug) }}" class="fa-group">{{ event.name }}</a>
+                                                    <a href="{{ url_for('private.event_gallery', year_slug=year.slug, event_slug=event.slug) }}" class="fa-group">{{ event.name }}</a>
                                                 </li>
                                                  {% endfor %}
                                                  </ul>
@@ -76,7 +77,7 @@
                                     </ul>
                                 </li>
                                 <li>
-                                    <a href="{{ url_for('private.depot_fichiers') }}" class="fa-copy">Dépôt fichiers</a>
+                                    <a href="{{ url_for('private.dashboard') }}" class="fa-copy">Tableau de bord</a>
                                 </li>
                                 <li>
                                     <a href="{{ url_for('private.membres') }}" class="fa-group">Membres</a>
