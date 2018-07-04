@@ -4,8 +4,15 @@
 # Virtual environment
 web/venv/
 
+# Credentials : Mysql / Email
+web/ponthe.prod.cfg
+.env
+
 # Instance Folder - used for configuration parameters and uploads / fixtures files
-# web/instance/club_folder/
+# web/app/instance/club_folder/
+web/app/instance/ponthe.cfg
+web/app/instance/club_folder
+web/app/instance/upload_tmp
 
 # Pypi package installation
-web/Galeries_Ponthe.egg-info/
+web/app/Galeries_Ponthe.egg-info/

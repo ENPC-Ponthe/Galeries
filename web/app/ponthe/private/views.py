@@ -1,52 +1,65 @@
-
-
 # -- coding: utf-8 --"
 
-from flask import Flask,render_template,request, flash, redirect, url_for, jsonify, Blueprint
+from . import private
+from flask import Flask, render_template, request, flash, redirect, url_for, jsonify
 from werkzeug import secure_filename
 from flask_mail import Message
 import os
-from flask_login import UserMixin, login_user , logout_user , current_user , login_required
+from flask_login import UserMixin, login_user, logout_user, current_user, login_required
 from itsdangerous import URLSafeTimedSerializer, SignatureExpired
 import string
 import random
-from .. import app, db
+from .. import app, db, mail
 from ..models import Year, Event, File, Category
-import os
-
-liste_char=string.ascii_letters+string.digits
+from ..file_helper import create_folder, move_file, is_image, is_video, ext
+import os, subprocess
+from flask_tus_ponthe import tus_manager
+from ..admin.views import batch_upload
 
 # dbconnexion = mysql.connector.connect(host="vps.enpc.org", port="7501", \
 #     user="enpc-ponthe",password="Ponthasm7gorique2017", \
 #     database="enpc-ponthe")
 
-DOSSIER_UPS = os.path.join(app.instance_path, 'uploads')
-directory2=DOSSIER_UPS
+UPLOAD_FOLDER = os.path.join(app.instance_path, 'club_folder', 'uploads')
+UPLOAD_TMP_FOLDER = os.path.join(app.instance_path, 'upload_tmp')
 
-private = Blueprint('private', __name__)
+tm = tus_manager(private, upload_url='/file-upload', upload_folder=UPLOAD_TMP_FOLDER)
+
+def get_filenames(year_slug, event_slug):
+    files = File.query.join(File.year).join(File.event).filter(Year.slug == year_slug, Event.slug == event_slug).all()
+    return [file.filename for file in files]
+
+def get_moderation_filenames(year_slug, event_slug):    # retourne la liste des fichiers non-modérés et la liste des fichiers modérés
+    files = File.query.join(File.year).join(File.event).filter(Year.slug == year_slug, Event.slug == event_slug).all()
+    return [file.filename for file in files if file.pending], [file.filename for file in files if not file.pending]
+
+@tm.upload_file_handler
+def upload_file_hander(upload_file_path, filename, year_value, event_name):
+    event = Event.query.filter_by(name=event_name).one()
+    year = Year.query.filter_by(value=year_value).one()
+    new_file = File(event=event, year=year, extension=ext(filename), author=current_user, pending=True)
+
+    if is_image(filename):
+        new_file.type = "IMAGE"
+    elif is_video(filename):
+        new_file.type = "VIDEO"
+    else:
+        raise ValueError("File extension not supported")
+
+    gallery_folder = os.path.join(UPLOAD_FOLDER, str(year_value), str(event_name))
+    create_folder(gallery_folder)
+    move_file(upload_file_path, os.path.join(gallery_folder, new_file.filename))  # can't use os.rename to move to docker volume : OSError: [Errno 18] Invalid cross-device link
+    db.session.add(new_file)
+    db.session.commit()
 
 @private.before_request     # login nécessaire pour tout le blueprint
 @login_required
 def before_request():
     pass
-    # if g.user.role != ROLE_ADMIN:     # code pour restreindr un blueprint aux admins ;)
-    #     abort(401)
-
-def extension_ok(nomfic):
-    """ Renvoie True si le fichier possede une extension d'image valide. """
-    return '.' in nomfic and nomfic.rsplit('.', 1)[1] in ('png', 'jpg', 'jpeg', 'gif', 'bmp')
-
-def createFolder(directory):
-    try:
-        if not os.path.exists(directory):
-            os.makedirs(directory)
-    except OSError:
-        print ('Error: Creating directory. '+directory)
 
 def render_events_template(template, **kwargs):
     dict_events = { year: Event.query.filter(File.query.filter_by(year=year, event_id=Event.id).exists()).all() for year in Year.query.order_by(Year.value).all() }
     return render_template(template, dict_events=dict_events, **kwargs)
-
 
 @private.route('/')
 def getHome():
@@ -62,124 +75,95 @@ def logout():
     return redirect('/login')
 
 @private.route('/materiel',methods=['GET','POST'])
-def materiel() :
+def materiel() :    # TODO
     if request.method == 'POST':
-        msg = Message(request.form['message'],sender= 'clubpontheenpc@gmail.com', recipients= 'clubpontheenpc@gmail.com', events = liste_ev)
+        msg = Message(subject="Demande d'emprunt de {} par {} {}".format(request.form['object'], current_user.firstname, current_user.lastname), body=request.form['message'], sender='Ponthé <no-reply@ponthe.enpc.org>', recipients=['philippe.ferreira-de-sousa@eleves.enpc.fr'])
         mail.send(msg)
-        return render_template("mail_envoye.html" , firstname=request.form['prenom'], lastname=request.form['nom'])
     return render_events_template('materiel.html')
 
-@private.route('/depot_fichiers', methods=['GET', 'POST'])
-def depot_fichiers():
+@private.route('/dashboard', methods=['GET', 'POST'])
+def dashboard():
     if request.method == 'POST':
-        evenement=request.form['evenement']
-        annee=request.form['annee']
-        if request.form['Envoyer']=='Envoyer':
-            if evenement: # on verifie que evenement est non vide
-                if annee: # on verifie que date est non vide
-                    directory=DOSSIER_UPS+annee+'/'
-                    createFolder(directory)
-                    directory2=directory+evenement+'/'
-                    createFolder(directory2)
-                    return redirect(url_for('upload', annee=annee, event=evenement))
-                else:
-                    flash("Veuillez indiquer la date de l'événement","error")
-            else:
-                flash("Veuillez indiquer le nom de l'événement","error")
-        if request.form['Envoyer']=='create_event':
-            return redirect('/create_event')
-        if request.form['Envoyer']=='create_annee':
-            return redirect('/create_annee')
-    list_events = [event.name for event in Event.query.all()]
-    list_years = [year.value for year in Year.query.order_by(Year.value).all()]
+        if request.form['option']=='create_event':
+            return redirect('/create-event')
+        if request.form['option']=='create_year':
+            return redirect('/create-year')
+        if request.form['option']=='batch_upload':
+            if current_user.admin:
+                batch_upload()
+    list_events = [event for event in Event.query.filter_by(author=current_user).all()]
+    list_years_slug = [year.slug for year in Year.query.order_by(Year.value).all()]
+    pending_galleries = []
+    confirmed_galleries = []
+    for year_slug in list_years_slug:
+        for event in list_events:
+            pending_filenames, confirmed_filenames = get_moderation_filenames(year_slug, event.slug)
+            if pending_filenames:
+                pending_galleries.append((year_slug, event.name, pending_filenames))
+            if confirmed_filenames:
+                confirmed_galleries.append((year_slug, event.name, confirmed_filenames))
+    return render_events_template('dashboard.html', pending_galleries=pending_galleries, confirmed_galleries=confirmed_galleries)
 
-    return render_events_template('depot_fichiers.html', liste_events=list_events, liste_annees=list_years)
+@private.route('/upload/<year>/<event>')
+def upload(year, event):
+    return render_events_template('upload.html', year=year, event=event)
 
-
-@private.route ('/archives/<category_slug>')
-def archives_categorie(category_slug):
+@private.route ('/category/<category_slug>')
+def category_gallery(category_slug):
     category = Category.query.filter_by(slug=category_slug).one()
     events_from_cat = Event.query.all()
     files_from_cat = File.query.join(File.event).join(Event.category).filter_by(slug=category_slug).all()
     galleries = { (file.year, file.event) for file in files_from_cat }
     liste_events_annees = [[event, year.slug, event.cover_image.filename if event.cover_image is not None else File.query.filter_by(event=event).first().filename] for (year, event) in galleries]    # A changer
-    return render_events_template('archives_categorie.html', category=category, liste_events_annees=liste_events_annees)
+    return render_events_template('category_gallery.html', category=category, liste_events_annees=liste_events_annees)
 
 
-@private.route('/archive/<year>')
-def archives_annee(year):
-    queried_year = Year.query.filter_by(slug=year).one()
+@private.route('/galleries/<year_slug>')
+def year_gallery(year_slug):
+    queried_year = Year.query.filter_by(slug=year_slug).one()
     events_from_year = Event.query.filter(File.query.filter_by(year=queried_year, event_id=Event.id).exists()).all()
     dict_events_annee = { event: event.cover_image.filename if event.cover_image is not None else File.query.filter_by(event=event).first().filename for event in events_from_year }
-    return render_events_template('archives_annee.html', year_slug=year, events_annee=dict_events_annee)
+    return render_events_template('year_gallery.html', year_slug=year_slug, events_annee=dict_events_annee)
 
-@private.route('/archives/<year>/<event>')
-def archives_evenement(year,event):
-    files = File.query.join(File.year).join(File.event).filter(Year.slug == year, Event.slug == event).all() # à remplacer par les slugs
-    filenames = [file.filename for file in files]
-    event_name = Event.query.filter_by(slug=event).one().name
-    return render_events_template('archives_evenement.html', year_slug=year, event_name=event_name, filenames=filenames)
+@private.route('/galleries/<year_slug>/<event_slug>')
+def event_gallery(year_slug, event_slug):
+    filenames = get_filenames(year_slug, event_slug)
+    event_name = Event.query.filter_by(slug=event_slug).one().name
+    return render_events_template('event_gallery.html', year_slug=year_slug, event_name=event_name, filenames=filenames)
 
-@private.route('/create_event', methods=['GET', 'POST'])
+@private.route('/create-event', methods=['GET', 'POST'])
 def create_event():
     liste_annees = [year.value for year in Year.query.all()]
 
     if request.method == 'POST':
-        new_event_name=request.form['new_event']
-        if new_event_name:
-            new_event = Event(name=new_event_name)
+        name = request.form['name']
+        category_name = request.form['category_name']
+        if name:
+            new_event = Event(name=name, author=current_user)
+            if category_name:
+                new_event.category = Category.query.filter_by(name=category_name).one()
             db.session.add(new_event)
             db.session.commit()
-            return redirect('/depot_fichiers')
+            return redirect('/dashboard')
         else:
             flash("Veuillez indiquer le nom du nouvel événement","error")
-    return render_events_template('create_event.html', liste_annees=liste_annees)
 
-@private.route('/create_annee', methods=['GET', 'POST'])
+    categories = [category.name for category in Category.query.all()]
+    return render_events_template('create_event.html', categories=categories)
+
+@private.route('/create-year', methods=['GET', 'POST'])
 def create_annee():
     if request.method == 'POST':
-        new_year_value = request.form['new_annee']
+        value = request.form['value']
         if new_year_value:
-            new_year = Event(name=new_year_value)
+            new_year = Event(value=value, author=current_user)
             db.session.add(new_year)
             db.session.commit()
-            return redirect('depot_fichiers')
+            return redirect('/create-event')
     else:
         flash("Veuillez indiquer la nouvelle année","error")
-    return render_events_template('create_annee.html')
-
-@private.route('/upload/<annee>/<event>', methods=['GET', 'POST'])
-def upload(annee, event):
-    t1=True
-    t2=True
-    if request.method == 'POST':
-        for f in request.files.getlist('photos'):
-            if f:
-                if extension_ok(f.filename.lower()): # on verifie que son extension est valide
-                    _, ext = os.path.splitext(f.filename)
-                    filename = ""
-                    for i in range(54):
-                        filename += liste_char[random.randint(0,len(liste_char)-1)]
-                    filename= filename + ext
-                    f.save( DOSSIER_UPS + annee + '/' + event + '/' + filename)
-                    event = Event.query.filter_by(name=event).one()
-                    year = Year.query.filter_by(value=annee).one()
-                    new_file = File(event=event, year=year, filename=filename)
-                    db.session.add(new_file)
-                    db.session.commit()
-                else:
-                    t1=False
-            else:
-                t2=False
-        if t1==True:
-            if t2==True:
-                flash("Bravo! Vos images ont été envoyées! :)","success")
-            else:
-                flash("Vous avez oublié le fichier !", "error")
-        if t1==False:
-            flash("Ce fichier ne porte pas l'extension png, jpg, jpeg, gif ou bmp !", "error")
-    return render_events_template('upload.html')
+    return render_events_template('create_year.html')
 
 @private.route('/membres')
 def membres():
-    return render_events_template('/membres.html')
+    return render_events_template('membres.html')

@@ -9,10 +9,10 @@
             <div class="col-md-9">
                 <!-- Main Content -->
                 <div class="headline">
-                    <h2> Mail de confirmation </h2>
+                    <h2>{{ title }}</h2>
                     <p>
-                        Un mail de confirmation a été envoyé à l'adresse suivante : {{ email }}
-                    </p>y
+                        {{ body | safe }}
+                    </p>
                 </div>
             </div>
             <!-- End Main Column -->
