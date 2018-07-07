@@ -119,7 +119,7 @@ def register():
                     return render_template('creation_compte.html')
             token = serializer.dumps(new_user.id)
             msg = Message('Confirme la validation de ton compte Ponthé', sender='Ponthé <no-reply@ponthe.enpc.org>', recipients=[new_user.email] )
-            link = url_for('public.registering', token=token, _external=True)
+            link = url_for('public.registering', token=token, _external=True, _scheme='https')
             print(link)
             msg.body = 'Clique sur le lien de confirmation suivant sous 24h pour activer ton compte : {}'.format(link)
             mail.send(msg)
@@ -162,7 +162,7 @@ def reset():
         if user is not None and user.email_confirmed:
             token = serializer.dumps(user.id)
             msg = Message('Réinitialise ton mot de passe Ponthé' , sender='Ponthé <no-reply@ponthe.enpc.org>', recipients=[email])
-            link = url_for('public.resetting', token=token, _external=True)
+            link = url_for('public.resetting', token=token, _external=True, _scheme='https')
             # put token to user entity to retrive it in confirm_email route
             msg.body = 'Pour réinitialiser ton mot de passe, clique sur le lien suivant : {}'.format(link)
             mail.send(msg)
