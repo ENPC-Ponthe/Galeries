@@ -37,7 +37,7 @@ def get_moderation_filenames(year_slug, event_slug):    # retourne la liste des 
 def upload_file_hander(upload_file_path, filename, year_value, event_name):
     event = Event.query.filter_by(name=event_name).one()
     year = Year.query.filter_by(value=year_value).one()
-    new_file = File(event=event, year=year, extension=ext(filename), author=current_user, pending=True)
+    new_file = File(event=event, year=year, extension=ext(filename), author=current_user, pending=(not current_user.admin))
 
     if is_image(filename):
         new_file.type = "IMAGE"
@@ -122,8 +122,8 @@ def category_gallery(category_slug):
 def year_gallery(year_slug):
     queried_year = Year.query.filter_by(slug=year_slug).one()
     events_from_year = Event.query.filter(File.query.filter_by(year=queried_year, event_id=Event.id).exists()).all()
-    dict_events_annee = { event: event.cover_image.filename if event.cover_image is not None else File.query.filter_by(event=event).first().filename for event in events_from_year }
-    return render_events_template('year_gallery.html', year_slug=year_slug, events_annee=dict_events_annee)
+    dict_events_year = { event: event.cover_image.filename if event.cover_image is not None else File.query.filter_by(event=event).first().filename for event in events_from_year }
+    return render_events_template('year_gallery.html', year_slug=year_slug, events_year=dict_events_year)
 
 @private.route('/galleries/<year_slug>/<event_slug>')
 def event_gallery(year_slug, event_slug):
@@ -154,9 +154,9 @@ def create_event():
 @private.route('/create-year', methods=['GET', 'POST'])
 def create_annee():
     if request.method == 'POST':
-        value = request.form['value']
+        new_year_value = request.form['value']
         if new_year_value:
-            new_year = Event(value=value, author=current_user)
+            new_year = Year(value=new_year_value, author=current_user)
             db.session.add(new_year)
             db.session.commit()
             return redirect('/create-event')

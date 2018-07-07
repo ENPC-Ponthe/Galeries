@@ -6,12 +6,12 @@
     <div class="container background-white">
         <div class="row margin-vert-30">
             <div class="col-md-12">
-                <h2>Bonjour</h2>
+                <h2>Galeries de {{ year_slug }}</h2>
             </div>
         </div>
         <div class="row">
             <div class="col-md-12 portfolio-group no-padding">
-                {% for event, filename in events_annee.items() %}
+                {% for event, filename in events_year.items() %}
                 <!-- Portfolio Item -->
                 <div class="col-md-3 portfolio-item margin-bottom-40 design">
                     <div>
