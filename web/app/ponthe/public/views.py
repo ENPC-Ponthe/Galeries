@@ -121,7 +121,7 @@ def register():
             msg = Message('Confirme la validation de ton compte Ponthé', sender='Ponthé <no-reply@ponthe.enpc.org>', recipients=[new_user.email] )
             link = "https://ponthe.enpc.org"+url_for('public.registering', token=token)
             print(link)
-            msg.body = render_template('email/register.html', register_link=link, firstname=new_user.firstname)
+            msg.html = render_template('email/register.html', register_link=link, firstname=new_user.firstname)
             mail.send(msg)
 
             flash("Email de confirmation envoyé à {}".format(new_user.email), "success")
@@ -163,7 +163,7 @@ def reset():
             msg = Message('Réinitialise ton mot de passe Ponthé' , sender='Ponthé <no-reply@ponthe.enpc.org>', recipients=[email])
             link = "https://ponthe.enpc.org"+url_for('public.resetting', token=token)
             # put token to user entity to retrive it in confirm_email route
-            msg.body = render_template('email/reset.html', reset_link=link, firstname=user.firstname)
+            msg.html = render_template('email/reset.html', reset_link=link, firstname=user.firstname)
             mail.send(msg)
         flash("Si un compte est associé à cette adresse email, un email t'as été envoyé", "success")
     return render_template('reset.html')
