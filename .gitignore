@@ -16,3 +16,6 @@ web/app/instance/upload_tmp
 
 # Pypi package installation
 web/app/Galeries_Ponthe.egg-info/
+
+# Sauvegardes de la bdd
+db-backup
