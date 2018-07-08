@@ -40,10 +40,7 @@ ponthe/manager.py load_fixtures
 
 ## Mettre en production
 
-Depuis la racine faire :
-```
-docker-compose up
-```
+Juste faire `deploy.sh` pour faire une sauvegarde de la bdd et redéployer. Pour des objectifs spécifique voir ci-dessous.
 
 Pour rebuild l'image web après modification des fichiers copiés :
 ```
@@ -66,7 +63,7 @@ sudo systemctl reload nginx
 
 Charger les fixtures dans le container :
 ```
-docker run -it pontheenpcorg_web_1 python ponthe/manager.py load_fixtures   # not working :'(
+docker-compose exec web python ponthe/manager.py load_fixtures
 ```
 
 ## Ajouter des fichiers aux galeries :
@@ -75,15 +72,12 @@ Les consulter :
 ```
 ssh ponthe@localhost -p 7502
 ```
-Mot de passe : *Ponthasm7gorique2017*
 
 En ajouter l'event TOSS à l'année 2018 :
 ```
 scp -P 7502 -r TOSS ponthe@ponthe.enpc.org:waiting_zone/2018/
 ```
 où TOSS est un répertoire de photos et vidéos
-
-Mot de passe : *Ponthasm7gorique2017*
 
 ## TODO
 
@@ -121,7 +115,6 @@ Ambigüités de jointure dûs à l'héritage :
 * Template de galerie
 * WTForm
 * Uppy : uppy-server et dashboard locales
-* Backup volumz in docker with cron
 * React Native
   * Map : https://github.com/react-community/react-native-maps
   * Firebase :
