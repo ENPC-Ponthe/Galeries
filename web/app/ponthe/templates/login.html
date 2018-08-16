@@ -21,17 +21,20 @@
                     </span>
                     <input class="form-control" type='password' name='password' id='password' placeholder='mot de passe'/>
                 </div>
-                {% with msgs = get_flashed_messages(category_filter=['error']) %}
-                    {% if msgs %}
-                        <div class="alert alert-danger">
-                            <ul>
-                                {% for m in msgs %}
-                                    <li>{{ m | safe }}</li>
-                                {% endfor %}
-                            </ul>
-                        </div>
-                    {% endif %}
-                {% endwith %}
+                {# on affiche les messages d'erreur puis les messages de succes #}
+                {% for categorie in ['error', 'success'] %}
+                    {% with msgs = get_flashed_messages(category_filter=[categorie]) %}
+                        {% if msgs %}
+                            <div class="alert alert-{{ 'danger' if categorie == 'error' else 'success' }}">
+                                <ul>
+                                    {% for m in msgs %}
+                                        <li>{{ m | safe }}</li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                        {% endif %}
+                    {% endwith %}
+                {% endfor %}
                 <div class="row">
                     <div class="col-md-6">
                         <label class="checkbox">
