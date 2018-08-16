@@ -116,7 +116,7 @@ def register():
                     db.session.commit()
                 else:
                     flash("Il existe déjà un compte pour cet adresse email", "error")
-                    return render_template('creation_compte.html')
+                    return render_template('register.html')
             token = serializer.dumps(new_user.id)
             msg = Message('Confirme la validation de ton compte Ponthé', sender='Ponthé <no-reply@ponthe.enpc.org>', recipients=[new_user.email] )
             link = "https://ponthe.enpc.org"+url_for('public.registering', token=token)
@@ -196,5 +196,6 @@ def resetting(token):
             db.session.add(user)
             db.session.commit()
             flash("Mot de passe réinitialisé avec succès", "success")
+            return redirect('login')
 
     return render_template('resetting.html', firstname=user.firstname)
