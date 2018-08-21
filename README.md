@@ -40,7 +40,7 @@ ponthe/manager.py load_fixtures
 
 ## Mettre en production
 
-Juste faire `deploy.sh` pour faire une sauvegarde de la bdd et redéployer. Pour des objectifs spécifique voir ci-dessous.
+Juste faire `./deploy.sh` pour faire une sauvegarde de la bdd et redéployer. Pour des objectifs spécifique voir ci-dessous.
 
 Pour rebuild l'image web après modification des fichiers copiés :
 ```

@@ -22,3 +22,6 @@ web/app/Galeries_Ponthe.egg-info/
 db-backup
 
 .idea
+
+# Clefs RSA pour JWT
+*.pem

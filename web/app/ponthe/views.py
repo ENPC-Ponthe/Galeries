@@ -13,6 +13,13 @@ def uploads(filename):
         filename
     )
 
+@app.route('/apk/<path:filename>')
+def apk(filename):
+    return send_from_directory(
+        os.path.join(app.instance_path, 'club_folder', 'apk'),
+        filename
+    )
+
 # handle login failed
 @app.errorhandler(401)
 def handleError(e):
