@@ -48,6 +48,9 @@ export default class HomeScreen extends Component {
             borderRadius: 50
           }}
         />
+        <Button onPress={this.props.deleteJWT}>
+          Log Out
+        </Button>
         <View></View>
       </View>
     )
