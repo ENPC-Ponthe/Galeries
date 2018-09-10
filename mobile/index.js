@@ -1,4 +1,4 @@
 import { AppRegistry } from 'react-native';
-import App from './src/components/App';
+import Root from './src/Root';
 
-AppRegistry.registerComponent('GaleriesPonthe', () => App);
+AppRegistry.registerComponent('GaleriesPonthe', () => Root);
