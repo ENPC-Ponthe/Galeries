@@ -18,8 +18,11 @@ echo -e "\e[1m\e[34mInstallation des dépendances...\e[0m"
 sudo -E apt-get update
 sudo -E apt-get install -y python3-pip apt-transport-https
 
-echo -e "\e[1m\e[34mInstallation de l'environnement python\e[0m"
+echo -e "\e[1m\e[34mInstallation de la base de données\e[0m"
+sudo apt-get install mysql-server
+echo "CREATE DATABASE ponthe;CREATE USER 'ponthe'@'localhost' IDENTIFIED BY ''; GRANT ALL ON ponthe.* TO 'ponthe'@'localhost'" | mysql -u root -p
 
+echo -e "\e[1m\e[34mInstallation de l'environnement python\e[0m"
 cd web
 pip3 install virtualenv
 virtualenv venv
@@ -28,10 +31,7 @@ pip install --editable .
 export FLASK_APP=ponthe
 flask db init
 flask db upgrade
-
-echo -e "\e[1m\e[34mInstallation de la base de données\e[0m"
-sudo apt-get install mysql-server
-echo "CREATE DATABASE ponthe;CREATE USER 'ponthe'@'localhost' IDENTIFIED BY ''; GRANT ALL ON ponthe.* TO 'ponthe'@'localhost'" | mysql -u root -p
+app/ponthe/manager.py load_data
 
 echo -e "\e[1m\e[34mAjout de dev-ponthe.enpc.org au fichier hosts\e[0m"
 
