@@ -109,7 +109,7 @@ def register():
                 db.session.rollback()
                 existing_user = User.query.filter_by(username=new_user.username).first()
 
-                if (datetime.utcnow()-existing_user.created).total_seconds() > 3600:
+                if not existing_user.email_confirmed and (datetime.utcnow()-existing_user.created).total_seconds() > 3600:
                     db.session.delete(existing_user)
                     db.session.commit()
                     db.session.add(new_user)
