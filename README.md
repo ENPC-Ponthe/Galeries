@@ -60,10 +60,21 @@ sudo ln -s /etc/nginx/sites-available/ponthe.enpc.org /etc/nginx/sites-enabled/p
 sudo certbot --nginx --noninteractive --agree-tos --email root@clubinfo.enpc.fr -d ponthe.enpc.org
 sudo systemctl reload nginx
 ```
+Charger les données initiales (catégories) dans le container:
+```
+docker-compose exec web python ponthe/manager.py load_data
+```
 
 Charger les fixtures dans le container :
 ```
 docker-compose exec web python ponthe/manager.py load_fixtures
+```
+
+Créer les comptes des nouveaux élèves :
+Demander le csv *mon_csv.csv* de création de compte de uPont au KI et faire
+```
+scp -P 7502 mon_csv.csv ponthe@ponthe.enpc.org:accounts.csv
+docker-compose exec web python ponthe/manager.py create_accounts
 ```
 
 ## Ajouter des fichiers aux galeries :

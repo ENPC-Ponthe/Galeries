@@ -1,15 +1,17 @@
 from flask_login import UserMixin, current_user
 from datetime import datetime
 from werkzeug.security import generate_password_hash, check_password_hash
-import translitcodec
-import codecs
+import codecs, translitcodec
 import enum
 from . import db
 import re
 import string, random
 
 _punct_re = re.compile(r'[\t !"#$%&\'()*\-/<=>?@\[\\\]^_`{|},.]+')  #   Les slug DSI enlève les ' au lieu de les remplacer par un -
-liste_char=string.ascii_letters+string.digits
+ALPHANUMERIC_LIST = string.ascii_letters+string.digits
+
+def generate_random_string(size, char_list=ALPHANUMERIC_LIST):
+    return "".join([char_list[random.randint(0,len(char_list)-1)] for i in range(size)])
 
 def slugify(text, delim=u'-'):
     """Generates an ASCII-only slug."""
@@ -76,6 +78,9 @@ class User(UserMixin, db.Model):
 
     def check_password(self, password):
         return check_password_hash(self.password, password)
+
+    def generate_random_password():
+        return generate_random_string(random.randint(8, 12))
 
     def __repr__(self):
         return '<User {} {}>'.format(self.firstname, self.lastname)
@@ -297,7 +302,7 @@ class File(Resource):   # the default slug is a 20-letter-string, just specify f
 
     def __init__(self, id=None, type=None, year=None, year_id=None, event=None, event_id=None, filename=None, extension=None, pending=None, tags=None, **kwargs):
         if "slug" not in kwargs:
-            kwargs["slug"] = "".join([liste_char[random.randint(0,len(liste_char)-1)] for i in range(20)])
+            kwargs["slug"] = generate_random_string(20)
         super().__init__(id=id, **kwargs)
         self.type = type
         if filename:
