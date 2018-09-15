@@ -18,6 +18,24 @@ def empty_db():
     db.drop_all()
     db.create_all()
 
+class Data():
+    category_sports = Category(
+        name="Sports",
+        description="Le sport c'est la vie"
+    )
+    category_vie_associative = Category(
+        name="Vie associative",
+        description="La meilleure vie associative de l'Est parisien !"
+    )
+    category_films = Category(
+        name="Films",
+        description="Tous plein de films ! Pour vous en mettre plein les yeux !"
+    )
+    category_voyages = Category(
+        name="Voyages",
+        description="Des voyages de oufs !"
+    )
+
 class Fixtures():
     user_philippe = User(
         firstname="Philippe",
@@ -37,38 +55,17 @@ class Fixtures():
         email_confirmed=True
     )
 
-    category_sports = Category(
-        name="Sports",
-        author=user_philippe,
-        description="Le sport c'est la vie"
-    )
-    category_vie_associative = Category(
-        name="Vie associative",
-        author=user_philippe,
-        description="La meilleure vie associative de l'Est parisien !"
-    )
-    category_films = Category(
-        name="Films",
-        author=user_philippe,
-        description="Tous plein de films ! Pour vous en mettre plein les yeux !"
-    )
-    category_voyages = Category(
-        name="Voyages",
-        author=user_philippe,
-        description="Des voyages de oufs !"
-    )
-
     event_admissibles = Event(
         name="Admissibles",
         author=user_philippe,
-        category=category_vie_associative,
+        category=Data.category_vie_associative,
         private=False,
         description="Retour en enfance !"
     )
     event_coupe_de_l_X = Event(
         name="Coupe de l'X",
         author=user_ponthe,
-        category=category_sports,
+        category=Data.category_sports,
         private=False,
         description="Tournoi sportif majeur de la vie des écoles d'ingénieur ! Et les Ponts ont fait pas mal de perf' !"
     )
@@ -154,6 +151,7 @@ def load_fixtures():
         print("Emptying database...")
         empty_db()
         print("Loading fixtures...")
+        load_data()
         for fixture in list(Fixtures.__dict__.values())[1:-3]:
             print(fixture)
             db.session.add(fixture)
@@ -173,6 +171,14 @@ def load_fixtures():
 @manager.command    # ponthe/manager.py batch_upload
 def batch_upload():
     admin_views.batch_upload()
+
+@manager.command
+def load_data():
+    #categories = [Fixtures.category_sports, Fixtures.category_vie_associative, Fixtures.category_films, Fixtures.category_voyages]
+    for category in list(Data.__dict__.values())[1:-3]:
+        print(category)
+        db.session.add(category)
+        db.session.commit()
 
 
 if __name__ == "__main__":
