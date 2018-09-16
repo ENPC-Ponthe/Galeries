@@ -1,4 +1,4 @@
-from flask import render_template, redirect
+from flask import redirect
 from . import app
 from .private.views import render_events_template
 import os
@@ -16,7 +16,7 @@ def uploads(filename):
 # handle login failed
 @app.errorhandler(401)
 def handleError(e):
-    print("Erreur lors de l'authentification : ", e)
+    app.logger.error(f"Erreur lors de l'authentification : {e}")
     return redirect('login')
 
 @app.errorhandler(404)
