@@ -1,4 +1,4 @@
-from flask_login import UserMixin, current_user
+from flask_login import UserMixin
 from datetime import datetime
 from werkzeug.security import generate_password_hash, check_password_hash
 import codecs, translitcodec
@@ -83,7 +83,7 @@ class User(UserMixin, db.Model):
         return generate_random_string(random.randint(8, 12))
 
     def __repr__(self):
-        return '<User {} {}>'.format(self.firstname, self.lastname)
+        return '{} {}'.format(self.firstname, self.lastname)
 
 class TimestampMixin(object):
     created = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)

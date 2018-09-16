@@ -1,14 +1,11 @@
 # -- coding: utf-8 --"
 
 from . import public
-from flask import Flask, render_template, request, flash, redirect, url_for, abort
+from flask import render_template, request, flash, redirect, url_for, abort
 from urllib.parse import urlparse, urljoin
 from flask_mail import Message
-import os
-from flask_login import LoginManager, login_user, logout_user, current_user, login_required
+from flask_login import login_user, current_user
 from itsdangerous import URLSafeTimedSerializer, SignatureExpired, BadSignature
-import string
-import random
 from .. import app, db, login_manager, mail
 from ..models import User
 from datetime import datetime
@@ -80,7 +77,7 @@ def login():
             return getLoginPage()
     if logging_user.check_password(password):
         login_user(logging_user)
-        print("Logging user :", logging_user)
+        app.logger.debug("Logging user: ", logging_user)
         next = get_redirect_target()
         return redirect(next) if next and urlparse(next).path!='/logout' else getHome()
     else:

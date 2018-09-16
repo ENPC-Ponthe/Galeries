@@ -1,24 +1,15 @@
 # -- coding: utf-8 --"
 
 from . import private
-from flask import Flask, render_template, request, flash, redirect, url_for, jsonify
-from werkzeug import secure_filename
+from flask import render_template, request, flash, redirect
 from flask_mail import Message
-import os
-from flask_login import UserMixin, login_user, logout_user, current_user, login_required
-from itsdangerous import URLSafeTimedSerializer, SignatureExpired
-import string
-import random
+from flask_login import logout_user, current_user, login_required
 from .. import app, db, mail
 from ..models import Year, Event, File, Category
 from ..file_helper import create_folder, move_file, is_image, is_video, ext
-import os, subprocess
+import os
 from flask_tus_ponthe import tus_manager
 from ..admin.views import batch_upload
-
-# dbconnexion = mysql.connector.connect(host="vps.enpc.org", port="7501", \
-#     user="enpc-ponthe",password="Ponthasm7gorique2017", \
-#     database="enpc-ponthe")
 
 UPLOAD_FOLDER = os.path.join(app.instance_path, 'club_folder', 'uploads')
 UPLOAD_TMP_FOLDER = os.path.join(app.instance_path, 'upload_tmp')
