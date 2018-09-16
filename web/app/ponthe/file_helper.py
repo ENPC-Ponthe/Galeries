@@ -1,5 +1,5 @@
-import os
-import shutil
+import os, shutil
+from ponthe import app
 
 def is_image(filename):
     """ Renvoie True si le fichier possede une extension d'image valide. """
@@ -14,7 +14,7 @@ def create_folder(directory):
         if not os.path.exists(directory):
             os.makedirs(directory)
     except OSError:
-        print('Error: Creating directory. {}'.format(directory))
+        app.logger.error('Error: Creating directory. {}'.format(directory))
 
 def delete_folder(directory):
     try:

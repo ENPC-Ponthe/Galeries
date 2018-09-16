@@ -1,17 +1,16 @@
 #!/bin/env python
+from smtplib import SMTPException
 
-from flask import Flask, render_template
+from flask import render_template
 from flask_mail import Message
 from flask_script import Manager
 
-from ponthe import app, mail
-from ponthe import db
+from ponthe import app, mail, db
 from ponthe.file_helper import create_folder, delete_folder, copy_folder
 from ponthe.models import *
 from ponthe.admin import views as admin_views
 import os, subprocess, csv
 
-from sparkpost import SparkPostException
 from sqlalchemy.exc import IntegrityError
 
 manager = Manager(app)
@@ -151,15 +150,15 @@ class Fixtures():
 def load_fixtures():
     print("NEVER DO THIS IN PRODUCTION !!!")
     if input("Are you sure ? The database and the files will be erased ! [y/N] ") in {"y", "Y", "yes", "Yes"}:
-        print("Emptying database...")
+        app.logger.info("Emptying database...")
         empty_db()
-        print("Loading fixtures...")
+        app.logger.info("Loading fixtures...")
         load_data()
         for fixture in list(Fixtures.__dict__.values())[1:-3]:
-            print(fixture)
+            app.logger.debug(fixture)
             db.session.add(fixture)
             db.session.commit()
-        print("Overwriting files...")
+        app.logger.info("Overwriting files...")
         os.chdir(os.path.dirname(os.path.abspath(__file__)))
         # Can't rm club_folder in docker because a volume is mounted on it : busy
         create_folder("../instance/club_folder")
@@ -170,7 +169,7 @@ def load_fixtures():
         copy_folder("../instance/test/uploads", "../instance/club_folder/uploads")
         subprocess.call(["cp", "../instance/test/accounts.csv", "../instance/club_folder/"])
     else:
-        print("Abandon, exiting")
+        app.logger.info("Abandon, exiting")
 
 @manager.command    # ponthe/manager.py batch_upload
 def batch_upload():
@@ -178,9 +177,8 @@ def batch_upload():
 
 @manager.command
 def load_data():
-    #categories = [Fixtures.category_sports, Fixtures.category_vie_associative, Fixtures.category_films, Fixtures.category_voyages]
     for category in list(Data.__dict__.values())[1:-3]:
-        print(category)
+        app.logger.debug(category)
         db.session.add(category)
         db.session.commit()
 
@@ -189,13 +187,10 @@ def create_accounts():
     csv_file = os.path.join(app.instance_path, 'club_folder', 'accounts.csv')
     with open(csv_file, "r") as input:
         csv_reader = csv.reader(input)
-
         for gender, lastname, firstname, email, origin, department, promotion in csv_reader:
-
             user = User(firstname=firstname, lastname=lastname, email=email, admin=False, email_confirmed=True)
             password = User.generate_random_password()
             user.set_password(password)
-            print(user)
             db.session.add(user)
             try:
                 db.session.commit()
@@ -206,15 +201,21 @@ def create_accounts():
                     + 'Connecte-toi dès maintenant avec les identifiants suivants :\n'\
                     + 'Email : {}\n'.format(user.email)\
                     + 'Mot de passe : {}'.format(password)
-                msg.html = render_template('email/create_account.html', firstname=user.firstname, email=user.email, password=password)
+                msg.html = render_template(
+                    'email/create_account.html',
+                    firstname=user.firstname,
+                    email=user.email,
+                    password=password
+                )
                 mail.send(msg)
+                app.logger.info(f"Account successfully created for user {user}")
             except IntegrityError:
                 db.session.rollback()
-                print("User already exists")
-            except SparkPostException as e:
+                app.logger.warn(f"Account can't be created. User {user} already exists.")
+            except SMTPException as e:
                 db.session.rollback()
-                print("Email could not be sent")
-                raise e
+                app.logger.error(f"Account creation canceled for user {user}"
+                                f" because email could not be sent to {user.email}.")
 
 
 if __name__ == "__main__":
