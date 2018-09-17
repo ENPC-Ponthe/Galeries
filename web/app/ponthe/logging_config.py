@@ -29,7 +29,7 @@ def logging_init():
                 'level': 'DEBUG',
                 'filename': LOG_PATH,
                 'when': 'midnight',
-                'backupCount': '365',
+                'backupCount': 365,
                 'encoding': 'utf-8',
                 'formatter': 'default'
             },
@@ -42,7 +42,6 @@ def logging_init():
             }
         },
         'root': {
-            'level': 'INFO',
             'handlers': ['console', 'rotating', 'slack']
         }
     })
