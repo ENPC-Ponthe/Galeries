@@ -1,3 +1,4 @@
+# coding=utf-8
 from flask_login import UserMixin
 from datetime import datetime
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -79,6 +80,7 @@ class User(UserMixin, db.Model):
     def check_password(self, password):
         return check_password_hash(self.password, password)
 
+    @staticmethod
     def generate_random_password():
         return generate_random_string(random.randint(8, 12))
 
