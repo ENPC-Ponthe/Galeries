@@ -13,10 +13,11 @@ export default class AuthLoadingScreen extends Component {
         this.bootstrapAuth();
     }
 
-    async bootstrapAuth () {
-        const userToken = await deviceStorage.getJWT();
-        console.log("hey")
-        this.props.navigation.navigate(userToken ? 'App' : 'Login');
+    bootstrapAuth () {
+        deviceStorage.getJWT().then((userToken) => {
+            console.log("hey");
+            this.props.navigation.navigate(userToken ? 'App' : 'Login');
+        });
     };
 
     render() {
