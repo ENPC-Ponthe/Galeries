@@ -11,4 +11,3 @@ Flask-Script
 translitcodec # to slugify foreign letters like ü in ue
 slack-logger
 Flask-JWT-extended[asymmetric_crypto]
-git+git://github.com/PhilippeFerreiraDeSousa/Flask-Tus.git#egg=Flask-Tus-Ponthe
