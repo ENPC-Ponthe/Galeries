@@ -1,8 +1,6 @@
 import React from 'react'
 import {createDrawerNavigator} from 'react-navigation'
-import HomeScreen from '../components/upload/HomeScreen'
-import CaptureImage from '../components/upload/CaptureImage'
-import Recorder from '../components/upload/Recorder'
+import HomeScreen from '../components/HomeScreen'
 
 function navigationOptions(title) {
     return () => ({
@@ -19,11 +17,8 @@ export default AppStack = createDrawerNavigator({
         screen: HomeScreen,
         navigationOptions: navigationOptions('Galeries Ponthé')
     },
-    Image: {
-        screen: CaptureImage,
-        navigationOptions: navigationOptions('Partage de Photo')
-    },
-    Video: { screen: Recorder,
-        navigationOptions: navigationOptions('Partage de vidéo')
+    Page: {
+        screen: HomeScreen,
+        navigationOptions: navigationOptions('Page')
     },
 })

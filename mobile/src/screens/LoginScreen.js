@@ -15,27 +15,27 @@ import axios from 'axios'
 
 export default class LoginScreen extends Component {
     constructor(props) {
-        super(props)
+        super(props);
         this.state = {
             email: '',
             password: '',
             displaySubmitButton: true
-        }
+        };
 
-        this.keyboardHeight = new Animated.Value(0)
-        this.imageSize = new Animated.Value(IMAGE_SIZE)
+        this.keyboardHeight = new Animated.Value(0);
+        this.imageSize = new Animated.Value(IMAGE_SIZE);
 
         this.loginUser = this.loginUser.bind(this)
     }
 
     componentWillMount () {
-        this.keyboardDidShowSub = Keyboard.addListener('keyboardDidShow', this.keyboardDidShow)
-        this.keyboardDidHideSub = Keyboard.addListener('keyboardDidHide', this.keyboardDidHide)
+        this.keyboardDidShowSub = Keyboard.addListener('keyboardDidShow', this.keyboardDidShow);
+        this.keyboardDidHideSub = Keyboard.addListener('keyboardDidHide', this.keyboardDidHide);
     }
 
     componentWillUnmount() {
-        this.keyboardDidShowSub.remove()
-        this.keyboardDidHideSub.remove()
+        this.keyboardDidShowSub.remove();
+        this.keyboardDidHideSub.remove();
     }
 
     keyboardDidShow = (event) => {
@@ -48,12 +48,12 @@ export default class LoginScreen extends Component {
                 duration: event.duration,
                 toValue: IMAGE_HEIGHT_SMALL,
             }),
-        ]).start()
+        ]).start();
         this.setState({displaySubmitButton: false})
-    }
+    };
 
     keyboardDidHide = (event) => {
-        const duration = event ? event.duration : 500
+        const duration = event ? event.duration : 500;
         Animated.parallel([
             Animated.timing(this.keyboardHeight, {
                 duration: duration,
@@ -63,18 +63,18 @@ export default class LoginScreen extends Component {
                 duration: duration,
                 toValue: IMAGE_SIZE,
             }),
-        ]).start()
+        ]).start();
         this.setState({displaySubmitButton: true})
-    }
+    };
 
-    loadJWT = async (token) => {
-        await deviceStorage.setJWT(token)
-        console.log(token)
+    async loadJWT(token) {
+        await deviceStorage.setJWT(token);
+        console.log(token);
         this.props.navigation.navigate('App')
     }
 
     loginUser() {
-        console.log("Let's login !")
+        console.log("Let's login !");
         axios.post(API_URL + "login",{
             email: this.state.email,
             password: this.state.password
