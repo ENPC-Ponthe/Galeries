@@ -3,11 +3,7 @@ package fr.ponthe.galeries;
 import android.app.Application;
 
 import com.facebook.react.ReactApplication;
-import com.brentvatne.react.ReactVideoPackage;
-import com.RNFetchBlob.RNFetchBlobPackage;
-import org.reactnative.camera.RNCameraPackage;
 import com.oblador.vectoricons.VectorIconsPackage;
-import com.imagepicker.ImagePickerPackage;
 import com.facebook.react.ReactNativeHost;
 import com.facebook.react.ReactPackage;
 import com.facebook.react.shell.MainReactPackage;
@@ -27,12 +23,8 @@ public class MainApplication extends Application implements ReactApplication {
     @Override
     protected List<ReactPackage> getPackages() {
       return Arrays.<ReactPackage>asList(
-            new MainReactPackage(),
-            new ReactVideoPackage(),
-            new VectorIconsPackage(),
-            new ImagePickerPackage(),
-            new RNFetchBlobPackage(),
-            new RNCameraPackage()
+          new MainReactPackage(),
+            new VectorIconsPackage()
       );
     }
 

@@ -36,5 +36,5 @@ export default styles = StyleSheet.create({
     }
 })
 
-export const IMAGE_SIZE = 250
-export const IMAGE_HEIGHT_SMALL = 100
+export const IMAGE_SIZE = 250;
+export const IMAGE_HEIGHT_SMALL = 100;

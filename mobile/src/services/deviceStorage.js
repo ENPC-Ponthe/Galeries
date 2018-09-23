@@ -1,9 +1,9 @@
 import { AsyncStorage } from 'react-native'
 
 export default class deviceStorage {
-    USER_TOKEN_KEY = 'userToken'
+    static USER_TOKEN_KEY = 'userToken';
 
-    async setJWT(value) {
+    static async setJWT(value) {
         try {
             await AsyncStorage.setItem(this.USER_TOKEN_KEY, value);
         } catch (error) {
@@ -11,7 +11,7 @@ export default class deviceStorage {
         }
     }
 
-    async unsetJWT() {
+    static async unsetJWT() {
         try {
             await AsyncStorage.removeItem(this.USER_TOKEN_KEY)
         } catch (error) {
@@ -19,7 +19,7 @@ export default class deviceStorage {
         }
     }
 
-    async getJWT() {
+    static async getJWT() {
         try {
             return await AsyncStorage.getItem(this.USER_TOKEN_KEY);
         } catch (error) {
