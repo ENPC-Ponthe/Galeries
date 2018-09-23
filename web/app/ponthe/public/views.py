@@ -37,19 +37,6 @@ def user_loader(id):
     else:
         return user
 
-
-#@login_manager.request_loader
-#def request_loader(request):    #   sert à quoi ???
-#    email = request.form['email']
-#    password = request.form['password']
-#    logging_user = User.query.filter_by(email=email, password=password).first()
-#
-#    if logging_user is not None:
-#        logging_user.is_authenticated = True
-#        return logging_user
-#    else:
-#        return
-
 def getLoginPage():
     return render_template('login.html')
 
