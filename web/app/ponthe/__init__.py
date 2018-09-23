@@ -20,6 +20,7 @@ mail=Mail(app)
 from .public.views import public
 from .private.views import private
 from .admin.views import admin
+from .api.routes import api
 
 from . import models
 from . import views
@@ -27,3 +28,4 @@ from . import views
 app.register_blueprint(public)
 app.register_blueprint(private)
 app.register_blueprint(admin)
+app.register_blueprint(api, url_prefix='/api')
