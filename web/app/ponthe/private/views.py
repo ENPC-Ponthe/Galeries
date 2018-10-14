@@ -1,34 +1,33 @@
 # -- coding: utf-8 --"
+from flask import render_template, request, flash, redirect
+from flask_login import logout_user, current_user, login_required
+from flask_mail import Message
+from flask_tus_ponthe import tus_manager
+import os
 
 from . import private
-from flask import render_template, request, flash, redirect
-from flask_mail import Message
-from flask_login import logout_user, current_user, login_required
 from .. import app, db, mail
-from ..models import Year, Event, File, Category
-from ..file_helper import create_folder, move_file, is_image, is_video, ext
-import os
-from flask_tus_ponthe import tus_manager
 from ..admin.views import batch_upload
+from ..file_helper import create_folder, move_file, is_image, is_video, get_extension
+from ..models import Year, Event, File, Category
+from ..persistence import GalleryDAO
 
 UPLOAD_FOLDER = os.path.join(app.instance_path, 'club_folder', 'uploads')
 UPLOAD_TMP_FOLDER = os.path.join(app.instance_path, 'upload_tmp')
 
 tm = tus_manager(private, upload_url='/file-upload', upload_folder=UPLOAD_TMP_FOLDER)
 
-def get_filenames(year_slug, event_slug):
-    files = File.query.join(File.year).join(File.event).filter(Year.slug == year_slug, Event.slug == event_slug).all()
-    return [file.filename for file in files]
 
 def get_moderation_filenames(year_slug, event_slug):    # retourne la liste des fichiers non-modérés et la liste des fichiers modérés
     files = File.query.join(File.year).join(File.event).filter(Year.slug == year_slug, Event.slug == event_slug).all()
     return [file.filename for file in files if file.pending], [file.filename for file in files if not file.pending]
 
+
 @tm.upload_file_handler
 def upload_file_hander(upload_file_path, filename, year_value, event_name):
     event = Event.query.filter_by(name=event_name).one()
     year = Year.query.filter_by(value=year_value).one()
-    new_file = File(event=event, year=year, extension=ext(filename), author=current_user, pending=(not current_user.admin))
+    new_file = File(event=event, year=year, extension=get_extension(filename), author=current_user, pending=(not current_user.admin))
 
     if is_image(filename):
         new_file.type = "IMAGE"
@@ -43,27 +42,33 @@ def upload_file_hander(upload_file_path, filename, year_value, event_name):
     db.session.add(new_file)
     db.session.commit()
 
+
 @private.before_request     # login nécessaire pour tout le blueprint
 @login_required
 def before_request():
     pass
 
+
 def render_events_template(template, **kwargs):
-    dict_events = { year: Event.query.filter(File.query.filter_by(year=year, event_id=Event.id).exists()).all() for year in Year.query.order_by(Year.value).all() }
-    return render_template(template, dict_events=dict_events, **kwargs)
+    galleries_by_year = { year: GalleryDAO.find_by_year(year) for year in Year.query.order_by(Year.value).all() }
+    return render_template(template, dict_events=galleries_by_year, **kwargs)
+
 
 @private.route('/')
 def getHome():
     return redirect('/index')
 
+
 @private.route('/index')
 def index():
-    return render_events_template('index.html')
+    return render_events_template('index.html', categories=Category.query.all())
+
 
 @private.route('/logout')
 def logout():
     logout_user()
     return redirect('/login')
+
 
 @private.route('/materiel',methods=['GET','POST'])
 def materiel() :    # TODO
@@ -71,6 +76,7 @@ def materiel() :    # TODO
         msg = Message(subject="Demande d'emprunt de {} par {} {}".format(request.form['object'], current_user.firstname, current_user.lastname), body=request.form['message'], sender='Ponthé <no-reply@ponthe.enpc.org>', recipients=['philippe.ferreira-de-sousa@eleves.enpc.fr'])
         mail.send(msg)
     return render_events_template('materiel.html')
+
 
 @private.route('/dashboard', methods=['GET', 'POST'])
 def dashboard():
@@ -95,32 +101,43 @@ def dashboard():
                 confirmed_galleries.append((year_slug, event.name, confirmed_filenames))
     return render_events_template('dashboard.html', pending_galleries=pending_galleries, confirmed_galleries=confirmed_galleries)
 
+
 @private.route('/upload/<year>/<event>')
 def upload(year, event):
     return render_events_template('upload.html', year=year, event=event)
 
-@private.route ('/category/<category_slug>')
+
+@private.route ('/categories/<category_slug>')
 def category_gallery(category_slug):
     category = Category.query.filter_by(slug=category_slug).one()
-    events_from_cat = Event.query.all()
-    files_from_cat = File.query.join(File.event).join(Event.category).filter_by(slug=category_slug).all()
-    galleries = { (file.year, file.event) for file in files_from_cat }
-    liste_events_annees = [[event, year.slug, event.cover_image.filename if event.cover_image is not None else File.query.filter_by(event=event).first().filename] for (year, event) in galleries]    # A changer
-    return render_events_template('category_gallery.html', category=category, liste_events_annees=liste_events_annees)
+    return render_events_template('category_gallery.html', category=category)
 
 
-@private.route('/galleries/<year_slug>')
+@private.route('/galleries/years/<year_slug>')
 def year_gallery(year_slug):
-    queried_year = Year.query.filter_by(slug=year_slug).one()
-    events_from_year = Event.query.filter(File.query.filter_by(year=queried_year, event_id=Event.id).exists()).all()
-    dict_events_year = { event: event.cover_image.filename if event.cover_image is not None else File.query.filter_by(event=event).first().filename for event in events_from_year }
+    year = Year.query.filter_by(slug=year_slug).one()
+    events = Event.query.filter(File.query.filter_by(year=year, event_id=Event.id).exists()).all()
+    dict_events_year = { event: event.cover_image.filename if event.cover_image is not None else File.query.filter_by(event=event).first().filename for event in events }
     return render_events_template('year_gallery.html', year_slug=year_slug, events_year=dict_events_year)
+
+
+@private.route('/galleries/<year_slug>/<event_slug>')
+def event_year_gallery(year_slug, event_slug):
+    galleries = GalleryDAO.find_by_event_and_year_slugs(event_slug, year_slug)
+    if len(galleries) == 1:
+        gallery_slug = galleries[0].slug
+        redirect(f"/galleries/{gallery_slug}")
+    event_name = Event.query.filter_by(slug=event_slug).one().name
+    return render_events_template('event_gallery.html', galleries=galleries)
+
 
 @private.route('/galleries/<year_slug>/<event_slug>')
 def event_gallery(year_slug, event_slug):
+    files = File.query()
     filenames = get_filenames(year_slug, event_slug)
     event_name = Event.query.filter_by(slug=event_slug).one().name
     return render_events_template('event_gallery.html', year_slug=year_slug, event_name=event_name, filenames=filenames)
+
 
 @private.route('/create-event', methods=['GET', 'POST'])
 def create_event():
@@ -142,6 +159,7 @@ def create_event():
     categories = [category.name for category in Category.query.all()]
     return render_events_template('create_event.html', categories=categories)
 
+
 @private.route('/create-year', methods=['GET', 'POST'])
 def create_annee():
     if request.method == 'POST':
@@ -155,6 +173,7 @@ def create_annee():
         flash("Veuillez indiquer la nouvelle année","error")
     return render_events_template('create_year.html')
 
-@private.route('/membres')
-def membres():
-    return render_events_template('membres.html')
+
+@private.route('/members')
+def members():
+    return render_events_template('members.html')

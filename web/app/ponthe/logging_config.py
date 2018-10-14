@@ -1,6 +1,5 @@
 import logging.config as config
 import os
-import logging
 
 LOG_FILE = "ponthe.log"
 LOG_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "instance", "logs", LOG_FILE)
@@ -42,6 +41,6 @@ def logging_init():
             }
         },
         'root': {
-            'handlers': ['console', 'rotating', 'slack']
+            'handlers': ['console', 'rotating']#, 'slack']
         }
     })

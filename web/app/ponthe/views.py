@@ -1,17 +1,14 @@
-from flask import redirect
+from flask import redirect, send_from_directory, send_file
+from flask_login import login_required
+import os
+
 from . import app
 from .private.views import render_events_template
-import os
-from flask import send_from_directory
-from flask_login import login_required
 
-@app.route('/uploads/<path:filename>')
+@app.route('/uploads/<path:file_path>')
 @login_required
-def uploads(filename):
-    return send_from_directory(
-        os.path.join(app.instance_path, 'club_folder', 'uploads'),
-        filename
-    )
+def uploads(file_path):
+    return send_file(os.path.join(app.instance_path, 'club_folder', 'uploads', file_path))
 
 @app.route('/apk/<path:filename>')
 def apk(filename):
@@ -23,7 +20,6 @@ def apk(filename):
 # handle login failed
 @app.errorhandler(401)
 def handleError(e):
-    app.logger.error(f"Erreur lors de l'authentification : {e}")
     return redirect('login')
 
 @app.errorhandler(404)
