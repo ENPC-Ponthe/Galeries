@@ -1,5 +1,4 @@
-from ponthe.models import User, Event, Year, File
-from .Data import Data
+from ponthe.models import User, Event, Year, File, Gallery, Category
 
 class Fixtures():
     user_philippe = User(
@@ -23,15 +22,13 @@ class Fixtures():
     event_admissibles = Event(
         name="Admissibles",
         author=user_philippe,
-        category=Data.category_vie_associative,
-        private=False,
+        category=Category.query.filter_by(slug="vie-associative").one(),
         description="Retour en enfance !"
     )
     event_coupe_de_l_X = Event(
         name="Coupe de l'X",
         author=user_ponthe,
-        category=Data.category_sports,
-        private=False,
+        category=Category.query.filter_by(slug="sports").one(),
         description="Tournoi sportif majeur de la vie des écoles d'ingénieur ! Et les Ponts ont fait pas mal de perf' !"
     )
 
@@ -48,13 +45,26 @@ class Fixtures():
         value=2017
     )
 
+    gallery1 = Gallery(
+        name="Les admissibles des RasPonts'",
+        slug="les-admissibles-des-rasponts",
+        year=year_2016,
+        event=event_admissibles
+    )
+
+    gallery2 = Gallery(
+        name="La coupe de l'X 2017 du turfu",
+        slug="la-coupe-de-l-x-2017-du-turfu",
+        year=year_2017,
+        event=event_coupe_de_l_X
+    )
+
     file1 = File(
         type="IMAGE",
         slug="jUpIiqdBWQ9VpXVMzgjV",
         name="Hey !",
         author=user_philippe,
-        year=year_2016,
-        event=event_admissibles,
+        gallery=gallery1,
         filename="jUpIiqdBWQ9VpXVMzgjV.bmp",
         pending=False
     )
@@ -63,8 +73,7 @@ class Fixtures():
         slug="t3dn23iQCa4aEDu7nNXB",
         name="Keur",
         author=user_philippe,
-        year=year_2016,
-        event=event_admissibles,
+        gallery=gallery1,
         filename="t3dn23iQCa4aEDu7nNXB.jpg",
         pending=False
     )
@@ -73,8 +82,7 @@ class Fixtures():
         slug="XbcoWxBD5PPzc941hXVM",
         name="Champions du monde !",
         author=user_philippe,
-        year=year_2016,
-        event=event_admissibles,
+        gallery=gallery1,
         filename="XbcoWxBD5PPzc941hXVM.jpg",
         pending=True
     )
@@ -83,8 +91,7 @@ class Fixtures():
         slug="EKMRZkewtLHvD01TQXrU",
         name=None,
         author=user_philippe,
-        year=year_2017,
-        event=event_coupe_de_l_X,
+        gallery=gallery2,
         filename="EKMRZkewtLHvD01TQXrU.jpg",
         pending=False
     )
@@ -93,8 +100,7 @@ class Fixtures():
         slug="8WsJH3V5D2nY3JxvkEJY",
         name="Oh !",
         author=user_philippe,
-        year=year_2017,
-        event=event_coupe_de_l_X,
+        gallery=gallery2,
         filename="8WsJH3V5D2nY3JxvkEJY.png",
         pending=True
     )
@@ -103,8 +109,7 @@ class Fixtures():
         slug="b4iryeMgCfPsN7Egq8Z9",
         name="Bouilla !",
         author=user_ponthe,
-        year=year_2017,
-        event=event_coupe_de_l_X,
+        gallery=gallery2,
         filename="b4iryeMgCfPsN7Egq8Z9.jpg",
         pending=True
     )

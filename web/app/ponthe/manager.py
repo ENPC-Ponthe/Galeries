@@ -10,7 +10,7 @@ from ponthe import app, mail, db
 from ponthe.file_helper import create_folder, delete_folder, copy_folder
 from ponthe.models import User
 from ponthe.admin import views as admin_views
-import os, subprocess, csv
+import os, subprocess, csv, glob
 
 from sqlalchemy.exc import IntegrityError
 
@@ -28,12 +28,12 @@ def load_fixtures():
         app.logger.info("Emptying database...")
         empty_db()
         app.logger.info("Loading fixtures...")
-        load_data()
+        persist_data()
         from ponthe.data.Fixtures import Fixtures
         for fixture in list(Fixtures.__dict__.values())[1:-3]:
             app.logger.debug(fixture)
             db.session.add(fixture)
-            db.session.commit()
+        db.session.commit()
         app.logger.info("Overwriting files...")
         os.chdir(os.path.dirname(os.path.abspath(__file__)))
         # Can't rm club_folder in docker because a volume is mounted on it : busy
@@ -43,21 +43,34 @@ def load_fixtures():
         delete_folder("../instance/club_folder/uploads")
         copy_folder("../instance/test/waiting_zone", "../instance/club_folder/waiting_zone")
         copy_folder("../instance/test/uploads", "../instance/club_folder/uploads")
+        copy_data()
         subprocess.call(["cp", "../instance/test/accounts.csv", "../instance/club_folder/"])
     else:
         app.logger.info("Abandon, exiting")
 
-@manager.command    # ponthe/manager.py batch_upload
+@manager.command
 def batch_upload():
     admin_views.batch_upload()
 
+def persist_data():
+    app.logger.info("Loading project data in database...")
+    from ponthe.data.Data import Data
+    for data in list(Data.__dict__.values())[1:-3]:
+        app.logger.debug(data)
+        db.session.add(data)
+    db.session.commit()
+
+def copy_data():
+    app.logger.info("Copying files...")
+    for directory in glob.glob(r'./data/galleries/*'):
+        print(directory)
+        copy_folder(directory, "../instance/club_folder/uploads/"+os.path.basename(directory))
+
 @manager.command
 def load_data():
-    from ponthe.data.Data import Data
-    for category in list(Data.__dict__.values())[1:-3]:
-        app.logger.debug(category)
-        db.session.add(category)
-        db.session.commit()
+    persist_data()
+    os.chdir(os.path.dirname(os.path.abspath(__file__)))
+    copy_data()
 
 @manager.command
 def create_accounts():

@@ -64,63 +64,21 @@
     <div class="row padding-vert-20">
         <div class="col-md-1"></div>
         <div class="col-md-10">
-            <!-- Portfolio -->
             <ul class="portfolio-group">
-                <!-- //Portfolio Item// -->
-                <!-- Portfolio Item -->
-                <li class="portfolio-item col-sm-6 col-xs-6 padding-20">
-                    <a href={{url_for('private.category_gallery', category_slug = 'sports')}}>
-                        <figure class="animate fadeInLeft">
-                            <img alt="image5" src="static/img/frontpage/pom.jpg">
-                            <figcaption>
-                                <h3>Sport</h3>
-                                <span>Tout sur la vie sportive : tournois, show pom pom, évènements ..  </span>
-                            </figcaption>
-                        </figure>
-                    </a>
-                </li>
-                <!-- //Portfolio Item// -->
-                <!-- Portfolio Item -->
-                <li class="portfolio-item col-sm-6 col-xs-6 padding-20">
-                    <a href={{url_for('private.category_gallery', category_slug = 'vie-associative')}}>
-                        <figure class="animate fadeInRight">
-                            <img alt="image6" src="static/img/frontpage/font2.jpg">
-                            <figcaption>
-                                <h3>Vie associative</h3>
-                                <span>WEI, NDLR, Campagnes, Soirées et autres festivités ! </span>
-                            </figcaption>
-                        </figure>
-                    </a>
-                </li>
-                <!-- //Portfolio Item// -->
-                <!-- Portfolio Item -->
-                <li class="portfolio-item col-sm-6 col-xs-6 padding-20">
-                    <a href={{url_for('private.category_gallery', category_slug = 'voyages')}}>
-                        <figure class="animate fadeInRight">
-                            <img alt="image6" src="static/img/frontpage/dam.jpg">
-                            <figcaption>
-                                <h3>Voyages</h3>
-                                <span>Les Ponts autour du monde </span>
-                            </figcaption>
-                        </figure>
-                    </a>
-                </li>
-                <!-- //Portfolio Item// -->
-                <!-- Portfolio Item -->
-                <li class="portfolio-item col-sm-6 col-xs-6 padding-20">
-                    <a href={{url_for('private.category_gallery', category_slug = 'films')}}>
-                        <figure class="animate fadeInRight">
-                            <img alt="image4" src="static/img/frontpage/voyage1.jpg">
-                            <figcaption>
-                                <h3>Films</h3>
-                                <span>Réalisations du club : films admissibles, de voyage, de tournois, de campagnes and more</span>
-                            </figcaption>
-                        </figure>
-                    </a>
-                </li>
-                <!-- //Portfolio Item// -->
+                {% for category in categories %}
+                    <li class="portfolio-item col-sm-6 col-xs-6 padding-20">
+                        <a href={{url_for('private.category_gallery', category_slug = category.slug)}}>
+                            <figure class="animate {{ loop.cycle('fadeInRight', 'fadeInLeft') }}">
+                                <img src="{{ url_for('uploads', file_path=category.cover_image.file_path) }}">
+                                <figcaption>
+                                    <h3>{{ category.name }}</h3>
+                                    <span>{{ category.description }}</span>
+                                </figcaption>
+                            </figure>
+                        </a>
+                    </li>
+                {% endfor %}
             </ul>
-            <!-- End Portfolio -->
         </div>
         <div class="col-md-1"></div>
     </div>
