@@ -1,12 +1,12 @@
 # coding=utf-8
-from flask_login import UserMixin
 from datetime import datetime
+from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
-import codecs, translitcodec
-import enum
+import codecs, translitcodec, enum, re, string, random
+
+from .file_helper import split_filename
+
 from . import db
-import re
-import string, random
 
 _punct_re = re.compile(r'[\t !"#$%&\'()*\-/<=>?@\[\\\]^_`{|},.]+')  #   Les slug DSI enlève les ' au lieu de les remplacer par un -
 ALPHANUMERIC_LIST = string.ascii_letters+string.digits
@@ -54,9 +54,7 @@ class User(UserMixin, db.Model):
     email_confirmed = db.Column(db.Boolean, nullable=False, default=False)
     created = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
 
-    def __init__(self, id=None, firstname=None, lastname=None, password=None, username=None, email=None, admin=None, email_confirmed=None):
-        if id:
-            self.id = id
+    def __init__(self, firstname=None, lastname=None, password=None, username=None, email=None, admin=None, email_confirmed=None):
         self.firstname = firstname
         self.lastname = lastname
         if username:
@@ -107,23 +105,39 @@ class Resource(TimestampMixin, db.Model):
         'polymorphic_on': resource_type
     }
 
-    def __init__(self, id=None, name=None, slug=None, author=None, author_id=None):   # fixtures need initializing with ids, **kwargs cause default __init__ of subclasses give all arguments to super i gues
+    def __init__(self, name=None, slug=None, author=None, author_id=None):
         self.name = name
-        if id:
-            self.id = id
         if slug:
-            self.slug = slug
+            self.set_slug(slug)
         else:
-            self.set_slug(name)
+            self.set_slug_by_name(name)
         if author_id:
             self.author_id = author_id
         elif author:
             self.author = author
-        #elif current_user is not None and current_user.is_authenticated:   # doesn't work
+        #elif current_user is not None and current_user.is_authenticated:   # doesn't work and should be in service layer
         #    self.author = current_user
 
-    def set_slug(self, name):
-        self.slug = slugify(name)
+    @staticmethod
+    def get_indexed_slug(slug: str, index: int):
+        return slug if index == 1 else slug + str(index)
+
+    def set_slug_by_name(self, name):
+        if not name:
+            self.slug = generate_random_string(20)
+            return
+
+        slug = slugify(name)
+        self.set_slug(slug)
+
+    def set_slug(self, slug):
+        index = 1
+        indexed_slug = self.get_indexed_slug(slug, index)
+        while Resource.query.filter_by(slug=indexed_slug).count() > 0:
+            index += 1
+            indexed_slug = self.get_indexed_slug(slug, index)
+
+        self.slug = indexed_slug
 
     def __repr__(self):
         return '<Resource {}>'.format(self.name)
@@ -135,25 +149,18 @@ class Group(Resource):
     }
 
     id = db.Column(db.Integer, db.ForeignKey('resources.id', onupdate="CASCADE", ondelete="CASCADE"), primary_key=True)
-    # à généraliser en galleries accessibles qui appartiennent à un (event, year)
-    year_id = db.Column(db.Integer, db.ForeignKey('years.id'), nullable=True)
-    year = db.relationship('Year', backref='groups', foreign_keys=[year_id])
-    event_id = db.Column(db.Integer, db.ForeignKey('events.id'), nullable=True)
-    event = db.relationship('Event', backref='groups', foreign_keys=[event_id])
-    # pour les évenement d'attribut private = True
+    gallery_id = db.Column(db.Integer, db.ForeignKey('galleries.id'), nullable=True)
+    gallery = db.relationship('Gallery', backref='groups', foreign_keys=[gallery_id])
+    # pour les galeries d'attribut private = True
 
-    def __init__(self, id=None, year=None, year_id=None, event=None, event_id=None, **kwargs):
-        super().__init__(id=id, **kwargs)
-        if year_id:
-            self.year_id = year_id
-        elif year:
-            self.year = year
-        if event_id:
-            self.event_id = event_id
-        elif event:
-            self.event = event
+    def __init__(self, gallery=None, gallery_id=None, **kwargs):
+        super().__init__(**kwargs)
+        if gallery_id:
+            self.gallery_id = gallery_id
+        elif gallery:
+            self.gallery = gallery
 
-class Reaction(TimestampMixin, db.Model):   # relation many-to-many type Slack
+class Reaction(TimestampMixin, db.Model):   # relation many-to-many type Slack, don't mess with MRO chain
     __tablename__ = 'reactions'
 
     user_id = db.Column(db.Integer, db.ForeignKey('users.id', name='fk_reactions_user'), primary_key=True)
@@ -162,8 +169,8 @@ class Reaction(TimestampMixin, db.Model):   # relation many-to-many type Slack
     resource = db.relationship('Resource', backref='reactions', foreign_keys=[resource_id])
     type = db.Column(db.Enum(ReactionEnum), nullable=False)
 
-    def __init__(self, id=None, user=None, user_id=None, resource=None, resource_id=None, type=None, **kwargs):
-        super().__init__(id=id, **kwargs)
+    def __init__(self, user=None, user_id=None, resource=None, resource_id=None, type=None, **kwargs):
+        super().__init__(**kwargs)
         if user_id:
             self.user_id = user_id
         elif user:
@@ -189,8 +196,8 @@ class Comment(Resource):
         "inherit_condition": id == Resource.id
     }
 
-    def __init__(self, id=None, text=None,resource=None, resource_id=None, **kwargs):
-        super().__init__(id=id, **kwargs)
+    def __init__(self, text=None,resource=None, resource_id=None, **kwargs):
+        super().__init__(**kwargs)
         self.text = text
         if resource_id:
             self.resource_id = resource_id
@@ -211,8 +218,8 @@ class Category(Resource):
     cover_image_id = db.Column(db.Integer, db.ForeignKey('files.id', name='fk_categories_file'), nullable=True)
     cover_image = db.relationship('File', backref='categories', foreign_keys=[cover_image_id])
 
-    def __init__(self, id=None, description=None, cover_image=None, cover_image_id=None, **kwargs):
-        super().__init__(id=id, **kwargs)
+    def __init__(self, description=None, cover_image=None, cover_image_id=None, **kwargs):
+        super().__init__(**kwargs)
         self.description = description
         if cover_image_id:
             self.cover_image_id = cover_image_id
@@ -227,7 +234,6 @@ class Event(Resource):
     __mapper_args__ = {
         'polymorphic_identity': 'event'
     }
-    # exemple de nom de l'event : Campagne BDE qui peut être sur plusieurs années
 
     id = db.Column(db.Integer, db.ForeignKey('resources.id', onupdate="CASCADE", ondelete="CASCADE"), primary_key=True)
     category_id = db.Column(db.Integer, db.ForeignKey('categories.id', name='fk_events_category'), nullable=True)
@@ -235,11 +241,10 @@ class Event(Resource):
     # dépendance circulaire entre table à migrer séparemment
     cover_image_id = db.Column(db.Integer, db.ForeignKey('files.id', name='fk_events_file'), nullable=True)
     cover_image = db.relationship('File', backref='events', foreign_keys=[cover_image_id])
-    private = db.Column(db.Boolean, nullable=False, default=False)
     description = db.Column(db.String(1024), nullable=True)
 
-    def __init__(self, id=None, category=None, category_id=None, cover_image=None, cover_image_id=None, private=None, description=None, **kwargs):
-        super().__init__(id=id, **kwargs)
+    def __init__(self, category=None, category_id=None, cover_image=None, cover_image_id=None, description=None, **kwargs):
+        super().__init__(**kwargs)
         if category_id:
             self.category_id = category_id
         elif category:
@@ -248,10 +253,7 @@ class Event(Resource):
             self.cover_image_id = cover_image_id
         elif cover_image:
             self.cover_image = cover_image
-        if private is not None:
-            self.private = private
-        if description:
-            self.description = description
+        self.description = description
 
     def __repr__(self):
         return '<Event {}>'.format(self.name)
@@ -268,10 +270,10 @@ class Year(Resource):
     cover_image_id = db.Column(db.Integer, db.ForeignKey('files.id', name='fk_years_file'), nullable=True)
     cover_image = db.relationship('File', backref='years', foreign_keys=[cover_image_id])
 
-    def __init__(self, value=None, id=None, cover_image=None, cover_image_id=None, **kwargs):
+    def __init__(self, value=None, cover_image=None, cover_image_id=None, **kwargs):
         if "slug" not in kwargs:
             kwargs["slug"] = str(value)
-        super().__init__(id=id, **kwargs)
+        super().__init__(**kwargs)
         self.value = value
         if cover_image_id:
             self.cover_image_id = cover_image_id
@@ -281,36 +283,22 @@ class Year(Resource):
     def __repr__(self):
         return '<Year {}>'.format(self.value)
 
-file_tag = db.Table('file_tag',
-    db.Column('tag_id', db.Integer, db.ForeignKey('tags.id', name='fk_file_tags_tag'), primary_key=True),
-    db.Column('file_id', db.Integer, db.ForeignKey('files.id', name='fk_file_tags_file'), primary_key=True)
-)
-
-class File(Resource):   # the default slug is a 20-letter-string, just specify filename or extension
-    __tablename__ = 'files'
+class Gallery(Resource):
+    __tablename__ = 'galleries'
     __mapper_args__ = {
-        'polymorphic_identity': 'file'
+        'polymorphic_identity': 'gallery'
     }
 
     id = db.Column(db.Integer, db.ForeignKey('resources.id', onupdate="CASCADE", ondelete="CASCADE"), primary_key=True)
-    type = db.Column(db.Enum(FileTypeEnum), nullable=False)
-    year_id = db.Column(db.Integer, db.ForeignKey('years.id', name='fk_files_year'), nullable=True)
-    year = db.relationship('Year', backref='files', foreign_keys=[year_id])
-    event_id = db.Column(db.Integer, db.ForeignKey('events.id', name='fk_files_event'), nullable=True)
-    event = db.relationship('Event', backref='files', foreign_keys=[event_id])  # plusieurs files peuvent appartenir à l'event Campagne BDE mais d'années différentes
-    filename = db.Column(db.String(64), unique=True, nullable=False)
-    pending = db.Column(db.Boolean, nullable=False, default=True)
-    tags = db.relationship('Tag', secondary=file_tag, lazy='subquery', backref=db.backref('files', lazy=True))
+    year_id = db.Column(db.Integer, db.ForeignKey('years.id', name='fk_galleries_year'), nullable=True)
+    year = db.relationship('Year', backref='galleries', foreign_keys=[year_id])
+    event_id = db.Column(db.Integer, db.ForeignKey('events.id', name='fk_galleries_event'), nullable=True)
+    event = db.relationship('Event', backref='galleries', foreign_keys=[event_id])
+    private = db.Column(db.Boolean, nullable=False, default=False)
 
-    def __init__(self, id=None, type=None, year=None, year_id=None, event=None, event_id=None, filename=None, extension=None, pending=None, tags=None, **kwargs):
-        if "slug" not in kwargs:
-            kwargs["slug"] = generate_random_string(20)
-        super().__init__(id=id, **kwargs)
-        self.type = type
-        if filename:
-            self.filename = filename
-        elif extension:
-            self.filename = "{}.{}".format(self.slug, extension)
+    def __init__(self, year=None, year_id=None, event=None, event_id=None, private=None, **kwargs):
+        super().__init__(**kwargs)
+        self.private = private
         if year_id:
             self.year_id = year_id
         elif year:
@@ -319,13 +307,58 @@ class File(Resource):   # the default slug is a 20-letter-string, just specify f
             self.event_id = event_id
         elif event:
             self.event = event
+
+    def __repr__(self):
+        '<Gallery {}>'.format(self.name)
+
+file_tag = db.Table('file_tag',
+    db.Column('tag_id', db.Integer, db.ForeignKey('tags.id', name='fk_file_tags_tag'), primary_key=True),
+    db.Column('file_id', db.Integer, db.ForeignKey('files.id', name='fk_file_tags_file'), primary_key=True)
+)
+
+class File(Resource):
+    __tablename__ = 'files'
+    __mapper_args__ = {
+        'polymorphic_identity': 'file'
+    }
+
+    id = db.Column(db.Integer, db.ForeignKey('resources.id', onupdate="CASCADE", ondelete="CASCADE"), primary_key=True)
+    type = db.Column(db.Enum(FileTypeEnum), nullable=False)
+    extension = db.Column(db.String(64), nullable=True)
+    gallery_id = db.Column(db.Integer, db.ForeignKey('galleries.id', name='fk_files_gallery'), nullable=False)
+    gallery = db.relationship('Gallery', backref='files', foreign_keys=[gallery_id])
+    pending = db.Column(db.Boolean, nullable=False, default=True)
+    tags = db.relationship('Tag', secondary=file_tag, lazy='subquery', backref=db.backref('files', lazy=True))
+
+    def __init__(self, type=None, gallery=None, gallery_id=None, filename=None, extension=None, pending=None, tags=None, **kwargs):
+        if filename:
+            slug, ext = split_filename(filename)
+            if "slug" not in kwargs:
+                kwargs["slug"] = slug
+            if not extension:
+                extension = ext
+        super().__init__(**kwargs)
+        self.type = type
+        self.extension = extension
+        if gallery_id:
+            self.gallery_id = gallery
+        elif gallery:
+            self.gallery = gallery
         if tags:
             self.tags = tags
         if pending is not None:
             self.pending = pending
 
+    @property
+    def filename(self):
+        return f"{self.slug}.{self.extension}"
+
+    @property
+    def file_path(self):
+        return f"{self.gallery.slug}/{self.slug}.{self.extension}"
+
     def __repr__(self):
-        return '<File {}>'.format(self.filename)
+        return '<File {}>'.format(self.file_path)
 
 class Tag(Resource):
     __tablename__ = 'tags'
