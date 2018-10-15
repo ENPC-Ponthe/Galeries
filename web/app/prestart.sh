@@ -1,8 +1,15 @@
-#! /usr/bin/env bash
+#!/usr/bin/env bash
+set -e
+HOST=db
+PORT=3306
+TIMEOUT=5
+
+service redis-server start
 
 # Let the DB start
-service redis-server start
-sleep 10;
+until /wait-for-it/wait-for-it.sh --host=${HOST} --port=${PORT} --timeout=${TIMEOUT} --quiet; do
+    >&2 echo "Connection not available on ${HOST}:${PORT} - waiting ${TIMEOUT} seconds"
+done
+
 # Run migrations
-# export FLASK_APP=ponthe
 flask db upgrade
