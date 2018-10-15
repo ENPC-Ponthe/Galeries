@@ -9,8 +9,6 @@ web/ponthe.prod.cfg
 .env
 
 # Instance Folder - used for configuration parameters and uploads / fixtures files
-# web/app/instance/club_folder/
-web/app/instance/ponthe.cfg
 web/app/instance/club_folder
 web/app/instance/upload_tmp
 web/app/instance/logs

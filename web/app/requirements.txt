@@ -1,7 +1,8 @@
 Flask
-Werkzeug
 Flask_Mail
 Flask-Login
+Flask-Cli
+Werkzeug
 SQLAlchemy
 Flask-SQLAlchemy
 mysqlclient
@@ -11,3 +12,4 @@ Flask-Script
 translitcodec # to slugify foreign letters like ü in ue
 slack-logger
 Flask-JWT-extended[asymmetric_crypto]
+click

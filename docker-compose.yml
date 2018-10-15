@@ -2,6 +2,7 @@ version: "3.1"
 
 services:
   web:
+    image: quay.io/PhilippeFerreiraDeSousa/ponthe-web:${TAG:-latest}
     build: ./web
     ports:
       - "127.0.0.1:7000:80"
@@ -11,6 +12,10 @@ services:
     depends_on:
       - db
       - sshd
+    environment:
+      - SECRET_KEY=${SECRET_KEY}
+      - SQLALCHEMY_DATABASE_URI=mysql://${DATABASE_USER}:${DATABASE_PASSWORD}@db/${DATABASE_NAME}
+      - MAIL_PASSWORD=${MAIL_PASSWORD}
     restart: always
 
   sshd:
@@ -68,7 +73,3 @@ volumes:
     driver: local
   club-folder:
     driver: local
-
-#configs:
-#  web-flask:
-#    file: ./web/ponthe.prod.cfg

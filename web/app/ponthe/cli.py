@@ -2,31 +2,33 @@
 # coding=utf-8
 from smtplib import SMTPException
 
+import click
 from flask import render_template
 from flask_mail import Message
-from flask_script import Manager
 
-from ponthe import app, mail, db
-from ponthe.file_helper import create_folder, delete_folder, copy_folder
-from ponthe.models import User
-from ponthe.admin import views as admin_views
+from . import app, mail, db
+from .file_helper import create_folder, delete_folder, copy_folder
+from .models import User
+from .admin import views as admin_views
 import os, subprocess, csv, glob
 
 from sqlalchemy.exc import IntegrityError
 
-manager = Manager(app)
-
-@manager.command
-def empty_db():
+def _drop_and_recreate_db():
+    click.echo("Emptying database...")
     db.drop_all()
     db.create_all()
 
-@manager.command    # ponthe/manager.py load_fixtures
+@app.cli.command(help='Empty database.')
+def empty_db():
+    _drop_and_recreate_db()
+
+
+@app.cli.command(help="Load fixtures")
 def load_fixtures():
-    print("NEVER DO THIS IN PRODUCTION !!!")
-    if input("Are you sure ? The database and the files will be erased ! [y/N] ") in {"y", "Y", "yes", "Yes"}:
-        app.logger.info("Emptying database...")
-        empty_db()
+    click.echo("NEVER DO THIS IN PRODUCTION !!!")
+    if click.confirm("Are you sure ? The database and the files will be erased !"):
+        _drop_and_recreate_db()
         app.logger.info("Loading fixtures...")
         persist_data()
         from ponthe.data.Fixtures import Fixtures
@@ -48,9 +50,11 @@ def load_fixtures():
     else:
         app.logger.info("Abandon, exiting")
 
-@manager.command
+
+@app.cli.command(help="Mass import from waiting zone")
 def batch_upload():
     admin_views.batch_upload()
+
 
 def persist_data():
     app.logger.info("Loading project data in database...")
@@ -65,13 +69,15 @@ def copy_data():
     for directory in glob.glob(r'./data/galleries/*'):
         copy_folder(directory, "../instance/club_folder/uploads/"+os.path.basename(directory))
 
-@manager.command
+
+@app.cli.command(help="Load initial data of the app like categories")
 def load_data():
     persist_data()
     os.chdir(os.path.dirname(os.path.abspath(__file__)))
     copy_data()
 
-@manager.command
+
+@app.cli.command(help="Create accounts based on accounts.csv in club_folder")
 def create_accounts():
     csv_file = os.path.join(app.instance_path, 'club_folder', 'accounts.csv')
     with open(csv_file, "r") as input:
@@ -105,7 +111,3 @@ def create_accounts():
                 db.session.rollback()
                 app.logger.error(f"Account creation canceled for user {user}"
                                 f" because email could not be sent to {user.email}.")
-
-
-if __name__ == "__main__":
-    manager.run()
