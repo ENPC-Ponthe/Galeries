@@ -7,11 +7,31 @@ Exécuter
 ./install.sh
 ```
 
-### Dévelopement
+## Installation en local
 
-Activer l'environnement de développement Python :
+Installer [VirtualenvWrapper](https://virtualenvwrapper.readthedocs.io/en/latest/) :
+```bash
+pip install virtualenvwrapper
 ```
-source venv/bin/activate
+
+Ajouter à votre *~/.bashrc* si vous êtes sous bash :
+```bash
+VIRTUALENVWRAPPER_PYTHON=/usr/bin/python3
+export WORKON_HOME=$HOME/virtenvs;
+source /usr/local/bin/virtualenvwrapper.sh;
+```
+et sourcez-le.
+
+Puis créer un virtualenv et l'activer
+```bash
+mkvirtualenv ponthe
+workon ponthe
+```
+
+Charger les données initiales de l'app comme les catégories :
+```
+export FLASK_APP=ponthe;
+flask load_data
 ```
 
 Lancer l'application
@@ -25,7 +45,6 @@ Pour le rendre disponible sur le réseau ajouter `--host=0.0.0.0` (écoute toute
 ### Migration
 Générer les migrations dans *web/migrations/versions* :
 ```
-cd web/app
 export FLASK_APP=ponthe
 flask db migrate
 flask db upgrade
@@ -34,8 +53,24 @@ flask db upgrade
 ### Fixtures
 Supprimer la BDD, les images / photos et charger les fixtures :
 ```
-cd web/app
-ponthe/manager.py load_fixtures
+export FLASK_APP=ponthe;
+flask load_fixtures
+```
+
+### Créer les comptes par import de csv
+
+Faire
+```
+export FLASK_APP=ponthe;
+flask create_accounts
+```
+
+### Batch import de galeries
+
+Faire :
+```
+export FLASK_APP=ponthe;
+flask batch_upload
 ```
 
 ## Mettre en production

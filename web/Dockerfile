@@ -4,11 +4,12 @@ MAINTAINER Philippe Ferreira De Sousa
 ENV NGINX_MAX_UPLOAD 10000m
 ENV STATIC_PATH /app/ponthe/static
 ENV FLASK_APP=ponthe
+ENV PROD_MODE=true
 
 RUN apt-get update && apt-get install -y redis-server
+RUN git clone https://github.com/vishnubob/wait-for-it.git /wait-for-it
 
 COPY ./app /app
-COPY ./ponthe.prod.cfg /app/instance/ponthe.cfg
 RUN mkdir -p /app/instance/club_folder/uploads && mkdir -p /app/instance/club_folder/waiting_zone && mkdir -p /app/instance/club_folder/apk && mkdir -p /app/instance/upload_tmp && mkdir -p /app/instance/logs
 
 RUN pip install /app
