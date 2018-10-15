@@ -61,15 +61,15 @@
                                     <span class="fa-th">Galeries</span>
                                     <ul>
                                         <li>
-                                            {% for year, events in dict_events.items() %}
+                                            {% for year, galleries in top_menu_galleries_by_year.items() %}
                                             <li>
                                                 <a href="{{ url_for('private.year_gallery', year_slug=year.slug) }}" class="parent">{{ year.value }}</a>
                                                 <ul>
-                                                    {% for event in events %}
-                                                <li>
-                                                    <a href="{{ url_for('private.event_gallery', year_slug=year.slug, event_slug=event.slug) }}" class="fa-group">{{ event.name }}</a>
-                                                </li>
-                                                 {% endfor %}
+                                                    {% for gallery in galleries %}
+                                                        <li>
+                                                            <a href="{{ url_for('private.gallery', gallery_slug=gallery.slug) }}" class="fa-group">{{ gallery.name }}</a>
+                                                        </li>
+                                                    {% endfor %}
                                                  </ul>
                                             </li>
                                             {% endfor %}

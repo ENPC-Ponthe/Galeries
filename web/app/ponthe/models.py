@@ -34,6 +34,10 @@ class FileTypeEnum(enum.Enum):
     IMAGE = 1
     VIDEO = 2
 
+class GenderEnum(enum.Enum):
+    M = 1
+    F = 2
+
 # See http://flask-sqlalchemy.pocoo.org/2.3/models/#many-to-many-relationships for query usage about many-to-many ralations
 membership = db.Table('membership',
     db.Column('user_id', db.Integer, db.ForeignKey('users.id'), primary_key=True),
@@ -44,19 +48,27 @@ class User(UserMixin, db.Model):
     __tablename__ = 'users'
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    gender = db.Column(db.Enum(GenderEnum))
     firstname = db.Column(db.String(64), nullable=False)
     lastname = db.Column(db.String(64), nullable=False)
-    username = db.Column(db.String(64), unique=True, nullable=False)
+    origin = db.Column(db.String(64))
+    department = db.Column(db.String(64))
+    promotion = db.Column(db.String(64))
     password = db.Column(db.String(128), nullable=False)
+    username = db.Column(db.String(64), unique=True, nullable=False)
     email = db.Column(db.String(64), unique=True, nullable=False)
     groups = db.relationship('Group', secondary=membership, lazy='subquery', backref=db.backref('members', lazy=True))
     admin = db.Column(db.Boolean, nullable=False, default=False)
     email_confirmed = db.Column(db.Boolean, nullable=False, default=False)
     created = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
 
-    def __init__(self, firstname=None, lastname=None, password=None, username=None, email=None, admin=None, email_confirmed=None):
+    def __init__(self, firstname=None, lastname=None, gender=None, origin=None, department=None, promotion=None, password=None, username=None, email=None, admin=None, email_confirmed=None):
         self.firstname = firstname
         self.lastname = lastname
+        self.gender = gender
+        self.origin = origin
+        self.department = department
+        self.promotion = promotion
         if username:
             self.username = username
             if not email:
@@ -77,6 +89,10 @@ class User(UserMixin, db.Model):
 
     def check_password(self, password):
         return check_password_hash(self.password, password)
+
+    @property
+    def full_name(self):
+        return f"{self.firstname} {self.lastname}"
 
     @staticmethod
     def generate_random_password():
@@ -255,6 +271,16 @@ class Event(Resource):
             self.cover_image = cover_image
         self.description = description
 
+    @property
+    def cover(self):
+        if self.cover_image:
+            return self.cover_image
+        else:
+            for gallery in self.galleries:
+                if len(gallery.files) > 0:
+                    return gallery.files[0]
+            return File.query.filter_by(slug="default-image")
+
     def __repr__(self):
         return '<Event {}>'.format(self.name)
 
@@ -269,16 +295,17 @@ class Year(Resource):
     value = db.Column(db.Integer, nullable=False)
     cover_image_id = db.Column(db.Integer, db.ForeignKey('files.id', name='fk_years_file'), nullable=True)
     cover_image = db.relationship('File', backref='years', foreign_keys=[cover_image_id])
+    description = db.Column(db.String(1024), nullable=True)
 
-    def __init__(self, value=None, cover_image=None, cover_image_id=None, **kwargs):
-        if "slug" not in kwargs:
-            kwargs["slug"] = str(value)
+    def __init__(self, value: int=None, cover_image=None, cover_image_id=None, description=None, **kwargs):
+        kwargs["name"] = str(value)
         super().__init__(**kwargs)
         self.value = value
         if cover_image_id:
             self.cover_image_id = cover_image_id
         elif cover_image:
             self.cover_image = cover_image
+        self.description = description
 
     def __repr__(self):
         return '<Year {}>'.format(self.value)
@@ -294,9 +321,12 @@ class Gallery(Resource):
     year = db.relationship('Year', backref='galleries', foreign_keys=[year_id])
     event_id = db.Column(db.Integer, db.ForeignKey('events.id', name='fk_galleries_event'), nullable=True)
     event = db.relationship('Event', backref='galleries', foreign_keys=[event_id])
+    cover_image_id = db.Column(db.Integer, db.ForeignKey('files.id', name='fk_galleries_file'), nullable=True)
+    cover_image = db.relationship('File', backref='galleries', foreign_keys=[cover_image_id])
+    description = db.Column(db.String(1024), nullable=True)
     private = db.Column(db.Boolean, nullable=False, default=False)
 
-    def __init__(self, year=None, year_id=None, event=None, event_id=None, private=None, **kwargs):
+    def __init__(self, year=None, year_id=None, event=None, event_id=None, cover_image=None, cover_image_id=None, description=None, private=None, **kwargs):
         super().__init__(**kwargs)
         self.private = private
         if year_id:
@@ -307,9 +337,23 @@ class Gallery(Resource):
             self.event_id = event_id
         elif event:
             self.event = event
+        if cover_image_id:
+            self.cover_image_id = cover_image_id
+        elif cover_image:
+            self.cover_image = cover_image
+        self.description = description
+
+    @property
+    def cover(self):
+        if self.cover_image:
+            return self.cover_image
+        else:
+            if len(self.files) > 0:
+                return self.files[0]
+            return File.query.filter_by(slug="default-image").one()
 
     def __repr__(self):
-        '<Gallery {}>'.format(self.name)
+        return '<Gallery {}>'.format(self.name)
 
 file_tag = db.Table('file_tag',
     db.Column('tag_id', db.Integer, db.ForeignKey('tags.id', name='fk_file_tags_tag'), primary_key=True),

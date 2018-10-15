@@ -63,7 +63,6 @@ def persist_data():
 def copy_data():
     app.logger.info("Copying files...")
     for directory in glob.glob(r'./data/galleries/*'):
-        print(directory)
         copy_folder(directory, "../instance/club_folder/uploads/"+os.path.basename(directory))
 
 @manager.command
@@ -78,7 +77,7 @@ def create_accounts():
     with open(csv_file, "r") as input:
         csv_reader = csv.reader(input)
         for gender, lastname, firstname, email, origin, department, promotion in csv_reader:
-            user = User(firstname=firstname, lastname=lastname, email=email, admin=False, email_confirmed=True)
+            user = User(firstname=firstname, lastname=lastname, gender=gender, origin=origin, department=department, promotion=promotion, email=email, admin=False, email_confirmed=True)
             password = User.generate_random_password()
             user.set_password(password)
             db.session.add(user)
