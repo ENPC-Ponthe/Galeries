@@ -2,9 +2,13 @@ from ponthe.models import User, Event, Year, File, Gallery, Category
 
 class Fixtures():
     user_philippe = User(
+        gender="M",
         firstname="Philippe",
         lastname="Ferreira De Sousa",
         username="philippe.ferreira-de-sousa",
+        origin="Concours Commun",
+        department="IMI",
+        promotion="019",
         password="password",
         admin=True,
         email_confirmed=True
@@ -33,14 +37,12 @@ class Fixtures():
     )
 
     year_2016 = Year(
-        slug="2016",
-        name="Une année riche en victoires !",
+        description="Une année riche en victoires !",
         author=user_philippe,
         value=2016
     )
     year_2017= Year(
-        slug="2017",
-        name="Une année de folie !",
+        description="Une année de folie !",
         author=user_philippe,
         value=2017
     )

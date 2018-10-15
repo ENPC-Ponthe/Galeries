@@ -30,10 +30,21 @@
                     <p>
                         <button type="submit" class="btn btn-primary" value="Envoyer">Envoyer</button>
                     </p>
+                    {% for categorie in ['error', 'success'] %}
+                        {% with msgs = get_flashed_messages(category_filter=[categorie]) %}
+                            {% if msgs %}
+                                <div class="alert alert-{{ 'danger' if categorie == 'error' else 'success' }}">
+                                    <ul>
+                                        {% for m in msgs %}
+                                            <li>{{ m | safe }}</li>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                            {% endif %}
+                        {% endwith %}
+                    {% endfor %}
                 </form>
             </div>
-            <!-- End Main Column -->
-            <!-- Side Column -->
             <div class="col-md-3">
                 <!-- Recent Posts -->
                 <div class="panel panel-default">
@@ -49,7 +60,6 @@
                         </li>
                     </div>
                 </div>
-                <!-- End recent Posts -->
             </div>
         </div>
     </div>

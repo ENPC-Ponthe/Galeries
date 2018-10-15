@@ -1,15 +1,34 @@
 {% extends "layout/layout.html" %}
+
 {% block content %}
 <div id="content-top-border" class="container"></div>
 <div id="content">
     <div class="container background-white">
         <div class="row margin-vert-30">
-            <div class="headline">
-                <h1>Ajouter vos photos et vidéos !!!</h1>
+            <div class="col-md-6">
                 <h2>{{ gallery.name }}</h2>
+                {% if gallery.description %}
+                    <p>{{ gallery.description }}</p>
+                {% endif %}
             </div>
-            <div class="col-md-12">
-                <div id="UppyDashboard"></div>
+            <div class="col-md-6">
+                <div class="DashboardContainer"></div>
+                <button id="UppyModalOpenerBtn" class="btn btn-primary">Ajouter des fichiers</button>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12 portfolio-group no-padding">
+                {% for file in gallery.files %}
+                    <div class="col-md-3 portfolio-item margin-bottom-40 design">
+                        <div>
+                            <figure>
+                                <a href="{{ url_for('uploads', file_path=file.file_path) }}">
+                                    <img src="{{ url_for('uploads', file_path=file.file_path) }}">
+                                </a>
+                            </figure>
+                        </div>
+                    </div>
+                {% endfor %}
             </div>
         </div>
     </div>
@@ -29,8 +48,9 @@
     });
     uppyTwo
       .use(Uppy.Dashboard, {
-          inline: true,
-          target: '#UppyDashboard',
+          trigger: '#UppyModalOpenerBtn',
+          inline: false,
+          target: '.DashboardContainer',
           replaceTargetContent: true,
           showProgressDetails: true,
           note: "Images et vidéos seulement, 1–10 fichiers, jusqu'à 1 GB",
@@ -47,6 +67,10 @@
           },
           browserBackButtonClose: true
       })
-      .use(Uppy.Tus, { endpoint: '{{ url_for('private.file-upload', gallery_slug=gallery.slug) }}' });
+      .use(Uppy.Tus, {endpoint: "{{ url_for('private.file-upload', gallery_slug=gallery_slug) }}"});
+
+    uppy.on('complete', (result) => {
+      console.log(result.successful);
+    })
 </script>
 {% endblock %}

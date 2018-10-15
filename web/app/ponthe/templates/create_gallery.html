@@ -5,31 +5,38 @@
 <div id="content">
     <div class="container background-white">
         <div class="row margin-vert-30">
-            <!-- Main Column -->
             <div class="col-md-9">
-                <!-- Main Content -->
                 <div class="headline">
-                    <h2>Créer un nouvel événement</h2>
-                    <!-- Contact Form -->
+                    <h2>Créer une nouvelle galerie</h2>
                     <form action="" method="post">
                         <label>Nom</label>
                         <div class="row margin-bottom-20">
                             <div class="col-md-6 col-md-offset-0">
-                                <input required type="text" class="form-control" name="name">
+                                <input required type="text" class="form-control" name="gallery_name">
                             </div>
                         </div>
-                        <label>Categorie</label>
+                        <label>Année</label>
                         <div class="row margin-bottom-20">
                             <div class="col-md-6 col-md-offset-0">
-                                <select name="category_slug">
-                                    {% for category in categories %}
-                                        <option value="{{ category.slug }}">{{ category.name }}</option>
+                                <select name="year_slug">
+                                    {% for year in years %}
+                                        <option value="{{ year.slug }}">{{ year.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <label>Evénement</label>
+                        <div class="row margin-bottom-20">
+                            <div class="col-md-6 col-md-offset-0">
+                                <select name="event_slug">
+                                    {% for event in events %}
+                                        <option value="{{ event.slug }}">{{ event.name }}</option>
                                     {% endfor %}
                                 </select>
                             </div>
                         </div>
                         <p>
-                            <button type="submit" class="btn btn-primary">Ajouter l'événement</button>
+                            <button type="submit" class="btn btn-primary">Ajouter la galerie</button>
                         </p>
                         {% with msgs = get_flashed_messages(category_filter=['error']) %}
                             {% if msgs %}
@@ -46,7 +53,6 @@
                 </div>
             </div>
         </div>
-        <!-- End Main Content -->
     </div>
 </div>
 <div id="content-bottom-border" class="container"></div>

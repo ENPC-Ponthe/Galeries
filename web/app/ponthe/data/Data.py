@@ -2,7 +2,7 @@
 from ponthe.models import Category, File, Gallery
 
 class Data():
-    ponthe_gallery = Gallery(
+    category_gallery = Gallery(
         name="Photos de couverture des catégories",
         slug="photos-de-couverture-des-categories",
         private=True
@@ -11,28 +11,28 @@ class Data():
         type="IMAGE",
         name="Sports Cover",
         filename="sports-cover.jpg",
-        gallery=ponthe_gallery,
+        gallery=category_gallery,
         pending=False
     )
     vie_associative_cover_image = File(
         type="IMAGE",
         name="Vie associative Cover",
         filename="vie-associative-cover.jpg",
-        gallery=ponthe_gallery,
+        gallery=category_gallery,
         pending=False
     )
     films_cover_image = File(
         type="IMAGE",
         name="Films Cover",
         filename="films-cover.jpg",
-        gallery=ponthe_gallery,
+        gallery=category_gallery,
         pending=False
     )
     voyages_cover_image = File(
         type="IMAGE",
         name="Voyages Cover",
         filename="voyages-cover.jpg",
-        gallery=ponthe_gallery,
+        gallery=category_gallery,
         pending=False
     )
 
@@ -55,4 +55,18 @@ class Data():
         name="Voyages",
         description="Les Ponts autour du monde",
         cover_image=voyages_cover_image
+    )
+
+    template_gallery = Gallery(
+        name="Photos du template",
+        slug="photos-du-template",
+        private=True
+    )
+
+    default_image = File(
+        type="IMAGE",
+        name="Default image",
+        filename="default-image.jpg",
+        gallery=template_gallery,
+        pending=False
     )
