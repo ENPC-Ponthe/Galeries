@@ -11,19 +11,24 @@
                 </div>
                 <form action="" method="post">
                     <div class="row margin-vert-30">
-                        <div class="col-md-4">
+                        <div class="col-md-3">
                             <p>
                                 <button type="submit" class="btn btn-primary" name="option" value="create_year">Créer une année</button>
                             </p>
                         </div>
-                        <div class="col-md-4">
+                        <div class="col-md-3">
                             <p>
                                 <button type="submit" class="btn btn-primary" name="option" value="create_event">Créer un évenement</button>
                             </p>
                         </div>
-                        <div class="col-md-4">
+                        <div class="col-md-3">
                             <p>
-                                <button type="submit" class="btn btn-primary" name="option" value="batch_upload">Téléverser fichiers en attente</button>
+                                <button type="submit" class="btn btn-primary" name="option" value="create_gallery">Créer une galerie</button>
+                            </p>
+                        </div>
+                        <div class="col-md-3">
+                            <p>
+                                <button type="submit" class="btn btn-primary" name="option" value="batch_upload" disabled="true">Téléverser fichiers en attente</button>
                             </p>
                         </div>
                     </div>
@@ -31,29 +36,30 @@
             </div>
         {% endif %}
         <hr/>
-        {% if pending_galleries %}
+        {% if pending_files_by_gallery %}
             <div class="col-md-12">
                 <div class="row margin-vert-30">
                     <h1>En attente de modération</h1>
                 </div>
             </div>
-            {% for year_slug, event_name, filenames in pending_galleries %}
+            {% for gallery, files in pending_files_by_gallery.items() %}
                 <div class="row margin-vert-30">
                     <div class="col-md-6">
-                        <h2>{{ year_slug }} - {{ event_name }}</h2>
+                        <h2>{{ gallery.name }}</h2>
+                        <h3>{{ gallery.event.name }} - {{ gallery.year.name }}</h3>
                     </div>
                     <div class="col-md-6">
-                        <a class="btn btn-primary" href="{{ url_for('private.upload', year=year_slug, event=event_name) }}">Ajouter des fichiers</a>
+                        <a class="btn btn-primary" href="{{ url_for('private.upload', gallery_slug=gallery.slug) }}">Ajouter des fichiers</a>
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-md-12 portfolio-group no-padding">
-                        {% for filename in filenames %}
+                        {% for file in files %}
                             <div class="col-md-3 portfolio-item margin-bottom-40 design">
                                 <div>
                                     <figure>
-                                        <a href="{{ url_for('uploads', filename='{}/{}/{}'.format(year_slug, event_name, filename)) }}">
-                                            <img src="{{ url_for('uploads', filename='{}/{}/{}'.format(year_slug, event_name, filename)) }}">
+                                        <a href="{{ url_for('uploads', file_path=file.file_path) }}">
+                                            <img src="{{ url_for('uploads', file_path=file.file_path) }}">
                                         </a>
                                     </figure>
                                 </div>
@@ -62,29 +68,32 @@
                     </div>
                 </div>
             {% endfor %}
+        <hr />
         {% endif %}
+
         <div class="col-md-12">
             <div class="row margin-vert-30">
-                <h1>Mes événements</h1>
+                <h1>Mes Galeries</h1>
             </div>
         </div>
-        {% for year_slug, event_name, filenames in confirmed_galleries %}
+        {% for gallery, files in confirmed_files_by_gallery.items() %}
             <div class="row margin-vert-30">
                 <div class="col-md-6">
-                    <h2>{{ year_slug }} - {{ event_name }}</h2>
+                    <h2>{{ gallery.name }}</h2>
+                    <h3>{{ gallery.event.name }} - {{ gallery.year.name }}</h3>
                 </div>
                 <div class="col-md-6">
-                    <a class="btn btn-primary" href="{{ url_for('private.upload', year=year_slug, event=event_name) }}">Ajouter des fichiers</a>
+                    <a class="btn btn-primary" href="{{ url_for('private.upload', gallery_slug=gallery.slug) }}">Ajouter des fichiers</a>
                 </div>
             </div>
             <div class="row">
                 <div class="col-md-12 portfolio-group no-padding">
-                    {% for filename in filenames %}
+                    {% for file in files %}
                         <div class="col-md-3 portfolio-item margin-bottom-40 design">
                             <div>
                                 <figure>
-                                    <a href="{{ url_for('uploads', filename='{}/{}/{}'.format(year_slug, event_name, filename)) }}">
-                                        <img src="{{ url_for('uploads', filename='{}/{}/{}'.format(year_slug, event_name, filename)) }}">
+                                    <a href="{{ url_for('uploads', file_path=file.file_path) }}">
+                                        <img src="{{ url_for('uploads', file_path=file.file_path) }}">
                                     </a>
                                 </figure>
                             </div>
@@ -93,7 +102,7 @@
                 </div>
             </div>
         {% endfor %}
-        {% if not galleries %}
+        {% if not confirmed_files_by_gallerys %}
             <div class="row margin-vert-30">
                 <div class="col-md-12">
                     Aucun fichier.

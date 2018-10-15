@@ -53,7 +53,7 @@ def login():
         else:
             return jsonify({"msg": "Compte en attente de confirmation par email"}), 400
     if user.check_password(password):
-        print("User authenticating on API :", user)
+        app.logger.debug("User authenticating on API :", user)
         access_token = create_access_token(identity=user)
         return jsonify(token=access_token), 200
     else:

@@ -9,3 +9,7 @@ class GalleryDAO:
     @staticmethod
     def find_by_year(year):
         return Gallery.query.filter_by(year=year).all()
+
+    @staticmethod
+    def find_by_slug(slug):
+        return Gallery.query.filter_by(slug=slug).one()
