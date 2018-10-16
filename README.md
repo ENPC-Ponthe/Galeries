@@ -16,7 +16,7 @@ pip install virtualenvwrapper
 
 Ajouter à votre *~/.bashrc* si vous êtes sous bash :
 ```bash
-VIRTUALENVWRAPPER_PYTHON=/usr/bin/python3
+export VIRTUALENVWRAPPER_PYTHON=/usr/bin/python3;
 export WORKON_HOME=$HOME/virtenvs;
 source /usr/local/bin/virtualenvwrapper.sh;
 ```

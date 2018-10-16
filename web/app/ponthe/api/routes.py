@@ -7,11 +7,6 @@ from flask_jwt_extended import JWTManager, jwt_required, create_access_token, ge
 
 jwt = JWTManager(app)
 
-with open(os.path.join(app.instance_path, "keys", "jwtRS256-public.pem"), 'r') as public_key:
-    app.config['JWT_PUBLIC_KEY'] = public_key.read()
-with open(os.path.join(app.instance_path, "keys", "jwtRS256-private.pem"), 'r') as private_key:
-    app.config['JWT_PRIVATE_KEY'] = private_key.read()
-
 @jwt.user_claims_loader
 def add_claims_to_access_token(user):
     return {
