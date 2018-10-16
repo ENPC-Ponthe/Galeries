@@ -1,17 +1,18 @@
 # -- coding: utf-8 --"
 
-from . import public
 from flask import render_template, request, flash, redirect, url_for, abort
 from urllib.parse import urlparse, urljoin
 from flask_mail import Message
 from flask_login import login_user, current_user
-from itsdangerous import URLSafeTimedSerializer, SignatureExpired, BadSignature
-from .. import app, db, login_manager, mail
-from ..models import User
+from itsdangerous import SignatureExpired, BadSignature
 from datetime import datetime
 from sqlalchemy.exc import IntegrityError
 
-serializer=URLSafeTimedSerializer(app.secret_key)
+from . import public
+from .. import app, db, login_manager, mail
+from ..models import User
+from ..services import UserService
+
 
 def getHome():
     return redirect('index')
@@ -101,7 +102,7 @@ def register():
                 else:
                     flash("Il existe déjà un compte pour cet adresse email", "error")
                     return render_template('register.html')
-            token = serializer.dumps(new_user.id)
+            token = UserService.get_token(new_user)
             msg = Message('Confirme la validation de ton compte Ponthé', sender='Ponthé <no-reply@ponthe.enpc.org>', recipients=[new_user.email] )
             link = "https://ponthe.enpc.org"+url_for('public.registering', token=token)
             msg.body = 'Clique sur le lien de confirmation suivant sous 24h pour activer ton compte : {}'.format(link)
@@ -115,7 +116,7 @@ def register():
 @public.route('/register/<token>')
 def registering(token):
     try :
-        user_id = serializer.loads(token, max_age=3600)
+        user_id = UserService.get_id_from_token(token)
     except BadSignature:
         abort(404)
     except SignatureExpired :
@@ -143,9 +144,8 @@ def reset():
         email = request.form['email']
         user = User.query.filter_by(email=email).first()
         if user is not None and user.email_confirmed:
-            token = serializer.dumps(user.id)
             msg = Message('Réinitialise ton mot de passe Ponthé' , sender='Ponthé <no-reply@ponthe.enpc.org>', recipients=[email])
-            link = "https://ponthe.enpc.org"+url_for('public.resetting', token=token)
+            link = UserService().get_reset_link(user)
             msg.body = 'Pour réinitialiser ton mot de passe, clique sur le lien suivant : {}'.format(link)
             msg.html = render_template('email/reset.html', reset_link=link, firstname=user.firstname)
             mail.send(msg)
@@ -155,7 +155,7 @@ def reset():
 @public.route('/reset/<token>', methods=['GET','POST'])
 def resetting(token):
     try :
-        user_id = serializer.loads(token, max_age=3600)
+        user_id = UserService.get_id_from_token(token)
     except BadSignature:
         abort(404)
     except SignatureExpired :
