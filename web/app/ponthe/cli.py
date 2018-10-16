@@ -1,23 +1,24 @@
 #!/bin/env python
 # coding=utf-8
-from smtplib import SMTPException
+import click, os, subprocess, csv, glob
 
-import click
 from flask import render_template
 from flask_mail import Message
+from smtplib import SMTPException
+from sqlalchemy.exc import IntegrityError
 
 from . import app, mail, db
+from .admin import views as admin_views
 from .file_helper import create_folder, delete_folder, copy_folder
 from .models import User
-from .admin import views as admin_views
-import os, subprocess, csv, glob
+from .services import UserService
 
-from sqlalchemy.exc import IntegrityError
 
 def _drop_and_recreate_db():
     click.echo("Emptying database...")
     db.drop_all()
     db.create_all()
+
 
 @app.cli.command(help='Empty database.')
 def empty_db():
@@ -64,6 +65,7 @@ def persist_data():
         db.session.add(data)
     db.session.commit()
 
+
 def copy_data():
     app.logger.info("Copying files...")
     for directory in glob.glob(r'./data/galleries/*'):
@@ -100,7 +102,8 @@ def create_accounts():
                     'email/create_account.html',
                     firstname=user.firstname,
                     email=user.email,
-                    password=password
+                    password=password,
+                    reset_link=UserService().get_reset_link(user)
                 )
                 mail.send(msg)
                 app.logger.info(f"Account successfully created for user {user}")
