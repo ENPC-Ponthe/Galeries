@@ -10,6 +10,7 @@ cd /app/instance/keys
 if [ ! -f "./jwtRS256-public.pem" ]; then
     openssl genrsa -out jwtRS256-private.pem 2048 && openssl rsa -in jwtRS256-private.pem -pubout -out jwtRS256-public.pem
 fi
+cd /app
 
 # Let the DB start
 until /wait-for-it/wait-for-it.sh --host=${HOST} --port=${PORT} --timeout=${TIMEOUT} --quiet; do
