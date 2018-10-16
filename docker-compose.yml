@@ -2,7 +2,7 @@ version: "3.1"
 
 services:
   web:
-    image: quay.io/PhilippeFerreiraDeSousa/ponthe-web:${TAG:-latest}
+    image: quay.io/philippeferreiradesousa/ponthe-web:${TAG:-latest}
     build: ./web
     ports:
       - "127.0.0.1:7000:80"
@@ -19,7 +19,7 @@ services:
     restart: always
 
   sshd:
-    image: quay.io/PhilippeFerreiraDeSousa/ponthe-sshd:${TAG:-latest}
+    image: quay.io/philippeferreiradesousa/ponthe-sshd:${TAG:-latest}
     env_file: .env
     build:
       context: ./sshd
