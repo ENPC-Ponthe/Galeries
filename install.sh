@@ -24,9 +24,12 @@ echo "CREATE DATABASE ponthe;CREATE USER 'ponthe'@'localhost' IDENTIFIED BY ''; 
 
 echo -e "\e[1m\e[34mInstallation de l'environnement python\e[0m"
 cd web
-pip3 install virtualenv
-virtualenv venv
-source venv/bin/activate
+pip3 install virtualenvwrapper
+echo "export VIRTUALENVWRAPPER_PYTHON=/usr/bin/python3;" >> ~/.bashrc
+echo "export WORKON_HOME=$HOME/virtenvs;" >> ~/.bashrc
+echo "source /usr/local/bin/virtualenvwrapper.sh;" >> ~/.bashrc
+mkvirtualenv ponthe
+workon ponthe
 pip install --editable .
 export FLASK_APP=ponthe
 flask db init

@@ -6,7 +6,7 @@ ENV STATIC_PATH /app/ponthe/static
 ENV FLASK_APP=ponthe
 ENV PROD_MODE=true
 
-RUN apt-get update && apt-get install -y redis-server
+RUN apt-get update && apt-get install -y redis-server openssl
 RUN git clone https://github.com/vishnubob/wait-for-it.git /wait-for-it
 
 COPY ./app /app

@@ -13,11 +13,15 @@ def load(app: Flask):
             MAIL_PORT = 587,
             MAIL_USERNAME = 'SMTP_Injection',
             MAIL_PASSWORD = os.environ['MAIL_PASSWORD'],
-            MAIL_USE_TLS=True,
-            JWT_ALGORITHM='RS256',
+            MAIL_USE_TLS = True,
+            JWT_ALGORITHM = 'RS256',
             JWT_ACCESS_TOKEN_EXPIRES = False
-
         )
     else:
         app.logger.warn("Galeries Ponthé starting in DEV mode")
         app.config.from_pyfile('ponthe.cfg')
+
+    with open(os.path.join(app.instance_path, "keys", "jwtRS256-public.pem"), 'r') as public_key:
+        app.config['JWT_PUBLIC_KEY'] = public_key.read()
+    with open(os.path.join(app.instance_path, "keys", "jwtRS256-private.pem"), 'r') as private_key:
+        app.config['JWT_PRIVATE_KEY'] = private_key.read()
