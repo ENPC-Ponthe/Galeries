@@ -21,7 +21,7 @@
                     </span>
                     <input class="form-control" type='password' name='password' id='password' placeholder='mot de passe'/>
                 </div>
-                {# on affiche les messages d'erreur puis les messages de succes #}
+                {# on affiche les messages d'erreur puis les messages de success #}
                 {% for categorie in ['error', 'success'] %}
                     {% with msgs = get_flashed_messages(category_filter=[categorie]) %}
                         {% if msgs %}

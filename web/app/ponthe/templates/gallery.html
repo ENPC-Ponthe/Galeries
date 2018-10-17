@@ -67,7 +67,7 @@
           },
           browserBackButtonClose: true
       })
-      .use(Uppy.Tus, {endpoint: "{{ url_for('private.file-upload', gallery_slug=gallery_slug) }}"});
+      .use(Uppy.Tus, {endpoint: "{{ url_for('private.file-upload', gallery_slug=gallery.slug) }}"});
 
     uppy.on('complete', (result) => {
       console.log(result.successful);
