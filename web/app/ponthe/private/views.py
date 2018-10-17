@@ -19,7 +19,7 @@ tm = tus_manager(private, upload_url='/file-upload', upload_folder=UPLOAD_TMP_FO
 
 
 @tm.upload_file_handler
-def upload_file_hander(upload_file_path, filename, gallery_slug):
+def upload_file_handler(upload_file_path, filename, gallery_slug):
     gallery = Event.query.filter_by(slug=gallery_slug).one()
     new_file = File(gallery=gallery, extension=get_extension(filename), author=current_user, pending=(not current_user.admin))
 

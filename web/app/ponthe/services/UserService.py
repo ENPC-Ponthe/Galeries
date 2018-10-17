@@ -1,4 +1,3 @@
-from flask import url_for
 from itsdangerous import URLSafeTimedSerializer
 from ponthe.models import User
 
@@ -16,4 +15,4 @@ class UserService:
         return serializer.loads(token, max_age=3600)
 
     def get_reset_link(self, user: User):
-        return "https://ponthe.enpc.org"+url_for('public.resetting', token=self.get_token(user))
+        return f"ponthe.enpc.org/reset/{self.get_token(user)}"

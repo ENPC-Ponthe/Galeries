@@ -279,7 +279,7 @@ class Event(Resource):
             for gallery in self.galleries:
                 if len(gallery.files) > 0:
                     return gallery.files[0]
-            return File.query.filter_by(slug="default-image")
+            return File.query.filter_by(slug="default-image").one()
 
     def __repr__(self):
         return '<Event {}>'.format(self.name)

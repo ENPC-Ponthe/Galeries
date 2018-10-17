@@ -156,6 +156,8 @@ def reset():
 def resetting(token):
     try :
         user_id = UserService.get_id_from_token(token)
+        if user_id is None:
+            abort(404)
     except BadSignature:
         abort(404)
     except SignatureExpired :
