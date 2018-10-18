@@ -5,7 +5,6 @@
 <div id="content">
     <div class="container background-white">
         <div class="row margin-vert-30">
-            <!-- Main Column -->
             <div class="col-md-9">
                 <div class="headline">
                     <h2>Créer un nouveau compte </h2>
@@ -42,6 +41,11 @@
                             <input required type="password" class="form-control" name="confirmation_password" id="confirmation_password">
                         </div>
                     </div>
+                    <div class="row margin-bottom-20">
+                        <div class="col-md-6 col-md-offset-0">
+                            <input required type="checkbox" class="form-control"> J'accepte les Conditions Générales d'Utilisation en ligne <a href="{{ url_for('public.cgu') }}">ici</a>.
+                        </div>
+                    </div>
                     {# on affiche les messages d'erreur puis les messages de succes #}
                     {% for categorie in ['error', 'success'] %}
                         {% with msgs = get_flashed_messages(category_filter=[categorie]) %}
@@ -61,24 +65,20 @@
                     </p>
                 </form>
             </div>
-            <!-- End Main Column -->
-            <!-- Side Column -->
             <div class="col-md-3">
-                <!-- Recent Posts -->
                 <div class="panel panel-default">
                     <div class="panel-heading">
-                        <h3 class="panel-title">Contact Info</h3>
+                        <h3 class="panel-title">Contact</h3>
                     </div>
                     <div class="panel-body">
                         <p>
                             Pour des questions supplémentaires sur le club ou la réservation de matériel, vous pouvez contacter les membres du club Ponthé avec les informations ci-jointes
                         </p>
                         <li>
-                            <i class="fa-envelope color-primary"></i>ponthe@liste.enpc.fr
+                            <i class="fa-envelope color-primary"></i><a href="mailto:ponthe@liste.enpc.fr">ponthe@liste.enpc.fr</a>
                         </li>
                     </div>
                 </div>
-                <!-- End recent Posts -->
             </div>
         </div>
     </div>

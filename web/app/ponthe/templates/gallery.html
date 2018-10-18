@@ -5,15 +5,46 @@
 <div id="content">
     <div class="container background-white">
         <div class="row margin-vert-30">
-            <div class="col-md-6">
-                <h2>{{ gallery.name }}</h2>
-                {% if gallery.description %}
-                    <p>{{ gallery.description }}</p>
+            <div class="margin-vert-30">
+            <div class="row">
+                <div class="col-md-6">
+                    <h1>{{ gallery.name }}</h1>
+                </div>
+                <div class="col-md-3">
+                    <div class="DashboardContainer"></div>
+                    <button id="UppyModalOpenerBtn" class="btn btn-primary margin-vert-20">Ajouter des fichiers</button>
+                </div>
+                {% if current_user.admin %}
+                    <div class="col-md-3">
+                        <button class="btn btn-danger margin-vert-20" type="button" data-toggle="modal" data-target="#deleteModal">Supprimer la galerie</button>
+                    </div>
                 {% endif %}
             </div>
-            <div class="col-md-6">
-                <div class="DashboardContainer"></div>
-                <button id="UppyModalOpenerBtn" class="btn btn-primary">Ajouter des fichiers</button>
+            {% if gallery.description %}
+                <div class="row">
+                    <div class="col-md-12">
+                        <p>{{ gallery.description }}</p>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+        <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="GalleryDeletion" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Suppression de la galerie</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                    Es-tu sûr de vouloir supprimer cette gallerie ? Toutes ses photos seront supprimées.
+                    </div>
+                    <form class="modal-footer" action="" method="post">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
+                        <button type="submit" name="delete" class="btn btn-danger">Confirmer</button>
+                    </form>
+                </div>
             </div>
         </div>
         <div class="row">
@@ -39,12 +70,14 @@
     const uppyTwo = new Uppy.Core({
         debug: true,
         autoProceed: false,
+        {% if not current_user.admin %}
         restrictions: {
             maxFileSize: 1000000000,
             maxNumberOfFiles: 10,
             minNumberOfFiles: 1,
             allowedFileTypes: ['image/*', 'video/*']
         }
+        {% endif %}
     });
     uppyTwo
       .use(Uppy.Dashboard, {
@@ -53,7 +86,9 @@
           target: '.DashboardContainer',
           replaceTargetContent: true,
           showProgressDetails: true,
+          {% if not current_user.admin %}
           note: "Images et vidéos seulement, 1–10 fichiers, jusqu'à 1 GB",
+          {% endif %}
           height: 470,
           metaFields: [
               { id: 'name', name: 'Nom', placeholder: 'Match de hand' },

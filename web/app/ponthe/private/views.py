@@ -5,6 +5,8 @@ from flask_mail import Message
 from flask_tus_ponthe import tus_manager
 import os
 
+from ponthe.persistence import EventDAO, YearDAO
+
 from . import private
 from .. import app, db, mail
 from ..admin.views import batch_upload
@@ -124,8 +126,12 @@ def category_gallery(category_slug):
     category = Category.query.filter_by(slug=category_slug).one()
     return render_events_template('category_gallery.html', category=category)
 
-@private.route('/events/<event_slug>')
+@private.route('/events/<event_slug>', methods=['GET', 'POST'])
 def event_gallery(event_slug):
+    if request.method == 'POST' and "delete" in request.form and current_user.admin:
+        EventDAO.delete_detaching_galleries(event_slug)
+        return redirect("/index")
+
     event = Event.query.filter_by(slug=event_slug).one()
     galleries_by_year = {}
     other_galleries = []
@@ -145,36 +151,35 @@ def event_gallery(event_slug):
         other_galleries=other_galleries
     )
 
-@private.route('/years/<year_slug>')
+@private.route('/years/<year_slug>', methods=['GET', 'POST'])
 def year_gallery(year_slug):
+    if request.method == 'POST' and "delete" in request.form and current_user.admin:
+        YearDAO.delete_detaching_galleries(year_slug)
+        return redirect("/index")
     year = Year.query.filter_by(slug=year_slug).one()
     return render_events_template('year_gallery.html', year=year)
 
-@private.route('/galleries/<gallery_slug>')
+@private.route('/galleries/<gallery_slug>', methods=['GET', 'POST'])
 def gallery(gallery_slug):
+    if request.method == 'POST' and "delete" in request.form and current_user.admin:
+        GalleryDAO.delete(gallery_slug)
+        return redirect("/index")
     gallery = GalleryDAO.find_by_slug(gallery_slug)
     return render_events_template('gallery.html', gallery=gallery)
-
-#@private.route('/galleries/<year_slug>/<event_slug>')
-#def event_year_gallery(year_slug, event_slug):
-#    galleries = GalleryDAO.find_by_event_and_year_slugs(event_slug, year_slug)
-#    if len(galleries) == 1:
-#        gallery_slug = galleries[0].slug
-#        redirect(f"/galleries/{gallery_slug}")
-#    event_name = Event.query.filter_by(slug=event_slug).one().name
-#    return render_events_template('event_gallery.html', galleries=galleries)
-
 
 @private.route('/create-event', methods=['GET', 'POST'])
 def create_event():
     if request.method == 'POST':
         name = request.form['name']
         category_slug = request.form['category_slug']
+        event_description = request.form.get('description')
         if name:
-            new_event = Event(name=name, author=current_user)
+            event = Event(name=name, author=current_user)
             if category_slug:
-                new_event.category = Category.query.filter_by(slug=category_slug).one()
-            db.session.add(new_event)
+                event.category = Category.query.filter_by(slug=category_slug).one()
+            if event_description:
+                event.description = event_description
+            db.session.add(event)
             db.session.commit()
             return redirect('/create-gallery')
         else:
@@ -187,10 +192,13 @@ def create_event():
 @private.route('/create-year', methods=['GET', 'POST'])
 def create_year():
     if request.method == 'POST':
-        new_year_value = request.form['value']
-        if new_year_value:
-            new_year = Year(value=new_year_value, author=current_user)
-            db.session.add(new_year)
+        year_value = request.form['value']
+        year_description = request.form.get('description')
+        if year_value:
+            year = Year(value=year_value, author=current_user)
+            if year_description:
+                year.description = year_description
+            db.session.add(year)
             db.session.commit()
             return redirect('/create-event')
         else:
@@ -200,20 +208,23 @@ def create_year():
 @private.route('/create-gallery', methods=['GET', 'POST'])
 def create_gallery():
     if request.method == 'POST':
-        gallery_name = request.form['gallery_name']
-        year_slug = request.form['year_slug']
-        event_slug = request.form['event_slug']
+        gallery_name = request.form['name']
+        gallery_description = request.form.get('description')
+        year_slug = request.form.get('year_slug')
+        event_slug = request.form.get('event_slug')
         if gallery_name:
-            new_gallery = Gallery(name=gallery_name, author=current_user)
+            gallery = Gallery(name=gallery_name, author=current_user)
             if year_slug:
                 year = Year.query.filter_by(slug=year_slug).one()
-                new_gallery.year = year
+                gallery.year = year
             if event_slug:
                 event = Event.query.filter_by(slug=event_slug).one()
-                new_gallery.event = event
-            db.session.add(new_gallery)
+                gallery.event = event
+            if gallery_description:
+                gallery.description = gallery_description
+            db.session.add(gallery)
             db.session.commit()
-            return redirect('/galleries/'+new_gallery.slug)
+            return redirect('/galleries/'+gallery.slug)
         else:
             flash("Veuillez indiquer le nom de la nouvelle galerie", "error")
 

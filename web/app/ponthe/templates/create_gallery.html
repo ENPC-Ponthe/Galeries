@@ -12,13 +12,20 @@
                         <label>Nom</label>
                         <div class="row margin-bottom-20">
                             <div class="col-md-6 col-md-offset-0">
-                                <input required type="text" class="form-control" name="gallery_name">
+                                <input required type="text" class="form-control" name="name">
+                            </div>
+                        </div>
+                        <label>Description</label>
+                        <div class="row margin-bottom-20">
+                            <div class="col-md-6 col-md-offset-0">
+                                <textarea class="form-control" name="description"></textarea>
                             </div>
                         </div>
                         <label>Année</label>
                         <div class="row margin-bottom-20">
                             <div class="col-md-6 col-md-offset-0">
                                 <select name="year_slug">
+                                    <option value="">Aucune</option>
                                     {% for year in years %}
                                         <option value="{{ year.slug }}">{{ year.name }}</option>
                                     {% endfor %}
@@ -29,6 +36,7 @@
                         <div class="row margin-bottom-20">
                             <div class="col-md-6 col-md-offset-0">
                                 <select name="event_slug">
+                                    <option value="">Aucun</option>
                                     {% for event in events %}
                                         <option value="{{ event.slug }}">{{ event.name }}</option>
                                     {% endfor %}

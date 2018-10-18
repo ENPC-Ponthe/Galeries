@@ -5,14 +5,22 @@
 <div id="content">
     <div class="container background-white">
         <div class="row margin-vert-30">
-            <!-- Main Column -->
             <div class="col-md-9">
-                <!-- Main Content -->
                 <div class="headline">
                     <h2>Créer une nouvelle année</h2>
-                    <!-- Contact Form -->
                     <form action="" method="post">
-                        <label>Nouvelle année</label>
+                        <label>Année</label>
+                        <div class="row margin-bottom-20">
+                            <div class="col-md-6 col-md-offset-0">
+                                <input required type="number" class="form-control" name="value">
+                            </div>
+                        </div>
+                        <label>Description</label>
+                        <div class="row margin-bottom-20">
+                            <div class="col-md-6 col-md-offset-0">
+                                <textarea class="form-control" name="description"></textarea>
+                            </div>
+                        </div>
                         {% with msgs = get_flashed_messages(category_filter=['error']) %}
                             {% if msgs %}
                                 <div class="alert alert-danger">
@@ -24,16 +32,10 @@
                                 </div>
                             {% endif %}
                         {% endwith %}
-                        <div class="row margin-bottom-20">
-                            <div class="col-md-6 col-md-offset-0">
-                                <input required type="text" class="form-control" name="value">
-                            </div>
-                        </div>
                         <p>
                             <button type="submit" class="btn btn-primary">Ajouter l'année</button>
                         </p>
                     </form>
-                <!-- End Main Content -->
             </div>
         </div>
     </div>

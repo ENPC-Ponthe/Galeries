@@ -14,5 +14,6 @@ class UserService:
     def get_id_from_token(token: str):
         return serializer.loads(token, max_age=3600)
 
-    def get_reset_link(self, user: User):
-        return f"ponthe.enpc.org/reset/{self.get_token(user)}"
+    @classmethod
+    def get_reset_link(cls, user: User):
+        return f"ponthe.enpc.org/reset/{cls.get_token(user)}"

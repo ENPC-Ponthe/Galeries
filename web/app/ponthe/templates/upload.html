@@ -20,12 +20,14 @@
     const uppyTwo = new Uppy.Core({
         debug: true,
         autoProceed: false,
+        {% if not current_user.admin %}
         restrictions: {
             maxFileSize: 1000000000,
             maxNumberOfFiles: 10,
             minNumberOfFiles: 1,
             allowedFileTypes: ['image/*', 'video/*']
         }
+        {% endif %}
     });
     uppyTwo
       .use(Uppy.Dashboard, {
@@ -33,7 +35,9 @@
           target: '#UppyDashboard',
           replaceTargetContent: true,
           showProgressDetails: true,
+          {% if not current_user.admin %}
           note: "Images et vidéos seulement, 1–10 fichiers, jusqu'à 1 GB",
+          {% endif %}
           height: 470,
           metaFields: [
               { id: 'name', name: 'Nom', placeholder: 'Match de hand' },
