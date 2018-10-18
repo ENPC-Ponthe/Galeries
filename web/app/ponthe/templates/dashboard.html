@@ -39,7 +39,7 @@
         {% if pending_files_by_gallery %}
             <div class="col-md-12">
                 <div class="row margin-vert-30">
-                    <h1>En attente de modération</h1>
+                    <h1>Mes Galeries en attente de modération</h1>
                 </div>
             </div>
             {% for gallery, files in pending_files_by_gallery.items() %}
@@ -102,10 +102,10 @@
                 </div>
             </div>
         {% endfor %}
-        {% if not confirmed_files_by_gallerys %}
+        {% if not confirmed_files_by_gallery %}
             <div class="row margin-vert-30">
                 <div class="col-md-12">
-                    Aucun fichier.
+                    Aucun fichier
                 </div>
             </div>
         {% endif %}

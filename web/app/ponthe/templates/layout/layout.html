@@ -1,4 +1,3 @@
-<!-- === BEGIN HEADER === -->
 <!DOCTYPE html>
 <!--[if IE 8]> <html lang="fr" class="ie8"> <![endif]-->
 <!--[if IE 9]> <html lang="fr" class="ie9"> <![endif]-->
@@ -6,25 +5,19 @@
 <html lang="fr" style="height: 100%;">
     <!--<![endif]-->
     <head>
-        <!-- Title -->
         <title>Galeries Ponthé</title>
-        <!-- Meta -->
         <meta http-equiv="content-type" content="text/html; charset=utf-8" />
         <meta name="description" content="Galeries Ponthé">
         <meta name="author" content="Ponthé">
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
 
-        <!-- Favicon -->
         <link rel="icon" type="image/png" href="{{ url_for('static', filename='img/logo.jpg') }}">
-        <!-- Bootstrap Core CSS -->
         <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.css') }}" rel="stylesheet">
-        <!-- Template CSS -->
         <link rel="stylesheet" href="{{ url_for('static', filename='css/animate.css') }}" rel="stylesheet">
         <link rel="stylesheet" href="{{ url_for('static', filename='css/font-awesome.css') }}" rel="stylesheet">
         <link rel="stylesheet" href="{{ url_for('static', filename='css/nexus.css') }}" rel="stylesheet">
         <link rel="stylesheet" href="{{ url_for('static', filename='css/responsive.css') }}" rel="stylesheet">
         <link rel="stylesheet" href="{{ url_for('static', filename='css/custom.css') }}" rel="stylesheet">
-        <!-- Google Fonts-->
         <link href="https://fonts.googleapis.com/css?family=Roboto+Condensed:400,300" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=PT+Sans" type="text/css" rel="stylesheet">
         <link href="https://fonts.googleapis.com/css?family=Roboto:400,300" rel="stylesheet" type="text/css">
@@ -36,19 +29,16 @@
             <div id="header">
                 <div class="container">
                     <div class="row">
-                        <!-- Logo -->
                         <div class="logo">
                             <a href="{{ url_for('private.index') }}" title="Ponthé">
                                 <span style="margin: 10px; font-size:30px;">Galeries Ponthé - Club d'audiovisuel des Ponts ParisTech</span>
                             </a>
                         </div>
-                        <!-- End Logo -->
                     </div>
                 </div>
             </div>
 
             {% if current_user.is_authenticated %}
-            <!-- Top Menu -->
             <div id="hornav" class="container no-padding">
                 <div class="row">
                     <div class="col-md-12 no-padding">
@@ -93,17 +83,11 @@
                     </div>
                 </div>
             </div>
-            <!-- End Top Menu -->
             {% endif %}
-            <!-- === END HEADER === -->
 
-            <!-- === BEGIN CONTENT === -->
             {% block content %}
             {% endblock %}
-            <!-- === END CONTENT === -->
 
-           <!-- === BEGIN FOOTER === -->
-            <!-- Footer Menu -->
             <div id = "footer">
                 <div class="container">
                     <div class="row">
@@ -125,25 +109,15 @@
                 </div>
             </div>
         </div>
-        <!-- End Footer Menu -->
 
-        <!-- JS -->
         <script type="text/javascript" src="{{ url_for('static', filename='js/jquery.min.js') }}"></script>
         <script type="text/javascript" src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
         <script type="text/javascript" src="{{ url_for('static', filename='js/scripts.js') }}"></script>
-        <!-- Isotope - Portfolio Sorting -->
         <script type="text/javascript" src="{{ url_for('static', filename='js/jquery.isotope.js') }}"></script>
-        <!-- Mobile Menu - Slicknav -->
         <script type="text/javascript" src="{{ url_for('static', filename='js/jquery.slicknav.js') }}"></script>
-        <!-- Animate on Scroll-->
         <script type="text/javascript" src="{{ url_for('static', filename='js/jquery.visible.js') }}"></script>
-        <!-- Sticky Div -->
         <script type="text/javascript" src="{{ url_for('static', filename='js/jquery.sticky.js') }}"></script>
-        <!-- Slimbox2-->
         <script type="text/javascript" src="{{ url_for('static', filename='js/slimbox2.js') }}"></script>
-        <!-- Modernizr -->
         <script type="text/javascript" src="{{ url_for('static', filename='js/modernizr.custom.js') }}"></script>
-        <!-- End JS -->
     </body>
 </html>
-<!-- === END FOOTER === -->

@@ -4,12 +4,42 @@
 <div id="content-top-border" class="container"></div>
 <div id="content">
     <div class="container background-white">
-        <div class="row margin-vert-30">
-            <div class="col-md-12">
-                <h1>{{ year.name }}</h1>
-                {% if year.description %}
-                    <p>{{ year.description }}</p>
+        <div class="margin-vert-30">
+            <div class="row">
+                <div class="col-md-9">
+                    <h1>{{ year.name }}</h1>
+                </div>
+                {% if current_user.admin %}
+                    <div class="col-md-3">
+                        <button class="btn btn-danger margin-vert-20" type="button" data-toggle="modal" data-target="#deleteModal">Supprimer l'année</button>
+                    </div>
                 {% endif %}
+            </div>
+            {% if year.description %}
+                <div class="row">
+                    <div class="col-md-12">
+                        <p>{{ year.description }}</p>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+        <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="YearDeletion" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Suppression de l'année</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                    Es-tu sûr de vouloir supprimer cette année ? Les galeries de l'année ne seront pas supprimées mais elles ne seront ratachées à aucune année.
+                    </div>
+                    <form class="modal-footer" action="" method="post">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
+                        <button type="submit" name="delete" class="btn btn-danger">Confirmer</button>
+                    </form>
+                </div>
             </div>
         </div>
         <div class="row">
