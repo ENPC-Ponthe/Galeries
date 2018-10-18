@@ -6,13 +6,21 @@ from flask_mail import Message
 from flask_login import login_user, current_user
 from itsdangerous import SignatureExpired, BadSignature
 from datetime import datetime
+
 from sqlalchemy.exc import IntegrityError
 
 from . import public
 from .. import app, db, login_manager, mail
 from ..models import User
 from ..services import UserService
+from ..private.views import render_events_template
 
+
+def render_public_template(template, **kwargs):
+    if current_user.is_authenticated:
+        return render_events_template(template, **kwargs)
+    else:
+        return render_template(template, **kwargs)
 
 def getHome():
     return redirect('index')
@@ -150,7 +158,7 @@ def reset():
             msg.html = render_template('email/reset.html', reset_link=link, firstname=user.firstname)
             mail.send(msg)
         flash("Si un compte est associé à cette adresse email, un email t'as été envoyé", "success")
-    return render_template('reset.html')
+    return render_public_template('reset.html')
 
 @public.route('/reset/<token>', methods=['GET','POST'])
 def resetting(token):
@@ -184,8 +192,8 @@ def resetting(token):
             flash("Mot de passe réinitialisé avec succès", "success")
             return redirect('login')
 
-    return render_template('resetting.html', firstname=user.firstname)
+    return render_public_template('resetting.html', firstname=user.firstname)
 
 @public.route('/cgu')
 def cgu():
-    return render_template('cgu.html')
+    return render_public_template('cgu.html')

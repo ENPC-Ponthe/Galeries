@@ -43,7 +43,14 @@
                     </div>
                     <div class="row margin-bottom-20">
                         <div class="col-md-6 col-md-offset-0">
-                            <input required type="checkbox" class="form-control"> J'accepte les Conditions Générales d'Utilisation en ligne <a href="{{ url_for('public.cgu') }}">ici</a>.
+                            <div class="input-group mb-3">
+                                <div class="input-group-prepend">
+                                    <div class="input-group-text">
+                                        <input type="checkbox" aria-label="CGU checkbox" required>
+                                    </div>
+                                </div>
+                                <span>J'accepte les Conditions Générales d'Utilisation en ligne <a href="{{ url_for('public.cgu') }}">ici</a>.</span>
+                            </div>
                         </div>
                     </div>
                     {# on affiche les messages d'erreur puis les messages de succes #}
