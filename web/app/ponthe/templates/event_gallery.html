@@ -4,12 +4,42 @@
 <div id="content-top-border" class="container"></div>
 <div id="content">
     <div class="container background-white">
-        <div class="row margin-vert-30">
-            <div class="col-md-12">
-                <h1>{{ event.name }}</h1>
-                {% if event.description %}
-                    <p>{{ event.description }}</p>
+        <div class="margin-vert-30">
+            <div class="row">
+                <div class="col-md-9">
+                    <h1>{{ event.name }}</h1>
+                </div>
+                {% if current_user.admin %}
+                    <div class="col-md-3">
+                        <button class="btn btn-danger margin-vert-20" type="button" data-toggle="modal" data-target="#deleteModal">Supprimer l'événement</button>
+                    </div>
                 {% endif %}
+            </div>
+            {% if event.description %}
+                <div class="row">
+                    <div class="col-md-12">
+                        <p>{{ event.description }}</p>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+        <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="EventDeletion" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Suppression de l'événement</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                    Es-tu sûr de vouloir supprimer cet événement ? Les galeries de l'année ne seront pas supprimées mais elles ne seront ratachées à aucun événement.
+                    </div>
+                    <form class="modal-footer" action="" method="post">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
+                        <button type="submit" name="delete" class="btn btn-danger">Confirmer</button>
+                    </form>
+                </div>
             </div>
         </div>
         {% for year, galleries in galleries_by_year.items() %}
@@ -37,6 +67,34 @@
                 </div>
             </div>
         {% endfor %}
+        {% if other_galleries %}
+            {% if galleries_by_year %}
+                <hr />
+                <div class="row margin-vert-30">
+                    <div class="col-md-12">
+                        <h2>Autres galeries</h2>
+                    </div>
+                </div>
+            {% endif %}
+            <div class="row">
+                <div class="col-md-12 portfolio-group no-padding">
+                    {% for gallery in other_galleries %}
+                        <div class="col-md-3 portfolio-item margin-bottom-40 design">
+                            <div>
+                                <a href="{{ url_for('private.gallery', gallery_slug=gallery.slug) }}">
+                                    <figure>
+                                        <img src="{{ url_for('uploads', file_path=gallery.cover.file_path) }}">
+                                        <figcaption>
+                                            <h3 class="margin-top-20">{{ gallery.name }}</h3>
+                                        </figcaption>
+                                    </figure>
+                                </a>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        {% endif %}
     </div>
 </div>
 <div id="content-bottom-border" class="container"></div>

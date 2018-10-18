@@ -145,7 +145,7 @@ def reset():
         user = User.query.filter_by(email=email).first()
         if user is not None and user.email_confirmed:
             msg = Message('Réinitialise ton mot de passe Ponthé' , sender='Ponthé <no-reply@ponthe.enpc.org>', recipients=[email])
-            link = UserService().get_reset_link(user)
+            link = UserService.get_reset_link(user)
             msg.body = 'Pour réinitialiser ton mot de passe, clique sur le lien suivant : {}'.format(link)
             msg.html = render_template('email/reset.html', reset_link=link, firstname=user.firstname)
             mail.send(msg)
@@ -185,3 +185,7 @@ def resetting(token):
             return redirect('login')
 
     return render_template('resetting.html', firstname=user.firstname)
+
+@public.route('/cgu')
+def cgu():
+    return render_template('cgu.html')

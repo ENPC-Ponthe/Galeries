@@ -103,7 +103,7 @@ def create_accounts():
                     firstname=user.firstname,
                     email=user.email,
                     password=password,
-                    reset_link=UserService().get_reset_link(user)
+                    reset_link=UserService.get_reset_link(user)
                 )
                 mail.send(msg)
                 app.logger.info(f"Account successfully created for user {user}")

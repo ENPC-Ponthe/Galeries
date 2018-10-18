@@ -5,12 +5,9 @@
 <div id="content">
     <div class="container background-white">
         <div class="row margin-vert-30">
-            <!-- Main Column -->
             <div class="col-md-9">
-                <!-- Main Content -->
                 <div class="headline">
                     <h2>Créer un nouvel événement</h2>
-                    <!-- Contact Form -->
                     <form action="" method="post">
                         <label>Nom</label>
                         <div class="row margin-bottom-20">
@@ -18,7 +15,7 @@
                                 <input required type="text" class="form-control" name="name">
                             </div>
                         </div>
-                        <label>Categorie</label>
+                        <label>Catégorie</label>
                         <div class="row margin-bottom-20">
                             <div class="col-md-6 col-md-offset-0">
                                 <select name="category_slug">
@@ -28,9 +25,12 @@
                                 </select>
                             </div>
                         </div>
-                        <p>
-                            <button type="submit" class="btn btn-primary">Ajouter l'événement</button>
-                        </p>
+                        <label>Description</label>
+                        <div class="row margin-bottom-20">
+                            <div class="col-md-6 col-md-offset-0">
+                                <textarea class="form-control" name="description"></textarea>
+                            </div>
+                        </div>
                         {% with msgs = get_flashed_messages(category_filter=['error']) %}
                             {% if msgs %}
                                 <div class="alert alert-danger">
@@ -42,11 +42,13 @@
                                 </div>
                             {% endif %}
                         {% endwith %}
+                        <p>
+                            <button type="submit" class="btn btn-primary">Ajouter l'événement</button>
+                        </p>
                     </form>
                 </div>
             </div>
         </div>
-        <!-- End Main Content -->
     </div>
 </div>
 <div id="content-bottom-border" class="container"></div>

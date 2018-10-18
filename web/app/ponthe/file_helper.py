@@ -53,6 +53,12 @@ def move_file(src, dest):
     except OSError as e:
         print('File not moved. Error: %s' % e)
 
+def delete_file(file_path):
+    try:
+        os.remove(file_path)
+    except OSError:
+        print('Error: Deleting file. {}'.format(file_path))
+
 def split_filename(filename):
     slug, extension = filename.rsplit('.', 1)
     return slug, extension
