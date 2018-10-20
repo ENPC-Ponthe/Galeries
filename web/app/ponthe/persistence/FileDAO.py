@@ -6,7 +6,6 @@ import os
 
 UPLOAD_FOLDER = app.config['MEDIA_ROOT']
 
-
 class FileDAO:
     @staticmethod
     def delete(file: File):

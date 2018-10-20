@@ -3,12 +3,15 @@ from flask import render_template, request, flash, redirect
 from flask_login import logout_user, current_user, login_required
 from flask_mail import Message
 from flask_tus_ponthe import tus_manager
+from ponthe.persistence import CategoryDAO
+from sqlalchemy.orm.exc import NoResultFound
 import os
 
-from ponthe.persistence import EventDAO, YearDAO
+from werkzeug.exceptions import NotFound
 
 from . import private
 from .. import app, db, mail
+from ..persistence import EventDAO, YearDAO
 from ..admin.views import batch_upload
 from ..file_helper import create_folder, move_file, is_image, is_video, get_extension
 from ..models import Year, Event, File, Category, Gallery
@@ -37,6 +40,7 @@ def upload_file_handler(upload_file_path, filename, gallery_slug):
     move_file(upload_file_path, os.path.join(gallery_folder, new_file.filename))  # can't use os.rename to move to docker volume : OSError: [Errno 18] Invalid cross-device link
     db.session.add(new_file)
     db.session.commit()
+    app.jinja_env.filters['thumb'](new_file)
 
 
 @private.before_request     # login nécessaire pour tout le blueprint
@@ -123,7 +127,10 @@ def upload(gallery_slug):
 
 @private.route ('/categories/<category_slug>')
 def category_gallery(category_slug):
-    category = Category.query.filter_by(slug=category_slug).one()
+    try:
+        category = CategoryDAO.find_by_slug(category_slug)
+    except NoResultFound:
+        raise NotFound()
     return render_events_template('category_gallery.html', category=category)
 
 @private.route('/events/<event_slug>', methods=['GET', 'POST'])
@@ -131,8 +138,10 @@ def event_gallery(event_slug):
     if request.method == 'POST' and "delete" in request.form and current_user.admin:
         EventDAO.delete_detaching_galleries(event_slug)
         return redirect("/index")
-
-    event = Event.query.filter_by(slug=event_slug).one()
+    try:
+        event = EventDAO.find_by_slug(event_slug)
+    except NoResultFound:
+        raise NotFound()
     galleries_by_year = {}
     other_galleries = []
     for gallery in event.galleries:
@@ -156,7 +165,10 @@ def year_gallery(year_slug):
     if request.method == 'POST' and "delete" in request.form and current_user.admin:
         YearDAO.delete_detaching_galleries(year_slug)
         return redirect("/index")
-    year = Year.query.filter_by(slug=year_slug).one()
+    try:
+        year = YearDAO.find_by_slug(year_slug)
+    except NoResultFound:
+        raise NotFound()
     return render_events_template('year_gallery.html', year=year)
 
 @private.route('/galleries/<gallery_slug>', methods=['GET', 'POST'])
@@ -164,7 +176,10 @@ def gallery(gallery_slug):
     if request.method == 'POST' and "delete" in request.form and current_user.admin:
         GalleryDAO.delete(gallery_slug)
         return redirect("/index")
-    gallery = GalleryDAO.find_by_slug(gallery_slug)
+    try:
+        gallery = GalleryDAO.find_by_slug(gallery_slug)
+    except NoResultFound:
+        raise NotFound()
     return render_events_template('gallery.html', gallery=gallery)
 
 @private.route('/create-event', methods=['GET', 'POST'])

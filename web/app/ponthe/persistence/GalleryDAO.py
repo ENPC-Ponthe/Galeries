@@ -1,7 +1,11 @@
-from .FileDAO import FileDAO
+import os
 
-from .. import db
+from .FileDAO import FileDAO
+from .. import app, db
 from ..models import Gallery, Year, Event
+from ..file_helper import delete_folder
+
+UPLOAD_FOLDER = app.config['MEDIA_ROOT']
 
 class GalleryDAO:
     @staticmethod
@@ -23,3 +27,4 @@ class GalleryDAO:
             FileDAO.delete(file)
         db.session.delete(gallery)
         db.session.commit()
+        delete_folder(os.path.join(UPLOAD_FOLDER, gallery_slug))
