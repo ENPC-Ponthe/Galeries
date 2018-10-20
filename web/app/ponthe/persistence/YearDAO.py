@@ -4,8 +4,12 @@ from ..models import Year
 
 class YearDAO:
     @staticmethod
-    def delete_detaching_galleries(year_slug):
-        year = Year.query.filter_by(slug=year_slug).one()
+    def find_by_slug(slug: str):
+        return Year.query.filter_by(slug=slug).one()
+
+    @staticmethod
+    def delete_detaching_galleries(slug):
+        year = Year.query.filter_by(slug=slug).one()
         for gallery in year.galleries:
             gallery.year = None
             db.session.add(gallery)

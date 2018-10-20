@@ -4,8 +4,8 @@ from ..models import Event, File
 
 class EventDAO:
     @staticmethod
-    def find_by_year(year):
-        Event.query.filter(File.query.filter_by(year=year, event_id=Event.id).exists()).all()
+    def find_by_slug(slug: str):
+        return Event.query.filter_by(slug=slug).one()
 
     @staticmethod
     def delete_detaching_galleries(event_slug):
