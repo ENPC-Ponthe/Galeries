@@ -8,7 +8,12 @@ from .private.views import render_events_template
 @app.route('/uploads/<path:file_path>')
 @login_required
 def uploads(file_path):
-    return send_file(os.path.join(app.instance_path, 'club_folder', 'uploads', file_path))
+    return send_file(os.path.join(app.config['MEDIA_ROOT'], file_path))
+
+@app.route('/thumbs/<path:file_path>')
+@login_required
+def thumbnails(file_path):
+    return send_file(os.path.join(app.config['THUMBNAIL_MEDIA_THUMBNAIL_ROOT'], file_path))
 
 @app.route('/apk/<path:filename>')
 def apk(filename):

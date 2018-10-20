@@ -15,7 +15,7 @@ def load(app: Flask):
             MAIL_PASSWORD = os.environ['MAIL_PASSWORD'],
             MAIL_USE_TLS = True,
             JWT_ALGORITHM = 'RS256',
-            JWT_ACCESS_TOKEN_EXPIRES = False
+            JWT_ACCESS_TOKEN_EXPIRES = False,
         )
     else:
         app.logger.warn("Galeries Ponthé starting in DEV mode")
@@ -25,3 +25,11 @@ def load(app: Flask):
         app.config['JWT_PUBLIC_KEY'] = public_key.read()
     with open(os.path.join(app.instance_path, "keys", "jwtRS256-private.pem"), 'r') as private_key:
         app.config['JWT_PRIVATE_KEY'] = private_key.read()
+    app.config['MEDIA_ROOT'] = os.path.join(app.instance_path, 'club_folder', 'uploads')
+    app.config['THUMBNAIL_MEDIA_ROOT'] = app.config['MEDIA_ROOT']
+    app.config['THUMBNAIL_MEDIA_THUMBNAIL_ROOT'] = os.path.join(app.instance_path, 'thumbs')
+    app.config['THUMBNAIL_MEDIA_THUMBNAIL_URL'] = '/thumbs'
+
+def thumbnails(app: Flask):
+    get_thumbnail = app.jinja_env.filters['thumbnail']
+    app.jinja_env.filters.update(thumb=lambda file: get_thumbnail(file.file_path, '226x226'))

@@ -4,7 +4,7 @@ from ..models import File
 
 import os
 
-UPLOAD_FOLDER = os.path.join(app.instance_path, 'club_folder', 'uploads')
+UPLOAD_FOLDER = app.config['MEDIA_ROOT']
 
 
 class FileDAO:

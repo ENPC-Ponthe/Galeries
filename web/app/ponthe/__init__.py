@@ -4,6 +4,7 @@ from flask_login import LoginManager
 from flask_mail import Mail
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
+from flask_thumbnails import Thumbnail
 
 from . import config
 from .logging_config import logging_init
@@ -17,6 +18,8 @@ config.load(app)
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 FlaskCLI(app)
+thumb = Thumbnail(app)
+config.thumbnails(app)
 
 login_manager = LoginManager()
 login_manager.init_app(app)

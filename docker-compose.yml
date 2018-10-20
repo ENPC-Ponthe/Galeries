@@ -16,6 +16,7 @@ services:
       - SECRET_KEY=${SECRET_KEY}
       - SQLALCHEMY_DATABASE_URI=mysql://${DATABASE_USER}:${DATABASE_PASSWORD}@db/${DATABASE_NAME}
       - MAIL_PASSWORD=${MAIL_PASSWORD}
+      - WEBHOOK_URL=${WEBHOOK_URL}
     restart: always
 
   sshd:
