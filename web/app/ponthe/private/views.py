@@ -14,7 +14,7 @@ from ..file_helper import create_folder, move_file, is_image, is_video, get_exte
 from ..models import Year, Event, File, Category, Gallery
 from ..persistence import GalleryDAO
 
-UPLOAD_FOLDER = os.path.join(app.instance_path, 'club_folder', 'uploads')
+UPLOAD_FOLDER = app.config['MEDIA_ROOT']
 UPLOAD_TMP_FOLDER = os.path.join(app.instance_path, 'upload_tmp')
 
 tm = tus_manager(private, upload_url='/file-upload', upload_folder=UPLOAD_TMP_FOLDER)

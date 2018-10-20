@@ -13,3 +13,5 @@ translitcodec # to slugify foreign letters like ü in ue
 slack-logger
 Flask-JWT-extended[asymmetric_crypto]
 click
+Flask-Thumbnails
+Pillow

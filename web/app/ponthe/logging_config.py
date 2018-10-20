@@ -3,7 +3,6 @@ import os
 
 LOG_FILE = "ponthe.log"
 LOG_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "instance", "logs", LOG_FILE)
-WEBHOOK_URL = "https://hooks.slack.com/services/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"
 
 def logging_init():
     config.dictConfig({
@@ -34,7 +33,7 @@ def logging_init():
             },
             'slack': {
                 'class': 'slack_logger.SlackHandler',
-                'url': WEBHOOK_URL,
+                'url': os.environ.get('WEBHOOK_URL'),
                 'username': 'Galeries Ponthé',
                 'level': 'WARNING',
                 'formatter': 'slack'
