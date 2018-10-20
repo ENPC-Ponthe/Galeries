@@ -41,6 +41,7 @@ cd app/instance/keys
 openssl genrsa -out jwtRS256-private.pem 2048 && openssl rsa -in jwtRS256-private.pem -pubout -out jwtRS256-public.pem
 
 mkdir -p ../logs
+mkdir -p ../thumbs
 
 echo -e "\e[1m\e[34mInstallation de la base de données\e[0m"
 sudo apt-get install mysql-server

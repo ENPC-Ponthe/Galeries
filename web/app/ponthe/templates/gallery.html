@@ -54,7 +54,7 @@
                         <div>
                             <figure>
                                 <a href="{{ url_for('uploads', file_path=file.file_path) }}">
-                                    <img src="{{ url_for('uploads', file_path=file.file_path) }}">
+                                    <img src="{{ file | thumb }}">
                                 </a>
                             </figure>
                         </div>
