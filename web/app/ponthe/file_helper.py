@@ -3,11 +3,11 @@ from ponthe import app
 
 def is_image(filename):
     """ Renvoie True si le fichier possede une extension d'image valide. """
-    return '.' in filename and filename.rsplit('.', 1)[-1] in ('png', 'jpg', 'jpeg', 'gif', 'bmp')
+    return '.' in filename and filename.rsplit('.', 1)[-1].lower() in ('png', 'jpg', 'jpeg', 'gif', 'bmp')
 
 def is_video(filename):
     """ Renvoie True si le fichier possede une extension de video valide. """
-    return '.' in filename and filename.rsplit('.', 1)[-1] in ('mp4', 'avi', 'mov')
+    return '.' in filename and filename.rsplit('.', 1)[-1].lower() in ('mp4', 'avi', 'mov')
 
 def create_folder(directory):
     try:
