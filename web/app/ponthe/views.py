@@ -15,13 +15,14 @@ def uploads(file_path):
     except FileNotFoundError:
         raise NotFound()
 
-@app.route('/thumbs/<path:file_path>')
-@login_required
-def thumbnails(file_path):
-    try:
-        return send_file(os.path.join(app.config['THUMBNAIL_MEDIA_THUMBNAIL_ROOT'], file_path))
-    except FileNotFoundError:
-        raise NotFound()
+if os.environ.get('PROD_MODE') != 'true':
+    @app.route('/thumbs/<path:file_path>')  # utilisé en dev, en prod c'est servi par le serveur web
+    @login_required
+    def thumbnails(file_path):
+        try:
+            return send_file(os.path.join(app.config['THUMBNAIL_MEDIA_THUMBNAIL_ROOT'], file_path))
+        except FileNotFoundError:
+            raise NotFound()
 
 @app.route('/apk/<path:filename>')
 def apk(filename):
