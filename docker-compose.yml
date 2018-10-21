@@ -20,7 +20,7 @@ services:
     restart: always
 
   sshd:
-    image: quay.io/philippeferreiradesousa/ponthe-sshd:${TAG:-latest}
+    # image: quay.io/philippeferreiradesousa/ponthe-sshd:${TAG:-latest}
     env_file: .env
     build:
       context: ./sshd
