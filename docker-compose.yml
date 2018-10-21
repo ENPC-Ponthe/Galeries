@@ -10,6 +10,7 @@ services:
       - club-folder:/app/instance/club_folder
       - ./web/db_backup:/db_backup
       - ./web/app/instance/thumbs:/app/instance/thumbs
+      - ./web/app/instance/uploads:/app/instance/uploads
     depends_on:
       - db
       - sshd

@@ -289,3 +289,18 @@ scale="0.5"
 gource --viewport $resolution --colour-images --stop-at-end -s $scale -a 0.01 --max-files 0 --highlight-users --highlight-dirs --key
 --title "L'histoire de Pzartech OCR" -i 0
 ```
+
+## Déployer à partir des images built par la CI sur quay.io
+
+Eventuellement
+```bash
+git pull
+```
+
+Puis
+```bash
+docker login -u philippeferreiradesousa quay.io
+export TAG=master;
+docker-compsose pull
+docker-compose up
+```
