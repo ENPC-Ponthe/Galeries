@@ -41,13 +41,13 @@ def load_fixtures():
         os.chdir(os.path.dirname(os.path.abspath(__file__)))
         # Can't rm club_folder in docker because a volume is mounted on it : busy
         create_folder("../instance/club_folder")
-        create_folder("../instance/upload_tmp")
         delete_folder("../instance/club_folder/waiting_zone")
-        delete_folder("../instance/club_folder/uploads")
-        copy_folder("../instance/test/waiting_zone", "../instance/club_folder/waiting_zone")
-        copy_folder("../instance/test/uploads", "../instance/club_folder/uploads")
+        create_folder("../instance/upload_tmp")
+        delete_folder("../instance/uploads")
+        copy_folder("../instance/test/club_folder/waiting_zone", "../instance/club_folder/waiting_zone")
+        copy_folder("../instance/test/uploads", "../instance/uploads")
         copy_data()
-        subprocess.call(["cp", "../instance/test/accounts.csv", "../instance/club_folder/"])
+        subprocess.call(["cp", "../instance/test/club_folder/accounts.csv", "../instance/club_folder/"])
     else:
         app.logger.info("Abandon, exiting")
 
@@ -69,7 +69,7 @@ def persist_data():
 def copy_data():
     app.logger.info("Copying files...")
     for directory in glob.glob(r'./data/galleries/*'):
-        copy_folder(directory, "../instance/club_folder/uploads/"+os.path.basename(directory))
+        copy_folder(directory, "../instance/uploads/"+os.path.basename(directory))
 
 
 @app.cli.command(help="Load initial data of the app like categories")
