@@ -44,7 +44,7 @@
         </div>
         <div class="row">
             <div class="col-md-12 portfolio-group no-padding">
-                {% for gallery in year.galleries %}
+                {% for gallery in public_galleries %}
                     <div class="col-md-3 portfolio-item margin-bottom-40 design">
                         <div>
                             <a href="{{ url_for('private.gallery', gallery_slug=gallery.slug) }}">
