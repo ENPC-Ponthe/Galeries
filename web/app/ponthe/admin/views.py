@@ -15,21 +15,21 @@ def before_request():
 
 def batch_upload():
     os.chdir(os.path.dirname(os.path.abspath(__file__)))
-    os.chdir("../../instance/club_folder")
+    os.chdir("../../instance")
 
-    for dirname in os.listdir("waiting_zone"):
+    for dirname in os.listdir("club_folder", "waiting_zone"):
         year = Year.query.filter_by(value=dirname).first()
         if year is None:
             year = Year(value=dirname)
             db.session.add(year)
             create_folder(os.path.join("uploads", dirname))
-        for subdirname in os.listdir(os.path.join("waiting_zone", dirname)):
+        for subdirname in os.listdir(os.path.join("club_folder", "waiting_zone", dirname)):
             event = Event.query.filter_by(name=subdirname).first()
             if event is None:
                 event = Event(name=subdirname)
                 db.session.add(event)
                 create_folder(os.path.join("uploads", dirname, subdirname))
-            for filename in os.listdir(os.path.join("waiting_zone", dirname, subdirname)):
+            for filename in os.listdir(os.path.join("club_folder", "waiting_zone", dirname, subdirname)):
                 new_file = File(year=year, event=event, extension=get_extension(filename), author=current_user, pending=False)
                 if is_image(filename):
                     new_file.type = "IMAGE"
@@ -37,6 +37,6 @@ def batch_upload():
                     new_file.type = "VIDEO"
                 else:
                     raise ValueError("File extension not supported")
-                os.rename(os.path.join("waiting_zone", dirname, subdirname, filename), os.path.join("uploads", dirname, subdirname, new_file.filename))
+                os.rename(os.path.join("club_folder", "waiting_zone", dirname, subdirname, filename), os.path.join("uploads", dirname, subdirname, new_file.filename))
                 db.session.add(new_file)
                 db.session.commit()

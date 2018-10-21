@@ -12,6 +12,7 @@ web/ponthe.prod.cfg
 web/app/instance/club_folder
 web/app/instance/upload_tmp
 web/app/instance/thumbs
+web/app/instance/uploads
 
 # Pypi package installation
 web/app/Galeries_Ponthe.egg-info/
