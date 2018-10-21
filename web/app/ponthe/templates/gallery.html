@@ -61,28 +61,30 @@
                                 </a>
                             </figure>
                         </div>
-                        <div>
-                            <button class="btn btn-danger margin-vert-20 moderation" type="button" data-toggle="modal" data-target="#deleteModal-{{ file.slug }}">Supprimer</button>
-                        </div>
-                        <div class="modal fade" id="deleteModal-{{ file.slug }}" tabindex="-1" role="dialog" aria-labelledby="FileDeletion" aria-hidden="true">
-                            <div class="modal-dialog" role="document">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h5 class="modal-title">Suppression du fichier</h5>
-                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                            <span aria-hidden="true">&times;</span>
-                                        </button>
+                        {% if current_user.admin %}
+                            <div>
+                                <button class="btn btn-danger moderation" type="button" data-toggle="modal" data-target="#deleteModal-{{ file.slug }}" style="display: none;">Supprimer</button>
+                            </div>
+                            <div class="modal fade" id="deleteModal-{{ file.slug }}" tabindex="-1" role="dialog" aria-labelledby="FileDeletion" aria-hidden="true">
+                                <div class="modal-dialog" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title">Suppression du fichier</h5>
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>
+                                        <div class="modal-body">
+                                        Es-tu sûr de vouloir supprimer ce fichier. C'est définitif.
+                                        </div>
+                                        <form class="modal-footer" action="" method="post">
+                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
+                                            <button type="submit" name="delete_file" value="{{ file.slug }}" class="btn btn-danger">Confirmer</button>
+                                        </form>
                                     </div>
-                                    <div class="modal-body">
-                                    Es-tu sûr de vouloir supprimer ce fichier. C'est définitif.
-                                    </div>
-                                    <form class="modal-footer" action="" method="post">
-                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
-                                        <button type="submit" name="delete_file" value="{{ file.slug }}" class="btn btn-danger">Confirmer</button>
-                                    </form>
                                 </div>
                             </div>
-                        </div>
+                        {% endif %}
                     </div>
                 {% endfor %}
             </div>
@@ -133,24 +135,24 @@
       console.log(result.successful);
     })
 </script>
-<script>
-    document.moderation = true;
+{% if current_user.admin %}
+    <script>
+        document.moderation = false;
 
-    function toggleModeration() {
-        document.moderation = !document.moderation;
+        function toggleModeration() {
+            document.moderation = !document.moderation;
 
-        moderatedElements = document.getElementsByClassName('moderation');
-        if (document.moderation) {
-            for (i = 0; i < moderatedElements.length; i++) {
-                moderatedElements[i].style.display = "block";
-            }
-        } else {
-            for (i = 0; i < moderatedElements.length; i++) {
-                moderatedElements[i].style.display = "none";
+            moderatedElements = document.getElementsByClassName('moderation');
+            if (document.moderation) {
+                for (i = 0; i < moderatedElements.length; i++) {
+                    moderatedElements[i].style.display = "inline-block";
+                }
+            } else {
+                for (i = 0; i < moderatedElements.length; i++) {
+                    moderatedElements[i].style.display = "none";
+                }
             }
         }
-    }
-
-    toggleModeration();
-</script>
+    </script>
+{% endif %}
 {% endblock %}
