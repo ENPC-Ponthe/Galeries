@@ -10,13 +10,16 @@
                 <div class="col-md-6">
                     <h1>{{ gallery.name }}</h1>
                 </div>
-                <div class="col-md-3">
+                <div class="col-md-2">
                     <div class="DashboardContainer"></div>
                     <button id="UppyModalOpenerBtn" class="btn btn-primary margin-vert-20">Ajouter des fichiers</button>
                 </div>
                 {% if current_user.admin %}
-                    <div class="col-md-3">
+                    <div class="col-md-2">
                         <button class="btn btn-danger margin-vert-20" type="button" data-toggle="modal" data-target="#deleteModal">Supprimer la galerie</button>
+                    </div>
+                    <div class="col-md-2">
+                        <button class="btn btn-warning margin-vert-20" type="button" data-toggle="modal" onclick="toggleModeration()">Modérer</button>
                     </div>
                 {% endif %}
             </div>
@@ -32,13 +35,13 @@
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="exampleModalLabel">Suppression de la galerie</h5>
+                        <h5 class="modal-title">Suppression de la galerie</h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
                     <div class="modal-body">
-                    Es-tu sûr de vouloir supprimer cette gallerie ? Toutes ses photos seront supprimées.
+                    Es-tu sûr de vouloir supprimer cette galerie ? Toutes ses photos seront supprimées.
                     </div>
                     <form class="modal-footer" action="" method="post">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
@@ -57,6 +60,28 @@
                                     <img src="{{ file | thumb }}">
                                 </a>
                             </figure>
+                        </div>
+                        <div>
+                            <button class="btn btn-danger margin-vert-20 moderation" type="button" data-toggle="modal" data-target="#deleteModal-{{ file.slug }}">Supprimer</button>
+                        </div>
+                        <div class="modal fade" id="deleteModal-{{ file.slug }}" tabindex="-1" role="dialog" aria-labelledby="FileDeletion" aria-hidden="true">
+                            <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">Suppression du fichier</h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                    Es-tu sûr de vouloir supprimer ce fichier. C'est définitif.
+                                    </div>
+                                    <form class="modal-footer" action="" method="post">
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
+                                        <button type="submit" name="delete_file" value="{{ file.slug }}" class="btn btn-danger">Confirmer</button>
+                                    </form>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 {% endfor %}
@@ -107,5 +132,25 @@
     uppy.on('complete', (result) => {
       console.log(result.successful);
     })
+</script>
+<script>
+    document.moderation = true;
+
+    function toggleModeration() {
+        document.moderation = !document.moderation;
+
+        moderatedElements = document.getElementsByClassName('moderation');
+        if (document.moderation) {
+            for (i = 0; i < moderatedElements.length; i++) {
+                moderatedElements[i].style.display = "block";
+            }
+        } else {
+            for (i = 0; i < moderatedElements.length; i++) {
+                moderatedElements[i].style.display = "none";
+            }
+        }
+    }
+
+    toggleModeration();
 </script>
 {% endblock %}
