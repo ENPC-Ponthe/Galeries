@@ -48,12 +48,23 @@
                         <h2>{{ gallery.name }}</h2>
                         <h3>{{ gallery.event.name }} - {{ gallery.year.name }}</h3>
                     </div>
-                    <div class="col-md-3">
-                        <a class="btn btn-primary" href="{{ url_for('private.upload', gallery_slug=gallery.slug) }}">Ajouter des fichiers</a>
+                    <div class="col-md-2">
+                        <a class="btn btn-success" href="{{ url_for('private.upload', gallery_slug=gallery.slug) }}">Ajouter des fichiers</a>
                     </div>
-                    <div class="col-md-3">
+                    <div class="col-md-2">
                         <a class="btn btn-primary" href="{{ url_for('private.gallery', gallery_slug=gallery.slug) }}">Consulter la galerie</a>
                     </div>
+                    {% if current_user.admin or current_user.id == gallery.author_id %}
+                        {% if gallery.private %}
+                            <form class="col-md-2" action="" method="post">
+                                <button class="btn btn-warning" type="submit" name="make_gallery_public" value="{{ gallery.slug }}">Rendre publique</button>
+                            </form>
+                        {% else %}
+                            <form class="col-md-2" action="" method="post">
+                                <button class="btn btn-warning" type="submit" name="make_gallery_private" value="{{ gallery.slug }}">Rendre privée</button>
+                            </form>
+                        {% endif %}
+                    {% endif %}
                 </div>
                 <div class="row">
                     <div class="col-md-12 portfolio-group no-padding">
@@ -107,12 +118,23 @@
                     <h2>{{ gallery.name }}</h2>
                     <h3>{{ gallery.event.name }} - {{ gallery.year.name }}</h3>
                 </div>
-                <div class="col-md-3">
-                    <a class="btn btn-primary" href="{{ url_for('private.upload', gallery_slug=gallery.slug) }}">Ajouter des fichiers</a>
+                <div class="col-md-2">
+                    <a class="btn btn-success" href="{{ url_for('private.upload', gallery_slug=gallery.slug) }}">Ajouter des fichiers</a>
                 </div>
-                <div class="col-md-3">
+                <div class="col-md-2">
                     <a class="btn btn-primary" href="{{ url_for('private.gallery', gallery_slug=gallery.slug) }}">Consulter la galerie</a>
                 </div>
+                {% if current_user.admin or current_user.id == gallery.author_id %}
+                    {% if gallery.private %}
+                        <form class="col-md-2" action="" method="post">
+                            <button class="btn btn-warning" type="submit" name="make_gallery_public" value="{{ gallery.slug }}">Rendre publique</button>
+                        </form>
+                    {% else %}
+                        <form class="col-md-2" action="" method="post">
+                            <button class="btn btn-warning" type="submit" name="make_gallery_private" value="{{ gallery.slug }}">Rendre privée</button>
+                        </form>
+                    {% endif %}
+                {% endif %}
             </div>
             <div class="row">
                 <div class="col-md-12 portfolio-group no-padding">

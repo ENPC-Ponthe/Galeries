@@ -49,7 +49,7 @@ def before_request():
 
 
 def render_events_template(template, **kwargs):
-    galleries_by_year = { year: GalleryDAO.find_by_year(year) for year in Year.query.order_by(Year.value).all() }
+    galleries_by_year = { year: GalleryDAO.find_public_by_year(year) for year in Year.query.order_by(Year.value).all() }
     for year, galleries in list(galleries_by_year.items()):
         if not galleries:
             del galleries_by_year[year]
@@ -100,6 +100,12 @@ def dashboard():
         if 'delete_file' in request.form and current_user.admin:
             file_slug = request.form['delete_file']
             FileDAO.delete_by_slug(file_slug)
+        if 'make_gallery_public' in request.form:
+            gallery_slug = request.form['make_gallery_public']
+            GalleryDAO.make_public(gallery_slug)
+        if 'make_gallery_private' in request.form:
+            gallery_slug = request.form['make_gallery_private']
+            GalleryDAO.make_private(gallery_slug)
 
     pending_files_by_gallery = {}
     confirmed_files_by_gallery = {}
@@ -146,6 +152,8 @@ def event_gallery(event_slug):
     galleries_by_year = {}
     other_galleries = []
     for gallery in event.galleries:
+        if gallery.private:
+            continue
         year = gallery.year
         if year is not None:
             if year not in galleries_by_year:
@@ -170,7 +178,8 @@ def year_gallery(year_slug):
         year = YearDAO.find_by_slug(year_slug)
     except NoResultFound:
         raise NotFound()
-    return render_events_template('year_gallery.html', year=year)
+    public_galleries = list(filter(lambda gallery: not gallery.private, year.galleries))
+    return render_events_template('year_gallery.html', year=year, public_galleries=public_galleries)
 
 @private.route('/galleries/<gallery_slug>', methods=['GET', 'POST'])
 def gallery(gallery_slug):
@@ -183,6 +192,8 @@ def gallery(gallery_slug):
     try:
         gallery = GalleryDAO.find_by_slug(gallery_slug)
     except NoResultFound:
+        raise NotFound()
+    if gallery.private and not (current_user.id == gallery.author_id or current_user.admin):
         raise NotFound()
     return render_events_template('gallery.html', gallery=gallery)
 
