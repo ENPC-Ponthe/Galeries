@@ -9,6 +9,7 @@ services:
     volumes:
       - club-folder:/app/instance/club_folder
       - ./web/db_backup:/db_backup
+      - ./web/app/instance/thumbs:/app/instance/thumbs
     depends_on:
       - db
       - sshd
