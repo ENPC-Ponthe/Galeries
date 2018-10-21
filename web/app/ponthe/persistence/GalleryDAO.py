@@ -19,6 +19,11 @@ class GalleryDAO:
         return Gallery.query.filter_by(year=year, private=False).all()
 
     @staticmethod
+    def find_private_by_year(year: Year):
+        galleries = Gallery.query.filter_by(year=year, private=True).all()
+        return list(filter(lambda gallery: current_user.admin or gallery.author_id == current_user.id, galleries))
+
+    @staticmethod
     def find_by_slug(slug: str):
         return Gallery.query.filter_by(slug=slug).one()
 
