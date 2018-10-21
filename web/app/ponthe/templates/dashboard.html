@@ -39,7 +39,7 @@
         {% if pending_files_by_gallery %}
             <div class="col-md-12">
                 <div class="row margin-vert-30">
-                    <h1>Mes Galeries en attente de modération</h1>
+                    <h1>Mes fichiers en attente de modération</h1>
                 </div>
             </div>
             {% for gallery, files in pending_files_by_gallery.items() %}
@@ -48,8 +48,11 @@
                         <h2>{{ gallery.name }}</h2>
                         <h3>{{ gallery.event.name }} - {{ gallery.year.name }}</h3>
                     </div>
-                    <div class="col-md-6">
+                    <div class="col-md-3">
                         <a class="btn btn-primary" href="{{ url_for('private.upload', gallery_slug=gallery.slug) }}">Ajouter des fichiers</a>
+                    </div>
+                    <div class="col-md-3">
+                        <a class="btn btn-primary" href="{{ url_for('private.gallery', gallery_slug=gallery.slug) }}">Consulter la galerie</a>
                     </div>
                 </div>
                 <div class="row">
@@ -59,12 +62,31 @@
                                 <div>
                                     <figure>
                                         <a href="{{ url_for('uploads', file_path=file.file_path) }}">
-                                            <img src="{{ url_for('uploads', file_path=file.file_path) }}">
+                                            <img src="{{ file | thumb }}">
                                         </a>
                                     </figure>
                                 </div>
                                 <div class="no-border">
-                                    <button class="btn btn-danger margin-vert-20" type="button" data-toggle="modal" data-target="#deleteModal">Supprimer</button>
+                                    <button class="btn btn-danger margin-vert-20" type="button" data-toggle="modal" data-target="#deletePendingModal-{{ file.slug }}">Supprimer</button>
+                                </div>
+                                <div class="modal fade" id="deletePendingModal-{{ file.slug }}" tabindex="-1" role="dialog" aria-labelledby="FileDeletion" aria-hidden="true">
+                                    <div class="modal-dialog" role="document">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title">Suppression du fichier</h5>
+                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                    <span aria-hidden="true">&times;</span>
+                                                </button>
+                                            </div>
+                                            <div class="modal-body">
+                                            Es-tu sûr de vouloir supprimer ce fichier. C'est définitif.
+                                            </div>
+                                            <form class="modal-footer" action="" method="post">
+                                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
+                                                <button type="submit" name="delete_file" value="{{ file.slug }}" class="btn btn-danger">Confirmer</button>
+                                            </form>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         {% endfor %}
@@ -76,7 +98,7 @@
 
         <div class="col-md-12">
             <div class="row margin-vert-30">
-                <h1>Mes Galeries</h1>
+                <h1>Mes fichiers</h1>
             </div>
         </div>
         {% for gallery, files in confirmed_files_by_gallery.items() %}
@@ -85,8 +107,11 @@
                     <h2>{{ gallery.name }}</h2>
                     <h3>{{ gallery.event.name }} - {{ gallery.year.name }}</h3>
                 </div>
-                <div class="col-md-6">
+                <div class="col-md-3">
                     <a class="btn btn-primary" href="{{ url_for('private.upload', gallery_slug=gallery.slug) }}">Ajouter des fichiers</a>
+                </div>
+                <div class="col-md-3">
+                    <a class="btn btn-primary" href="{{ url_for('private.gallery', gallery_slug=gallery.slug) }}">Consulter la galerie</a>
                 </div>
             </div>
             <div class="row">
@@ -96,12 +121,31 @@
                             <div>
                                 <figure>
                                     <a href="{{ url_for('uploads', file_path=file.file_path) }}">
-                                        <img src="{{ url_for('uploads', file_path=file.file_path) }}">
+                                        <img src="{{ file | thumb }}">
                                     </a>
                                 </figure>
                             </div>
                             <div>
-                                <button class="btn btn-danger margin-vert-20" type="button" data-toggle="modal" data-target="#deleteModal">Supprimer</button>
+                                <button class="btn btn-danger margin-vert-20" type="button" data-toggle="modal" data-target="#deleteModal-{{ file.slug }}">Supprimer</button>
+                            </div>
+                            <div class="modal fade" id="deleteModal-{{ file.slug }}" tabindex="-1" role="dialog" aria-labelledby="FileDeletion" aria-hidden="true">
+                                <div class="modal-dialog" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title">Suppression du fichier</h5>
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>
+                                        <div class="modal-body">
+                                        Es-tu sûr de vouloir supprimer ce fichier. C'est définitif.
+                                        </div>
+                                        <form class="modal-footer" action="" method="post">
+                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
+                                            <button type="submit" name="delete_file" value="{{ file.slug }}" class="btn btn-danger">Confirmer</button>
+                                        </form>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     {% endfor %}
@@ -111,7 +155,7 @@
         {% if not confirmed_files_by_gallery %}
             <div class="row margin-vert-30">
                 <div class="col-md-12">
-                    Aucun fichier
+                    Aucun fichier téléversé
                 </div>
             </div>
         {% endif %}

@@ -3,7 +3,6 @@ from flask import render_template, request, flash, redirect
 from flask_login import logout_user, current_user, login_required
 from flask_mail import Message
 from flask_tus_ponthe import tus_manager
-from ponthe.persistence import CategoryDAO
 from sqlalchemy.orm.exc import NoResultFound
 import os
 
@@ -11,7 +10,7 @@ from werkzeug.exceptions import NotFound
 
 from . import private
 from .. import app, db, mail
-from ..persistence import EventDAO, YearDAO
+from ..persistence import EventDAO, YearDAO, CategoryDAO, FileDAO
 from ..admin.views import batch_upload
 from ..file_helper import create_folder, move_file, is_image, is_video, get_extension
 from ..models import Year, Event, File, Category, Gallery
@@ -90,15 +89,17 @@ def materiel():
 @private.route('/dashboard', methods=['GET', 'POST'])
 def dashboard():
     if request.method == 'POST':
-        if request.form['option']=='create_event':
+        if request.form.get('option') == 'create_event':
             return redirect('/create-event')
-        if request.form['option']=='create_year':
+        if request.form.get('option') == 'create_year':
             return redirect('/create-year')
-        if request.form['option']=='create_gallery':
+        if request.form.get('option') == 'create_gallery':
             return redirect('/create-gallery')
-        if request.form['option']=='batch_upload':
-            if current_user.admin:
-                batch_upload()
+        if request.form.get('option') == 'batch_upload' and current_user.admin:
+            batch_upload()
+        if 'delete_file' in request.form and current_user.admin:
+            file_slug = request.form['delete_file']
+            FileDAO.delete_by_slug(file_slug)
 
     pending_files_by_gallery = {}
     confirmed_files_by_gallery = {}
@@ -176,6 +177,9 @@ def gallery(gallery_slug):
     if request.method == 'POST' and "delete" in request.form and current_user.admin:
         GalleryDAO.delete(gallery_slug)
         return redirect("/index")
+    if 'delete_file' in request.form and current_user.admin:
+        file_slug = request.form['delete_file']
+        FileDAO.delete_by_slug(file_slug)
     try:
         gallery = GalleryDAO.find_by_slug(gallery_slug)
     except NoResultFound:
