@@ -188,12 +188,23 @@ def year_gallery(year_slug):
 
 @private.route('/galleries/<gallery_slug>', methods=['GET', 'POST'])
 def gallery(gallery_slug):
-    if request.method == 'POST' and "delete" in request.form and current_user.admin:
-        GalleryDAO.delete(gallery_slug)
-        return redirect("/index")
-    if 'delete_file' in request.form and current_user.admin:
-        file_slug = request.form['delete_file']
-        FileDAO.delete_by_slug(file_slug)
+    if request.method == 'POST':
+        if "delete" in request.form and current_user.admin:
+            GalleryDAO.delete(gallery_slug)
+            return redirect("/index")
+        if 'delete_file' in request.form and current_user.admin:
+            file_slug = request.form['delete_file']
+            FileDAO.delete_by_slug(file_slug)
+        if 'make_gallery_public' in request.form:
+            GalleryDAO.make_public(gallery_slug)
+        if 'make_gallery_private' in request.form:
+            GalleryDAO.make_private(gallery_slug)
+        if 'approve_file' in request.form and current_user.admin:
+            file_slug = request.form['approve_file']
+            file = FileDAO.find_by_slug(file_slug)
+            file.pending = False
+            db.session.add(file)
+            db.session.commit()
     try:
         gallery = GalleryDAO.find_by_slug(gallery_slug)
     except NoResultFound:
