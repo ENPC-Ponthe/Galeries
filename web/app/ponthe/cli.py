@@ -44,6 +44,7 @@ def load_fixtures():
         delete_folder("../instance/club_folder/waiting_zone")
         create_folder("../instance/upload_tmp")
         delete_folder("../instance/uploads")
+        delete_folder("../instance/thumbs")
         copy_folder("../instance/test/club_folder/waiting_zone", "../instance/club_folder/waiting_zone")
         copy_folder("../instance/test/uploads", "../instance/uploads")
         copy_data()
