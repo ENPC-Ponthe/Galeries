@@ -11,8 +11,6 @@ web/ponthe.prod.cfg
 # Instance Folder - used for configuration parameters and uploads / fixtures files
 web/app/instance/club_folder
 web/app/instance/upload_tmp
-web/app/instance/logs
-web/app/instance/thumbs
 
 # Pypi package installation
 web/app/Galeries_Ponthe.egg-info/

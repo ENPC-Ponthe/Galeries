@@ -27,7 +27,7 @@ def load(app: Flask):
         app.config['JWT_PRIVATE_KEY'] = private_key.read()
     app.config['MEDIA_ROOT'] = os.path.join(app.instance_path, 'club_folder', 'uploads')
     app.config['THUMBNAIL_MEDIA_ROOT'] = app.config['MEDIA_ROOT']
-    app.config['THUMBNAIL_MEDIA_THUMBNAIL_ROOT'] = os.path.join(app.instance_path, 'thumbs')
+    app.config['THUMBNAIL_MEDIA_THUMBNAIL_ROOT'] = os.path.join(app.instance_path, 'club_folder', 'thumbs')
     app.config['THUMBNAIL_MEDIA_THUMBNAIL_URL'] = '/thumbs'
 
 def thumbnails(app: Flask):
