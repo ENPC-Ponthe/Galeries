@@ -55,11 +55,25 @@
                                             <li>
                                                 <a href="{{ url_for('private.year_gallery', year_slug=year.slug) }}" class="parent">{{ year.value }}</a>
                                                 <ul>
-                                                    {% for gallery in galleries %}
+                                                    {% if galleries['public'] and galleries['private'] %}
+                                                        <strong class="fa-th">Galeries publiques</strong>
+                                                    {% endif %}
+                                                    {% for gallery in galleries['public'] %}
                                                         <li>
                                                             <a href="{{ url_for('private.gallery', gallery_slug=gallery.slug) }}" class="fa-group">{{ gallery.name }}</a>
                                                         </li>
                                                     {% endfor %}
+                                                    {% if galleries['public'] and galleries['private'] %}
+                                                        <hr>
+                                                    {% endif %}
+                                                    {% if galleries['private'] %}
+                                                    <strong class="fa-th">Galeries privées</strong>
+                                                        {% for gallery in galleries['private'] %}
+                                                            <li>
+                                                                <a href="{{ url_for('private.gallery', gallery_slug=gallery.slug) }}" class="fa-group">{{ gallery.name }}</a>
+                                                            </li>
+                                                        {% endfor %}
+                                                    {% endif %}
                                                  </ul>
                                             </li>
                                             {% endfor %}
