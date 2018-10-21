@@ -49,9 +49,14 @@ def before_request():
 
 
 def render_events_template(template, **kwargs):
-    galleries_by_year = { year: GalleryDAO.find_public_by_year(year) for year in Year.query.order_by(Year.value).all() }
+    galleries_by_year = {
+        year: {
+            'public': GalleryDAO.find_public_by_year(year),
+            'private': GalleryDAO.find_private_by_year(year),
+        } for year in Year.query.order_by(Year.value).all()
+    }
     for year, galleries in list(galleries_by_year.items()):
-        if not galleries:
+        if not galleries['public'] and not galleries['private']:
             del galleries_by_year[year]
     return render_template(template, top_menu_galleries_by_year=galleries_by_year, **kwargs)
 
@@ -242,6 +247,7 @@ def create_gallery():
         gallery_description = request.form.get('description')
         year_slug = request.form.get('year_slug')
         event_slug = request.form.get('event_slug')
+        private = request.form.get('private')
         if gallery_name:
             gallery = Gallery(name=gallery_name, author=current_user)
             if year_slug:
@@ -252,6 +258,9 @@ def create_gallery():
                 gallery.event = event
             if gallery_description:
                 gallery.description = gallery_description
+            if private == "on":
+                gallery.private = True
+
             db.session.add(gallery)
             db.session.commit()
             return redirect('/galleries/'+gallery.slug)
