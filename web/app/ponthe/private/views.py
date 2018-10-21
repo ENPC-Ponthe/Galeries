@@ -184,7 +184,7 @@ def gallery(gallery_slug):
 
 @private.route('/create-event', methods=['GET', 'POST'])
 def create_event():
-    if request.method == 'POST':
+    if request.method == 'POST' and current_user.admin:
         name = request.form['name']
         category_slug = request.form['category_slug']
         event_description = request.form.get('description')
@@ -206,7 +206,7 @@ def create_event():
 
 @private.route('/create-year', methods=['GET', 'POST'])
 def create_year():
-    if request.method == 'POST':
+    if request.method == 'POST' and current_user.admin:
         year_value = request.form['value']
         year_description = request.form.get('description')
         if year_value:
@@ -222,7 +222,7 @@ def create_year():
 
 @private.route('/create-gallery', methods=['GET', 'POST'])
 def create_gallery():
-    if request.method == 'POST':
+    if request.method == 'POST' and current_user.admin:
         gallery_name = request.form['name']
         gallery_description = request.form.get('description')
         year_slug = request.form.get('year_slug')
