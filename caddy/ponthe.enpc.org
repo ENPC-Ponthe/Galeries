@@ -1,7 +1,7 @@
 localhost:8000 {
     import ../common
 
-    root /home/philippe/Personnal/ponthe.enpc.org/web/app/instance
+    root /srv/ponthe.enpc.org/web/app/instance
 
     proxy /phpmyadmin localhost:7500 {
         without /phpmyadmin
