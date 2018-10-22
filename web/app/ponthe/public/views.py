@@ -1,5 +1,7 @@
 # -- coding: utf-8 --"
 
+import re
+
 from flask import render_template, request, flash, redirect, url_for, abort
 from urllib.parse import urlparse, urljoin
 from flask_mail import Message
@@ -14,7 +16,7 @@ from .. import app, db, login_manager, mail
 from ..models import User
 from ..services import UserService
 from ..private.views import render_events_template
-
+from ..config import constants
 
 def render_public_template(template, **kwargs):
     if current_user.is_authenticated:
@@ -84,14 +86,18 @@ def login():
 @public.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
+        username = request.form['local_email']
         if request.form['password'] != request.form['confirmation_password']:
-            flash("Les deux mots de passe ne correspondent pas", "error")
+            flash("Les deux mots de passe ne correspondent pas.", "error")
+        elif not re.fullmatch(r"[a-z0-9\-]+\.[a-z0-9\-]+", username):
+            flash("Votre adresse email doit être de la forme prenom.nom@eleves.enpc.fr ou prenom et nom ne peuvent contenir que des lettres minuscules, des chiffres et des tirets.", "error")
         else:
             new_user=User(
                 lastname=request.form['lastname'],
                 firstname=request.form['firstname'],
-                username=request.form['local_email'],
+                username=username,
                 password=request.form['password'],
+                promotion=request.form['promotion'],
                 admin=False,
                 email_confirmed=False
             )
@@ -119,7 +125,7 @@ def register():
 
             flash("Email de confirmation envoyé à {}".format(new_user.email), "success")
 
-    return render_template('register.html')
+    return render_template('register.html', AVAILABLE_PROMOTIONS=constants.AVAILABLE_PROMOTIONS)
 
 @public.route('/register/<token>')
 def registering(token):
