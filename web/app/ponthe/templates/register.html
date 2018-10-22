@@ -11,22 +11,32 @@
                 </div>
                 <br>
                 <form action="" method="post">
-                    <label>Nom</label>
-                    <div class="row margin-bottom-20">
-                        <div class="col-md-6 col-md-offset-0">
-                            <input type="text" required class="form-control" name="lastname" id="lastname">
-                        </div>
-                    </div>
                     <label>Prénom</label>
                     <div class="row margin-bottom-20">
                         <div class="col-md-6 col-md-offset-0">
                             <input type="text" required class="form-control" name="firstname" id="firstname">
                         </div>
                     </div>
+                    <label>Nom</label>
+                    <div class="row margin-bottom-20">
+                        <div class="col-md-6 col-md-offset-0">
+                            <input type="text" required class="form-control" name="lastname" id="lastname">
+                        </div>
+                    </div>
                     <label>Email</label>
                     <div class="row margin-bottom-20">
                         <div class="col-md-6 col-md-offset-0">
                             <input type="text" required class="form-control" style="display: inline; width: calc(100% - 110px);" name="local_email" id="local_email"> @eleves.enpc.fr
+                        </div>
+                    </div>
+                    <label>Promotion</label>
+                    <div class="row margin-bottom-20">
+                        <div class="col-md-6 col-md-offset-0">
+                            <select required class="form-control" name="promotion" id="promotion">
+                                {% for promotion in AVAILABLE_PROMOTIONS %}
+                                    <option value="{{ promotion }}">{{ promotion }}</option>
+                                {% endfor %}
+                            </select>
                         </div>
                     </div>
                     <label>Mot de passe </label>
