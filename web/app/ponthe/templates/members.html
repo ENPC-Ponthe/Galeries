@@ -1,111 +1,103 @@
-{% extends "layout/layout.html" %}
+{% extends "layout/layout_members.html" %
 
 {% block content %}
-<div id="content-top-border" class="container"></div>
-<div id="content">
-    <div class="container background-white">
-        <h2 class="margin-vert-20">Membres</h2>
-        <div class="row margin-bottom-30">
-            <div class="col-md-12 animate fadeIn">
-                <!-- Person Details -->
-                <div class="col-md-3 col-sm-4 person-details margin-bottom-30">
-                    <figure>
-                        <img src="{{ url_for('static', filename='img/the_team/020.png') }}" alt="Photo 020">
-                        <figcaption>
-                            <h3 class="margin-bottom-10">Ponthé 020</h3>
-                            <p>
-                                <span style="color: orange;" class="animate fadeIn">Thomas Chabal</span> : Président<br/>
-                                Nathan Godey<br/>
-                                Alexandre Perez<br/>
-                                Philippe d'Harcourt<br/>
-                                Wissam Alami<br/>
-                                Candice Pichon<br/>
-                                Jeffrey Mahou<br/>
-                                Quentin Spinat<br/>
-                                Martin Graive
-                            </p>
-                        </figcaption>
-                    </figure>
-                </div>
-                <div class="col-md-3 col-sm-4 person-details margin-bottom-30">
-                    <figure>
-                        <img src="{{ url_for('static', filename='img/the_team/019.png') }}" alt="Photo 019">
-                        <figcaption>
-                            <h3 class="margin-bottom-10">Ponthé 019</h3>
-                            <p>
-                                <span style="color: orange;" class="animate fadeIn">Inès Tazi</span> : Présidente<br/>
-                                Philippe Ferreira De Sousa<br/>
-                                Francesca Carreiro<br/>
-                                Victor Noisette<br/>
-                                Thomas Benichou<br/>
-                                Stephane Allado<br/>
-                                Hugo Sénetaire<br/>
-                                Anaïs Chopin<br/>
-                                Louis Dumont
-                            </p>
-                        </figcaption>
-                    </figure>
-                </div>
-                <div class="col-md-3 col-sm-4 person-details margin-bottom-30">
-                    <figure>
-                        <figcaption>
-                            <h3 class="margin-bottom-10">Ponthé 018</h3>
-                            <p>
-                              <span style="color: orange;" class="animate fadeIn">Lucien Mauffret</span> :	Président<br/>
-                              Augustin Joncheray : Vice-Président<br/>
-                              Anatole Parre	: Secrétaire général<br/>
-                              Victor Marchais :	Photon<br/>
-                              Nicolas Thery	: Photon<br/>
-                              Aurelie Shi	: Photon<br/>
-                              Alexandre Aheto :	Pixel<br/>
-                              Felix Roubaud	: Pixel<br/>
-                              Romain Durand	: Pixel
-                            </p>
-                        </figcaption>
-                    </figure>
-                </div>
-                <div class="col-md-3 col-sm-4 person-details margin-bottom-30">
-                    <figure>
-                        <figcaption>
-                            <h3 class="margin-bottom-10">Ponthé 017
-                            </h3>
-                            <p>
-                                <span style="color: orange;" class="animate fadeIn">Alban Berrube</span> : Président
-                            </p>
-                        </figcaption>
-                    </figure>
-                </div>
-                <div class="col-md-3 col-sm-4 person-details margin-bottom-30">
-                    <figure>
-                        <figcaption>
-                            <h3 class="margin-bottom-10">Ponthé 016
-                            </h3>
-                            <p>
-                                <span style="color: orange;" class="animate fadeIn">Omar Mounir Alaoui</span> : Président<br/>
-                                Eliot Andres : Réalisateur
-                            </p>
-                        </figcaption>
-                    </figure>
-                </div>
-                <div class="col-md-3 col-sm-4 person-details margin-bottom-30">
-                    <figure>
-                        <figcaption>
-                            <h3 class="margin-bottom-10">Ponthé 015
-                            </h3>
-                            <p>
-                                <span style="color: orange;" class="animate fadeIn">Geoffroy Gallier</span> : Président<br/>
-                                Mathieu Ramananarivo<br/>
-                                Mickael Bergem<br/>
-                                Chanh-Nghi Lam<br/>
-                                Paul Chabas<br/>
-                                Paul Boosz
-                            </p>
-                        </figcaption>
-                    </figure>
-                </div>
-            </div>
-        </div>
+<!-- Intro -->
+  <section id="intro" class="main style1 dark fullscreen">
+    <div class="content">
+      <header>
+        <h2>Les membres du Ponthé</h2>
+      </header>
+      <p>Créé par un 016, Thomas Chevrier, le Ponthé a vu se succéder des générations de cinéastes et photographes...</p>
+      <footer>
+        <a href="#p020" class="button style2 down">More</a>
+      </footer>
     </div>
-</div>
-<div id="content-bottom-border" class="container"></div>
+  </section>
+
+<!-- One -->
+  <section id="p020" class="main style2 right dark fullscreen">
+    <div class="content box style2">
+      <header>
+        <h2>Ponthé 020</h2>
+      </header>
+      <p>Président : Thomas Chabal</p>
+      <p>Respo Images : Quentin Spinat</p>
+      <p>Respo Matériel : Martin Graive</p>
+      <p>Respos Communication : Candice Pichon et Nathan Godey</p>
+      <p>Chefs monteur : Wissam Alami-Messaouidi et Jeffrey Mahou</p>
+      <p>Directeur Photo : Philippe d'Harcourt</p>
+      <p>Consultant : Alexandre Perez</p>
+    </div>
+    <a href="#p019" class="button style2 down anchored">Next</a>
+  </section>
+
+<!-- Two -->
+  <section id="p019" class="main style2 left dark fullscreen">
+    <div class="content box style2">
+      <header>
+        <h2>Ponthé 019</h2>
+      </header>
+      <p>Présidente : Inès Tazi</p>
+      <p>Responsable Web : Philippe Ferreira de Sousa</p>
+      <p>Membres : Francesca Carreiro, Victor Noisette, Thomas Benichou, Stephane Allado, Hugo Sénetaire, Anaïs Chopin, Louis Dumont</p>
+    </div>
+    <a href="#p018" class="button style2 down anchored">Next</a>
+  </section>
+
+    <!-- Three -->
+  <section id="p018" class="main style2 right dark fullscreen">
+    <div class="content box style2">
+      <header>
+        <h2>Ponthé 018</h2>
+      </header>
+                <p>Lucien Mauffret : Président</p>
+                <p>Augustin Joncheray : Vice-Président</p>
+                <p>Anatole Parre : Secrétaire général</p>
+                <p>Victor Marchais : Photon</p>
+                <p>Nicolas Thery : Photon</p>
+                <p>Aurelie Shi : Photon</p>
+                <p>Alexandre Aheto : Pixel</p>
+                <p>Felix Roubaud : Pixel</p>
+                <p>Romain Durand : Pixel </p>
+    </div>
+    <a href="#p017" class="button style2 down anchored">Next</a>
+  </section>
+
+    <!-- Four -->
+  <section id="p017" class="main style2 left dark fullscreen">
+    <div class="content box style2">
+      <header>
+        <h2>Ponthé 017</h2>
+      </header>
+                <p>Alban Berrube : Président</p>
+    </div>
+    <a href="#p016" class="button style2 down anchored">Next</a>
+  </section>
+
+    <!-- Five -->
+  <section id="p016" class="main style2 right dark fullscreen">
+    <div class="content box style2">
+      <header>
+        <h2>Ponthé 016</h2>
+      </header>
+                <p>Omar Mounir Alaoui : Président</p>
+                <p>Eliot Andres : Réalisateur</p>
+    </div>
+    <a href="#p015" class="button style2 down anchored">Next</a>
+  </section>
+
+    <!-- Six -->
+  <section id="p015" class="main style2 left dark fullscreen">
+    <div class="content box style2">
+      <header>
+        <h2>Ponthé 015</h2>
+                </header>
+                <p>Geoffroy Gallier : Président</p>
+                <p>Mathieu Ramananarivo</p>
+                <p>Mickael Bergem</p>
+                <p>Chanh-Nghi Lam</p>
+                <p>Paul Chabas</p>
+                <p>Paul Boosz</p>
+    </div>
+  </section>
 {% endblock %}

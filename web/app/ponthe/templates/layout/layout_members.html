@@ -1,0 +1,67 @@
+<!DOCTYPE HTML>
+<!--[if IE 8]> <html lang="fr" class="ie8"> <![endif]-->
+<!--[if IE 9]> <html lang="fr" class="ie9"> <![endif]-->
+<!--[if !IE]><!-->
+<html>
+  <!--<![endif]-->
+	<head>
+		<title>Membres du Ponthé</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="{{ url_for('static', filename='assets_m/css/main.css') }}" />
+		<link rel="icon" type="image/png" href="{{ url_for('static', filename='img/logo.jpg') }}" />
+		<noscript><link rel="stylesheet" href="{{ url_for('static', filename='assets_m/css/noscript.css') }}" /></noscript>
+	</head>
+	<body class="is-preload">
+
+		<!-- Header -->
+			<header id="header">
+				<img src="images/logo.png" alt="Le Ponthé" id="logo" />
+                <h1><a href="home.html">Le Ponthé - Club audiovisuel des Ponts</a></h1>
+
+				<nav>
+					<ul>
+						<li><a href="{{ url_for('private.gallery') }}">Galeries</a></li>
+						<li><a href="{{ url_for('private.dashboard') }}">Tableau de bord</a></li>
+						<li><a href="{{ url_for('private.members') }}">Membres</a></li>
+						<li><a href="{{ url_for('private.materiel') }}">Matériel</a></li>
+						<li><a href="{{ url_for('private.logout') }}">Déconnexion</a></li>
+					</ul>
+				</nav>
+			</header>
+
+      {% block content %}
+      {% endblock %}
+
+		<!-- Footer -->
+			<footer id="footer">
+
+				<!-- Icons -->
+					<ul class="icons">
+						<li><a href="#" class="icon fa-twitter"><span class="label">Twitter</span></a></li>
+						<li><a href="#" class="icon fa-facebook"><span class="label">Facebook</span></a></li>
+						<li><a href="#" class="icon fa-instagram"><span class="label">Instagram</span></a></li>
+						<li><a href="#" class="icon fa-linkedin"><span class="label">LinkedIn</span></a></li>
+						<li><a href="#" class="icon fa-dribbble"><span class="label">Dribbble</span></a></li>
+						<li><a href="#" class="icon fa-pinterest"><span class="label">Pinterest</span></a></li>
+					</ul>
+
+				<!-- Menu -->
+					<ul class="menu">
+						<li>&copy; Ponthé 020</li>
+					</ul>
+
+			</footer>
+
+		<!-- Scripts -->
+			<script src="{{ url_for('static', filename='assets_h/js/jquery.min.js') }}"></script>
+      <script src="{{ url_for('static', filename='assets_h/js/jquery.poptrox.min.js') }}"></script>
+      <script src="{{ url_for('static', filename='assets_h/js/jquery.scrolly.min.js') }}"></script>
+      <script src="{{ url_for('static', filename='assets_h/js/jquery.scrollex.min.js') }}"></script>
+      <script src="{{ url_for('static', filename='assets_h/js/browser.min.js') }}"></script>
+      <script src="{{ url_for('static', filename='assets_h/js/breakpoints.min.js') }}"></script>
+      <script src="{{ url_for('static', filename='assets_h/js/util.js') }}"></script>
+      <script src="{{ url_for('static', filename='assets_h/js/main.js') }}"></script>
+
+	</body>
+</html>
