@@ -1,15 +1,10 @@
-import os
-
-from flask_login import current_user
-
-from .FileDAO import FileDAO
-from .. import app, db
+from .ResourceDAO import ResourceDAO
 from ..models import Gallery, Year, Event
-from ..file_helper import delete_folder
 
-UPLOAD_FOLDER = app.config['MEDIA_ROOT']
+class GalleryDAO(ResourceDAO):
+    def __init__(self):
+        super().__init__(Gallery)
 
-class GalleryDAO:
     @staticmethod
     def find_by_event_and_year_slugs(event_slug: str,  year_slug: str):
         return Gallery.query.join(Gallery.year).join(Gallery.event).filter(Year.slug == year_slug, Event.slug == event_slug).all()
@@ -18,36 +13,7 @@ class GalleryDAO:
     def find_public_by_year(year: Year):
         return Gallery.query.filter_by(year=year, private=False).all()
 
-    @staticmethod
-    def find_private_by_year(year: Year):
+    @classmethod
+    def find_private_by_year(cls, year: Year):
         galleries = Gallery.query.filter_by(year=year, private=True).all()
-        return list(filter(lambda gallery: current_user.admin or gallery.author_id == current_user.id, galleries))
-
-    @staticmethod
-    def find_by_slug(slug: str):
-        return Gallery.query.filter_by(slug=slug).one()
-
-    @staticmethod
-    def delete(gallery_slug: str):
-        gallery = Gallery.query.filter_by(slug=gallery_slug).one()
-        for file in gallery.files:
-            FileDAO.delete(file)
-        db.session.delete(gallery)
-        db.session.commit()
-        delete_folder(os.path.join(UPLOAD_FOLDER, gallery_slug))
-
-    @classmethod
-    def make_private(cls, slug):
-        gallery = cls.find_by_slug(slug)
-        if current_user.admin or current_user.id == gallery.author_id:
-            gallery.private = True
-            db.session.add(gallery)
-            db.session.commit()
-
-    @classmethod
-    def make_public(cls, slug):
-        gallery = GalleryDAO.find_by_slug(slug)
-        if current_user.admin or current_user.id == gallery.author_id:
-            gallery.private = False
-            db.session.add(gallery)
-            db.session.commit()
+        return list(filter(cls.has_right_on, galleries))

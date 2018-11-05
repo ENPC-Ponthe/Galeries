@@ -19,7 +19,6 @@ db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 FlaskCLI(app)
 thumb = Thumbnail(app)
-config.thumbnails(app)
 
 login_manager = LoginManager()
 login_manager.init_app(app)

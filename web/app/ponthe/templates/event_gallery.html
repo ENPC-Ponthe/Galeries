@@ -45,7 +45,7 @@
         {% for year, galleries in galleries_by_year.items() %}
             <div class="row margin-vert-30">
                 <div class="col-md-12">
-                    <h2>Année {{ year.slug }}</h2>
+                    <h2><a href="{{ url_for('private.year_gallery', year_slug=year.slug) }}">Année {{ year.slug }}</a></h2>
                 </div>
             </div>
             <div class="row">

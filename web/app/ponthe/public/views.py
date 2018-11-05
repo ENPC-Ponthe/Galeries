@@ -4,30 +4,21 @@ import re
 
 from flask import render_template, request, flash, redirect, url_for, abort
 from urllib.parse import urlparse, urljoin
-from flask_mail import Message
 from flask_login import login_user, current_user
 from itsdangerous import SignatureExpired, BadSignature
 from datetime import datetime
 
-from sqlalchemy.exc import IntegrityError
-
 from . import public
-from .. import app, db, login_manager, mail
-from ..models import User
+from .. import app, db, login_manager
 from ..services import UserService
-from ..private.views import render_events_template
 from ..config import constants
+from ..persistence import UserDAO
 
-def render_public_template(template, **kwargs):
-    if current_user.is_authenticated:
-        return render_events_template(template, **kwargs)
-    else:
-        return render_template(template, **kwargs)
 
 def getHome():
     return redirect('index')
 
-def is_safe_url(target):    #    empêche les redirections malicieuses
+def is_safe_url(target):    # empêche les redirections malicieuses
     ref_url = urlparse(request.host_url)
     test_url = urlparse(urljoin(request.host_url, target))
     return test_url.scheme in ('http', 'https') and \
@@ -42,7 +33,7 @@ def get_redirect_target():
 
 @login_manager.user_loader
 def user_loader(id):
-    user = User.query.get(id)
+    user = UserDAO.get_by_id(id)
     if user is None:
         return
     else:
@@ -61,7 +52,7 @@ def login():
 
     email = request.form['email']
     password = request.form['password']
-    logging_user = User.query.filter_by(email=email).first()
+    logging_user = UserDAO.find_by_email(email)
 
     if logging_user is None:
         flash("Identifiants incorrectes", "error")
@@ -86,43 +77,21 @@ def login():
 @public.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
+        lastname = request.form['lastname']
+        firstname = request.form['firstname']
         username = request.form['local_email']
-        if request.form['password'] != request.form['confirmation_password']:
+        password = request.form['password']
+        promotion = request.form['promotion']
+        if password != request.form['confirmation_password']:
             flash("Les deux mots de passe ne correspondent pas.", "error")
         elif not re.fullmatch(r"[a-z0-9\-]+\.[a-z0-9\-]+", username):
             flash("Votre adresse email doit être de la forme prenom.nom@eleves.enpc.fr ou prenom et nom ne peuvent contenir que des lettres minuscules, des chiffres et des tirets.", "error")
         else:
-            new_user=User(
-                lastname=request.form['lastname'],
-                firstname=request.form['firstname'],
-                username=username,
-                password=request.form['password'],
-                promotion=request.form['promotion'],
-                admin=False,
-                email_confirmed=False
-            )
-            db.session.add(new_user)
             try:
-                db.session.commit()
-            except IntegrityError:
-                db.session.rollback()
-                existing_user = User.query.filter_by(username=new_user.username).first()
-
-                if not existing_user.email_confirmed and (datetime.utcnow()-existing_user.created).total_seconds() > 3600:
-                    db.session.delete(existing_user)
-                    db.session.commit()
-                    db.session.add(new_user)
-                    db.session.commit()
-                else:
-                    flash("Il existe déjà un compte pour cet adresse email", "error")
-                    return render_template('register.html')
-            token = UserService.get_token(new_user)
-            msg = Message('Confirme la validation de ton compte Ponthé', sender='Ponthé <no-reply@ponthe.enpc.org>', recipients=[new_user.email] )
-            link = "https://ponthe.enpc.org"+url_for('public.registering', token=token)
-            msg.body = 'Clique sur le lien de confirmation suivant sous 24h pour activer ton compte : {}'.format(link)
-            msg.html = render_template('email/register.html', register_link=link, firstname=new_user.firstname)
-            mail.send(msg)
-
+                new_user = UserService.register(username, firstname, lastname, password, promotion)
+            except ValueError:
+                flash("Il existe déjà un compte pour cet adresse email", "error")
+                return render_template('register.html')
             flash("Email de confirmation envoyé à {}".format(new_user.email), "success")
 
     return render_template('register.html', AVAILABLE_PROMOTIONS=constants.AVAILABLE_PROMOTIONS)
@@ -139,7 +108,7 @@ def registering(token):
             body='Le token est expiré. Tu as dépassé le délai de 24h.'
         )
 
-    user = User.query.get(user_id)
+    user = UserDAO.get_by_id(user_id)
     if user is None:
         return render_template('mail_confirmation.html',
             title="Erreur - Aucun utilisateur correspondant",
@@ -156,15 +125,9 @@ def registering(token):
 def reset():
     if request.method == 'POST' :
         email = request.form['email']
-        user = User.query.filter_by(email=email).first()
-        if user is not None and user.email_confirmed:
-            msg = Message('Réinitialise ton mot de passe Ponthé' , sender='Ponthé <no-reply@ponthe.enpc.org>', recipients=[email])
-            link = UserService.get_reset_link(user)
-            msg.body = 'Pour réinitialiser ton mot de passe, clique sur le lien suivant : {}'.format(link)
-            msg.html = render_template('email/reset.html', reset_link=link, firstname=user.firstname)
-            mail.send(msg)
+        UserService.reset(email)
         flash("Si un compte est associé à cette adresse email, un email t'as été envoyé", "success")
-    return render_public_template('reset.html')
+    return render_template('reset.html')
 
 @public.route('/reset/<token>', methods=['GET','POST'])
 def resetting(token):
@@ -180,7 +143,7 @@ def resetting(token):
             body='Le token est expiré. Tu as dépassé le délai de 24h.'
         )
 
-    user = User.query.get(user_id)
+    user = UserDAO.get_by_id(user_id)
     if user is None:
         return render_template('mail_confirmation.html',
             title="Erreur - Aucun utilisateur correspondant",
@@ -198,8 +161,8 @@ def resetting(token):
             flash("Mot de passe réinitialisé avec succès", "success")
             return redirect('login')
 
-    return render_public_template('resetting.html', firstname=user.firstname)
+    return render_template('resetting.html', firstname=user.firstname)
 
 @public.route('/cgu')
 def cgu():
-    return render_public_template('cgu.html')
+    return render_template('cgu.html')

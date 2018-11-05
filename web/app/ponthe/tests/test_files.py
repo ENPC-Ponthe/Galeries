@@ -9,7 +9,7 @@ class ProjectTests(unittest.TestCase):
         app.config['DEBUG'] = False
         self.app = app.test_client()
 
-        self.assertEquals(app.debug, False)
+        self.assertEqual(app.debug, False)
 
     # executed after each test
     def tearDown(self):
@@ -17,7 +17,7 @@ class ProjectTests(unittest.TestCase):
 
     def test_login_page(self):
         response = self.app.get('/login', follow_redirects=True)
-        self.assertIn(b'Future site for logging into Galeries Ponthé!', response.data)
+        self.assertIn(b'Connecte-toi !', response.data)
 
 
 if __name__ == "__main__":

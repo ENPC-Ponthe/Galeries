@@ -5,13 +5,13 @@ import click, os, subprocess, csv, glob
 from flask import render_template
 from flask_mail import Message
 from smtplib import SMTPException
+
 from sqlalchemy.exc import IntegrityError
 
 from . import app, mail, db
-from .admin import views as admin_views
-from .file_helper import create_folder, delete_folder, copy_folder
+from .file_helper import create_folder, delete_folder, copy_folder, delete_folders_in_folder,copy_folders_in_folder, copy_file
 from .models import User
-from .services import UserService
+from .services import UserService, GalleryService
 
 
 def _drop_and_recreate_db():
@@ -38,24 +38,24 @@ def load_fixtures():
             db.session.add(fixture)
         db.session.commit()
         app.logger.info("Overwriting files...")
-        os.chdir(os.path.dirname(os.path.abspath(__file__)))
+        os.chdir(app.instance_path)
         # Can't rm club_folder in docker because a volume is mounted on it : busy
-        create_folder("../instance/club_folder")
-        delete_folder("../instance/club_folder/waiting_zone")
-        create_folder("../instance/upload_tmp")
-        delete_folder("../instance/uploads")
-        delete_folder("../instance/thumbs")
-        copy_folder("../instance/test/club_folder/waiting_zone", "../instance/club_folder/waiting_zone")
-        copy_folder("../instance/test/uploads", "../instance/uploads")
+        create_folder("club_folder")
+        delete_folder("club_folder/waiting_zone")
+        create_folder("upload_tmp")
+        delete_folders_in_folder("uploads")
+        delete_folders_in_folder("thumbs")
+        copy_folder("test/club_folder/waiting_zone", "club_folder/waiting_zone")
+        copy_folders_in_folder("test/uploads", "uploads")
         copy_data()
-        subprocess.call(["cp", "../instance/test/club_folder/accounts.csv", "../instance/club_folder/"])
+        copy_file("test/club_folder/accounts.csv", "club_folder/accounts.csv")
     else:
         app.logger.info("Abandon, exiting")
 
 
 @app.cli.command(help="Mass import from waiting zone")
 def batch_upload():
-    admin_views.batch_upload()
+    GalleryService.batch_upload(None)
 
 
 def persist_data():
@@ -69,14 +69,13 @@ def persist_data():
 
 def copy_data():
     app.logger.info("Copying files...")
-    for directory in glob.glob(r'./data/galleries/*'):
-        copy_folder(directory, "../instance/uploads/"+os.path.basename(directory))
+    copy_folders_in_folder("../ponthe/data/galleries", "uploads")
 
 
 @app.cli.command(help="Load initial data of the app like categories")
 def load_data():
     persist_data()
-    os.chdir(os.path.dirname(os.path.abspath(__file__)))
+    os.chdir(app.instance_path)
     copy_data()
 
 
@@ -110,7 +109,7 @@ def create_accounts():
                 app.logger.info(f"Account successfully created for user {user}")
             except IntegrityError:
                 db.session.rollback()
-                app.logger.warn(f"Account can't be created. User {user} already exists.")
+                app.logger.warning(f"Account can't be created. User {user} already exists.")
             except SMTPException as e:
                 db.session.rollback()
                 app.logger.error(f"Account creation canceled for user {user}"

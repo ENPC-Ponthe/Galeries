@@ -28,13 +28,29 @@
                         </div>
                         <div class="col-md-3">
                             <p>
-                                <button type="submit" class="btn btn-primary" name="option" value="batch_upload" disabled="true">Téléverser fichiers en attente</button>
+                                <button type="submit" class="btn btn-primary" name="option" value="moderate">Modérer</button>
                             </p>
                         </div>
                     </div>
                 </form>
             </div>
         {% endif %}
+        <!--{% if not current_user.admin %}
+            <div class="col-md-12">
+                <div class="row margin-vert-30">
+                    <h1>Zone d'édition</h1>
+                </div>
+                <form action="" method="post">
+                    <div class="row margin-vert-30">
+                        <div class="col-md-3">
+                            <p>
+                                <button type="submit" class="btn btn-primary" name="option" value="create_gallery">Créer une galerie</button>
+                            </p>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        {% endif %}-->
         <hr/>
         {% if pending_files_by_gallery %}
             <div class="col-md-12">
@@ -44,15 +60,12 @@
             </div>
             {% for gallery, files in pending_files_by_gallery.items() %}
                 <div class="row margin-vert-30">
-                    <div class="col-md-6">
-                        <h2>{{ gallery.name }}</h2>
-                        <h3>{{ gallery.event.name }} - {{ gallery.year.name }}</h3>
+                    <div class="col-md-8">
+                        <h2><a href="{{ url_for('private.gallery', gallery_slug=gallery.slug) }}">{{ gallery.name }}</a></h2>
+                        <h3><a href="{{ url_for('private.event_gallery', event_slug=gallery.event.slug) }}">{{ gallery.event.name }}</a> - <a href="{{ url_for('private.year_gallery', year_slug=gallery.year.slug) }}">{{ gallery.year.name }}</a></h3>
                     </div>
                     <div class="col-md-2">
                         <a class="btn btn-success" href="{{ url_for('private.upload', gallery_slug=gallery.slug) }}">Ajouter des fichiers</a>
-                    </div>
-                    <div class="col-md-2">
-                        <a class="btn btn-primary" href="{{ url_for('private.gallery', gallery_slug=gallery.slug) }}">Consulter la galerie</a>
                     </div>
                     {% if current_user.admin or current_user.id == gallery.author_id %}
                         {% if gallery.private %}
@@ -114,15 +127,12 @@
         </div>
         {% for gallery, files in confirmed_files_by_gallery.items() %}
             <div class="row margin-vert-30">
-                <div class="col-md-6">
-                    <h2>{{ gallery.name }}</h2>
-                    <h3>{{ gallery.event.name }} - {{ gallery.year.name }}</h3>
+                <div class="col-md-8">
+                    <h2><a href="{{ url_for('private.gallery', gallery_slug=gallery.slug) }}">{{ gallery.name }}</a></h2>
+                    <h3><a href="{{ url_for('private.event_gallery', event_slug=gallery.event.slug) }}">{{ gallery.event.name }}</a> - <a href="{{ url_for('private.year_gallery', year_slug=gallery.year.slug) }}">{{ gallery.year.name }}</a></h3>
                 </div>
                 <div class="col-md-2">
                     <a class="btn btn-success" href="{{ url_for('private.upload', gallery_slug=gallery.slug) }}">Ajouter des fichiers</a>
-                </div>
-                <div class="col-md-2">
-                    <a class="btn btn-primary" href="{{ url_for('private.gallery', gallery_slug=gallery.slug) }}">Consulter la galerie</a>
                 </div>
                 {% if current_user.admin or current_user.id == gallery.author_id %}
                     {% if gallery.private %}
