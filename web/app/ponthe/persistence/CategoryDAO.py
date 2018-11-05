@@ -1,7 +1,7 @@
-from ..models import Category
+from ponthe.models import Category
 
+from .ResourceDAO import ResourceDAO
 
-class CategoryDAO:
-    @staticmethod
-    def find_by_slug(slug):
-        return Category.query.filter_by(slug=slug).one()
+class CategoryDAO(ResourceDAO):
+    def __init__(self):
+        super().__init__(Category)

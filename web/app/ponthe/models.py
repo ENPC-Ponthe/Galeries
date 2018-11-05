@@ -352,6 +352,10 @@ class Gallery(Resource):
                 return self.files[0]
             return File.query.filter_by(slug="default-image").one()
 
+    @property
+    def is_pending(self):
+        return any(file.pending for file in self.files)
+
     def __repr__(self):
         return '<Gallery {}>'.format(self.name)
 

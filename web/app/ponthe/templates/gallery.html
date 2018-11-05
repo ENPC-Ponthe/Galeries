@@ -32,9 +32,6 @@
                     <div class="col-md-2">
                         <button class="btn btn-danger margin-vert-20 moderation" style="display:none;" type="button" data-toggle="modal" data-target="#deleteModal">Supprimer la galerie</button>
                     </div>
-                    <div class="col-md-2">
-                        <button class="btn btn-warning margin-vert-20 moderation" style="display:none;" type="button" onclick="hideConfirmedPhotos()">Masquer les photos approuvées</button>
-                    </div>
                 {% endif %}
             </div>
             {% if gallery.description %}
@@ -42,6 +39,11 @@
                     <div class="col-md-12">
                         <p>{{ gallery.description }}</p>
                     </div>
+                </div>
+            {% endif %}
+            {% if gallery.private %}
+                <div class="alert alert-warning">
+                    Cette galerie est privée : elle n'est visible que par les administrateurs et son auteur
                 </div>
             {% endif %}
         </div>
@@ -66,8 +68,8 @@
         </div>
         <div class="row">
             <div class="col-md-12 portfolio-group no-padding">
-                {% for file in gallery.files %}
-                    <div class="col-md-3 portfolio-item margin-bottom-40 design {% if not file.pending %}confirmed-file{% endif %}">
+                {% for file in approved_files %}
+                    <div class="col-md-3 portfolio-item margin-bottom-40 design">
                         <div>
                             <figure>
                                 <a href="{{ url_for('uploads', file_path=file.file_path) }}">
@@ -77,14 +79,12 @@
                         </div>
                         {% if current_user.admin %}
                             <div class="row">
-                                <div class="col-md-{% if file.pending %}6{% else %}12{% endif %}">
+                                <div class="col-md-12">
                                     <button class="btn btn-danger moderation" type="button" data-toggle="modal" data-target="#deleteModal-{{ file.slug }}" style="display: none;">Supprimer</button>
                                 </div>
-                                {% if file.pending %}
-                                    <form action="" method="post" class="col-md-6">
-                                        <button class="btn btn-success moderation" type="submit" style="display: none;" name="approve_file" value="{{ file.slug }}">Approuver</button>
-                                    </form>
-                                {% endif %}
+                            </div>
+                            <div class="row moderation" style="display: none;">
+                                {{ file.author.full_name }}
                             </div>
                             <div class="modal fade" id="deleteModal-{{ file.slug }}" tabindex="-1" role="dialog" aria-labelledby="FileDeletion" aria-hidden="true">
                                 <div class="modal-dialog" role="document">
@@ -171,23 +171,6 @@
             } else {
                 for (i = 0; i < moderatedElements.length; i++) {
                     moderatedElements[i].style.display = "none";
-                }
-            }
-        }
-
-        document.hideConfirmed = false;
-
-        function hideConfirmedPhotos() {
-            document.hideConfirmed = !document.hideConfirmed;
-
-            var confirmedFiles = document.getElementsByClassName('confirmed-file');
-            if (document.hideConfirmed) {
-                for (i = 0; i < confirmedFiles.length; i++) {
-                    confirmedFiles[i].style.display = "none";
-                }
-            } else {
-                for (i = 0; i < confirmedFiles.length; i++) {
-                    confirmedFiles[i].style.display = "inline-block";
                 }
             }
         }

@@ -1,0 +1,8 @@
+# Install ponthe
+-e .
+
+git+git://github.com/PhilippeFerreiraDeSousa/Flask-Tus.git#egg=Flask-Tus-Ponthe
+
+pytest-cov
+pylint
+pylint-quotes
