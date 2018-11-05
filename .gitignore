@@ -14,6 +14,9 @@ web/app/instance/upload_tmp
 web/app/instance/thumbs
 web/app/instance/uploads
 
+# Coverqge
+web/app/.coverage
+
 # Pypi package installation
 web/app/Galeries_Ponthe.egg-info/
 

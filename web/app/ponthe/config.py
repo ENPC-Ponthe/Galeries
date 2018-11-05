@@ -22,7 +22,7 @@ def load(app: Flask):
             JWT_ACCESS_TOKEN_EXPIRES = False,
         )
     else:
-        app.logger.warn("Galeries Ponthé starting in DEV mode")
+        app.logger.warning("Galeries Ponthé starting in DEV mode")
         app.config.from_pyfile('ponthe.cfg')
 
     with open(os.path.join(app.instance_path, "keys", "jwtRS256-public.pem"), 'r') as public_key:
@@ -30,10 +30,7 @@ def load(app: Flask):
     with open(os.path.join(app.instance_path, "keys", "jwtRS256-private.pem"), 'r') as private_key:
         app.config['JWT_PRIVATE_KEY'] = private_key.read()
     app.config['MEDIA_ROOT'] = os.path.join(app.instance_path, 'uploads')
+    app.config['ASSET_ROOT'] = os.path.join(app.instance_path, 'assets')
     app.config['THUMBNAIL_MEDIA_ROOT'] = app.config['MEDIA_ROOT']
     app.config['THUMBNAIL_MEDIA_THUMBNAIL_ROOT'] = os.path.join(app.instance_path, 'thumbs')
     app.config['THUMBNAIL_MEDIA_THUMBNAIL_URL'] = '/thumbs'
-
-def thumbnails(app: Flask):
-    get_thumbnail = app.jinja_env.filters['thumbnail']
-    app.jinja_env.filters.update(thumb=lambda file: get_thumbnail(file.file_path, '226x226'))

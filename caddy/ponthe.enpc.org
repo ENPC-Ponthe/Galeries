@@ -8,7 +8,7 @@ localhost:8000 {
         transparent
     }
     proxy / localhost:7000 {
-        except /thumbs /uploads
+        except /thumbs /uploads /assets
         transparent
     }
 }

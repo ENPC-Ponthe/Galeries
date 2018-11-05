@@ -1,18 +1,16 @@
+from .ResourceDAO import ResourceDAO
 from .. import db
-from ..models import Event, File
+from ..models import Event
 
 
-class EventDAO:
-    @staticmethod
-    def find_by_slug(slug: str):
-        return Event.query.filter_by(slug=slug).one()
+class EventDAO(ResourceDAO):
+    def __init__(self):
+        super().__init__(Event)
 
-    @staticmethod
-    def delete_detaching_galleries(event_slug):
-        event = Event.query.filter_by(slug=event_slug).one()
+    def delete_detaching_galleries(self, event_slug):
+        event = self.find_by_slug(event_slug)
         for gallery in event.galleries:
             gallery.event=None
-            db.session.add(gallery)
         db.session.commit()
         db.session.delete(event)
         db.session.commit()

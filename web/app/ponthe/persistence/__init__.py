@@ -3,3 +3,4 @@ from .GalleryDAO import GalleryDAO
 from .YearDAO import YearDAO
 from .FileDAO import FileDAO
 from .CategoryDAO import CategoryDAO
+from .UserDAO import UserDAO

@@ -23,6 +23,17 @@ def delete_folder(directory):
     except OSError:
         print('Error: Deleting directory. {}'.format(directory))
 
+def delete_folders_in_folder(directory):
+    for inner_directory in os.listdir(directory):
+        inner_directory_path = os.path.join(directory, inner_directory)
+        delete_folder(inner_directory_path)
+
+def copy_folders_in_folder(src, dest):
+    for inner_directory in os.listdir(src):
+        inner_src_path = os.path.join(src, inner_directory)
+        inner_dest_path = os.path.join(dest, inner_directory)
+        copy_folder(inner_src_path, inner_dest_path)
+
 def copy_folder(src, dest):
     try:
         shutil.copytree(src, dest)

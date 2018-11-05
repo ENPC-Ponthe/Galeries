@@ -1,23 +1,20 @@
 <!DOCTYPE html>
-<!--[if IE 8]> <html lang="fr" class="ie8"> <![endif]-->
-<!--[if IE 9]> <html lang="fr" class="ie9"> <![endif]-->
-<!--[if !IE]><!-->
 <html lang="fr" style="height: 100%;">
-    <!--<![endif]-->
     <head>
         <title>Galeries Ponthé</title>
+
         <meta http-equiv="content-type" content="text/html; charset=utf-8" />
         <meta name="description" content="Galeries Ponthé">
         <meta name="author" content="Ponthé">
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
 
-        <link rel="icon" type="image/png" href="{{ url_for('static', filename='img/logo.jpg') }}">
-        <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.css') }}" rel="stylesheet">
-        <link rel="stylesheet" href="{{ url_for('static', filename='css/animate.css') }}" rel="stylesheet">
-        <link rel="stylesheet" href="{{ url_for('static', filename='css/font-awesome.css') }}" rel="stylesheet">
-        <link rel="stylesheet" href="{{ url_for('static', filename='css/nexus.css') }}" rel="stylesheet">
-        <link rel="stylesheet" href="{{ url_for('static', filename='css/responsive.css') }}" rel="stylesheet">
-        <link rel="stylesheet" href="{{ url_for('static', filename='css/custom.css') }}" rel="stylesheet">
+        <link rel="icon" type="image/png" href="/assets/img/logo.png">
+        <link rel="stylesheet" href="/assets/css/bootstrap.css">
+        <link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+        <link rel="stylesheet" href="/assets/css/animate.css" rel="stylesheet">
+        <link rel="stylesheet" href="/assets/css/nexus.css" rel="stylesheet">
+        <link rel="stylesheet" href="/assets/css/responsive.css" rel="stylesheet">
+        <link rel="stylesheet" href="/assets/css/custom.css" rel="stylesheet">
         <link href="https://fonts.googleapis.com/css?family=Roboto+Condensed:400,300" rel="stylesheet" type="text/css">
         <link href="https://fonts.googleapis.com/css?family=PT+Sans" type="text/css" rel="stylesheet">
         <link href="https://fonts.googleapis.com/css?family=Roboto:400,300" rel="stylesheet" type="text/css">
@@ -38,7 +35,7 @@
                 </div>
             </div>
 
-            {% if current_user.is_authenticated %}
+            {% if top_menu_galleries_by_year %}
             <div id="hornav" class="container no-padding">
                 <div class="row">
                     <div class="col-md-12 no-padding">
@@ -114,7 +111,7 @@
                                     <a href="https://www.facebook.com/clubtournageponthe" target="_blank"><li>Facebook</li></a>
                                 </li>
                                 <li>
-                                    <a href="https://m.me/clubtournageponthe" target="_blank"><li>Messenger</li></a>
+                                    <a href="https://m.me/club.ponthe" target="_blank"><li>Messenger</li></a>
                                 </li>
                             </ul>
                         </div>
@@ -124,14 +121,15 @@
             </div>
         </div>
 
-        <script type="text/javascript" src="{{ url_for('static', filename='js/jquery.min.js') }}"></script>
-        <script type="text/javascript" src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
-        <script type="text/javascript" src="{{ url_for('static', filename='js/scripts.js') }}"></script>
-        <script type="text/javascript" src="{{ url_for('static', filename='js/jquery.isotope.js') }}"></script>
-        <script type="text/javascript" src="{{ url_for('static', filename='js/jquery.slicknav.js') }}"></script>
-        <script type="text/javascript" src="{{ url_for('static', filename='js/jquery.visible.js') }}"></script>
-        <script type="text/javascript" src="{{ url_for('static', filename='js/jquery.sticky.js') }}"></script>
-        <script type="text/javascript" src="{{ url_for('static', filename='js/slimbox2.js') }}"></script>
-        <script type="text/javascript" src="{{ url_for('static', filename='js/modernizr.custom.js') }}"></script>
+        <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+        <script type="text/javascript" src="/assets/js/bootstrap.min.js"></script>
+        <script type="text/javascript" src="/assets/js/scripts.js"></script>
+        <script type="text/javascript" src="/assets/js/jquery.isotope.js"></script>
+        <script type="text/javascript" src="/assets/js/jquery.slicknav.js"></script>
+        <script type="text/javascript" src="/assets/js/jquery.visible.js"></script>
+        <script type="text/javascript" src="/assets/js/jquery.sticky.js"></script>
+        <script type="text/javascript" src="/assets/js/slimbox2.js"></script>
+        <script type="text/javascript" src="/assets/js/modernizr.custom.js"></script>
     </body>
 </html>

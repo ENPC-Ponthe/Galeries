@@ -30,7 +30,7 @@ setup(
     author_email='philippe@fdesousa.fr',
     license='MIT',
     packages=['ponthe'],
-    test_suite='nose2.collector.collector',
+    test_suite='py.test',
     include_package_data=True,
     install_requires=install_requires,
     zip_safe=False
