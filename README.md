@@ -297,10 +297,18 @@ Eventuellement
 git pull
 ```
 
-Puis
+### En environement de prod
+
 ```bash
-docker login -u philippeferreiradesousa quay.io
 export TAG=master;
+docker-compsose pull
+docker-compose up
+```
+
+### En environement de test
+
+```bash
+export TAG=testing;
 docker-compsose pull
 docker-compose up
 ```
