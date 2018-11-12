@@ -300,15 +300,14 @@ git pull
 ### En environement de prod
 
 ```bash
-export TAG=master;
-docker-compsose pull
+docker-compose pull
 docker-compose up
 ```
 
 ### En environement de test
 
+Mettre `TAG=testing` dans le *.env*
 ```bash
-export TAG=testing;
-docker-compsose pull
+docker-compose pull
 docker-compose up
 ```
