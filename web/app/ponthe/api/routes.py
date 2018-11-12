@@ -1,6 +1,8 @@
 from . import api
+import re
 import os, datetime
 from ..models import User
+from ..services import UserService
 from flask import jsonify, request
 from .. import db, app
 from flask_jwt_extended import JWTManager, jwt_required, create_access_token, get_jwt_identity
@@ -53,6 +55,24 @@ def login():
         return jsonify(token=access_token), 200
     else:
         return jsonify({"msg": "Bad email or password"}), 401
+
+@api.route('/register', methods=['POST'])
+def register():
+    lastname = request.json.get('lastname')
+    firstname = request.json.get('firstname')
+    username = request.json.get('email')
+    password = request.json.get('password')
+    promotion = request.json.get('promotion')
+    if password != request.json.get('confirmation_password'):
+        return jsonify({"msg": "les deux mot de passe ne correspondent pas"}), 401
+    elif not re.fullmatch(r"[a-z0-9\-]+\.[a-z0-9\-]+", username):
+        return jsonify({"msg": "adresse non valide"}), 401
+    else:
+        try:
+            new_user = UserService.register(username, firstname, lastname, password, promotion)
+        except ValueError:
+            return jsonify({"msg": "Il existe déjà un compte pour cet adresse email"}), 401
+    return jsonify({"msg": "utilisateur créé"}), 200
 
 @api.route('/protected', methods=['GET'])
 @jwt_required
