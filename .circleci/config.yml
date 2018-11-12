@@ -39,13 +39,11 @@ jobs:
             docker_layer_caching: true
       - run: apk --no-cache add py-pip && pip install 'docker-compose==1.18.0'
       - checkout
-      - run: cp .env.dist .env
-      - run: sed -i s/secretSSHPassword/${BUILD_SSH_PASSWORD}/g .env
       - run: docker login -u $DOCKER_USER -p $DOCKER_PASSWORD quay.io
       - run: |
           export TAG=${CIRCLE_BRANCH}
-          docker-compose -f docker-compose.yml build
-          docker-compose -f docker-compose.yml push
+          docker build -t quay.io/enpcponthe/galeries-web:${TAG} ./web
+          docker push quay.io/enpcponthe/galeries-web:${TAG}
 
 workflows:
   version: 2
@@ -60,3 +58,4 @@ workflows:
             branches:
               only:
                 - master
+                - testing
