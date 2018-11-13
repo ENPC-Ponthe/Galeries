@@ -13,6 +13,7 @@ web/app/instance/club_folder
 web/app/instance/upload_tmp
 web/app/instance/thumbs
 web/app/instance/uploads
+web/app/ponthe/config.py
 
 # Coverqge
 web/app/.coverage
