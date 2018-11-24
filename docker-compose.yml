@@ -25,15 +25,14 @@ services:
   sshd:
     image: quay.io/enpcponthe/galeries-sshd:${TAG}
     env_file: .env
-    build:
-      context: ./sshd
-      environment:
-        - SSH_USERNAME=${SSH_USERNAME}
-        - SSH_PASSWORD=${SSH_PASSWORD}
+    build: ./sshd
     ports:
       - "${SSHD_PORT}:22"
     volumes:
       - club-folder:/home/ponthe
+    environment:
+      - SSH_USERNAME=${SSH_USERNAME}
+      - SSH_PASSWORD=${SSH_PASSWORD}
     restart: always
 
   backup:
