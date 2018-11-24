@@ -25,7 +25,7 @@ setup(
     version=__version__,
     description='Site du Ponthé',
     keywords='ponthé club cinéma audivisuel',
-    url='https://github.com/PhilippeFerreiraDeSousa/ponthe.enpc.org',
+    url='https://github.com/ENPC-Ponthe/Galeries',
     author=['Philippe Ferreira De Sousa'],
     author_email='philippe@fdesousa.fr',
     license='MIT',
@@ -33,5 +33,8 @@ setup(
     test_suite='py.test',
     include_package_data=True,
     install_requires=install_requires,
+    dependency_links=[
+        "http://github.com/ENPC-Ponthe/Flask-Tus/tarball/master#egg=Flask-Tus-Ponthe",
+    ],
     zip_safe=False
 )
