@@ -37,7 +37,7 @@ setup(
         'Flask-Tus-Ponthe'
     ],
     dependency_links=[
-        'http://github.com/ENPC-Ponthe/Flask-Tus/tarball/master#egg=Flask-Tus-Ponthe-1.0.0',
+        'https://github.com/ENPC-Ponthe/Flask-Tus/tarball/master#egg=Flask-Tus-Ponthe-1.0.0',
     ],
     zip_safe=False
 )

@@ -14,7 +14,7 @@ RUN mkdir -p /app/instance/uploads; \
     mkdir -p /app/instance/upload_tmp; \
     mkdir -p /app/instance/keys
 
-RUN pip install /app
+RUN pip install /app  --process-dependency-links
 
 VOLUME /app/instance/club_folder
 VOLUME /app/instance/uploads
