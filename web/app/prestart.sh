@@ -1,10 +1,15 @@
 #!/usr/bin/env bash
 set -e
+
 HOST=db
 PORT=3306
 TIMEOUT=5
 
 service redis-server start
+
+mkdir -p /app/instance/club_folder/logs
+mkdir -p /app/instance/club_folder/waiting_zone
+mkdir -p /app/instance/club_folder/apk
 
 cd /app/instance/keys
 if [ ! -f "./jwtRS256-public.pem" ]; then

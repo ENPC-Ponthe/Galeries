@@ -16,6 +16,9 @@ from .services import UserService, GalleryService
 
 def _drop_and_recreate_db():
     click.echo("Emptying database...")
+    if os.environ.get("TAG") == "master":
+        app.logger.error("Environment variable TAG=master detected: you are on a production environment, database drop aborted")
+        exit()
     db.drop_all()
     db.create_all()
 

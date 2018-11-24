@@ -19,6 +19,7 @@ services:
       - SQLALCHEMY_DATABASE_URI=mysql://${DATABASE_USER}:${DATABASE_PASSWORD}@db/${DATABASE_NAME}
       - MAIL_PASSWORD=${MAIL_PASSWORD}
       - WEBHOOK_URL=${WEBHOOK_URL}
+      - TAG=${TAG}
     restart: always
 
   sshd:
@@ -26,9 +27,9 @@ services:
     env_file: .env
     build:
       context: ./sshd
-      args:
-        - SSH_USERNAME
-        - SSH_PASSWORD
+      environment:
+        - SSH_USERNAME=${SSH_USERNAME}
+        - SSH_PASSWORD=${SSH_PASSWORD}
     ports:
       - "${SSHD_PORT}:22"
     volumes:
