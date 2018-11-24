@@ -29,6 +29,11 @@ mkvirtualenv ponthe
 workon ponthe
 ```
 
+Installer l'app
+```bash
+pip install web/app  --process-dependency-links
+```
+
 Charger les données initiales de l'app comme les catégories :
 ```
 export FLASK_APP=ponthe;
