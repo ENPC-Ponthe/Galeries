@@ -1,5 +1,10 @@
 **/__pycache__/
 **/*.pyc
+docker-compose.yml
+install.sh
+deploy.sh
+*/Dockerfile
+*/logging_config.py
 
 # Virtual environment
 web/venv/
