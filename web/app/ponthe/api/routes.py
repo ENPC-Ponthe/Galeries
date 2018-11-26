@@ -77,6 +77,52 @@ def register():
 @api.route('/protected', methods=['GET'])
 @jwt_required
 def protected():
-    # Access the identity of the current user with get_jwt_identity
     current_user = get_jwt_identity()
     return jsonify(logged_in_as=current_user), 200
+
+@api.route('/reset', methods=['POST'])
+def reset():
+    email = request.json.get['email']
+    UserService.reset(email)
+    return json({"msg": "si un compte est associé à cette adresse, un mail a été envoyé"}), 200
+
+@api.route('/reset/<token>', methods=['GET', 'POST'])
+def resetting(token):
+    try :
+        user_id = UserService.get_id_from_token(token)
+        if user_id is None:
+            abort(404)
+    except BadSignature:
+        abort(404)
+    except SignatureExpired :
+        return jsonify(
+            {
+                "title": "Le token est expiré",
+                "body": "Tu as dépassé le délai de 24h."
+            }
+        ), 401
+
+    user = UserDAO.get_by_id(user_id)
+    if user is None:
+        return jsonify(
+            {
+                "title": "Erreur - Aucun utilisateur correspondant",
+                "body": "Le compte associé n'existe plus"
+            }
+        ), 401
+
+    if request.method == 'POST':
+        new_password = request.json.get('new_password')
+        if new_password != request.json.get('confirmation_password'):
+            return jsonify({"msg": "Les deux mots de passe ne correspondent pas"}), 401
+        else:
+            user.set_password(new_password)
+            db.session.add(user)
+            db.session.commit()
+            return jsonify({"msg": "Mot de passe réinitialisé avec succès"}), 200
+
+    return render_template('resetting.html', firstname=user.firstname)
+
+@api.route('/cgu')
+def cgu():
+    return render_template('cgu.html')
