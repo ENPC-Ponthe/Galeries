@@ -14,32 +14,32 @@ def logging_init():
             'slack': {
                 'class': 'slack_logger.SlackFormatter'
             }
-        },
-        'handlers': {
-            'console': {
-                'class': 'logging.StreamHandler',
-                'level': 'DEBUG',
-                'stream': 'ext://sys.stdout',
-                'formatter': 'default'
-            },
-            'rotating': {
-                'class': 'logging.handlers.TimedRotatingFileHandler',
-                'level': 'DEBUG',
-                'filename': LOG_PATH,
-                'when': 'midnight',
-                'backupCount': 365,
-                'encoding': 'utf-8',
-                'formatter': 'default'
-            },
-            'slack': {
-                'class': 'slack_logger.SlackHandler',
-                'url': os.environ.get('WEBHOOK_URL'),
-                'username': 'Galeries Ponthé',
-                'level': 'WARNING',
-                'formatter': 'slack'
-            }
-        },
-        'root': {
-            'handlers': ['console', 'rotating']#, 'slack']
         }
+        # 'handlers': {
+        #     'console': {
+        #         'class': 'logging.StreamHandler',
+        #         'level': 'DEBUG',
+        #         'stream': 'ext://sys.stdout',
+        #         'formatter': 'default'
+        #     },
+        #     'rotating': {
+        #         'class': 'logging.handlers.TimedRotatingFileHandler',
+        #         'level': 'DEBUG',
+        #         'filename': os.environ.get('LOG_PATH'),
+        #         'when': 'midnight',
+        #         'backupCount': 365,
+        #         'encoding': 'utf-8',
+        #         'formatter': 'default'
+        #     },
+        #      'slack': {
+        #         'class': 'slack_logger.SlackHandler',
+        #         'url': os.environ.get('WEBHOOK_URL'),
+        #         'username': 'Galeries Ponthé',
+        #         'level': 'WARNING',
+        #         'formatter': 'slack'
+        #     }
+        # },
+        # 'root': {
+        #     'handlers': ['console', 'rotating']#, 'slack']
+        # }
     })
