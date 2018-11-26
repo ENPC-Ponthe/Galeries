@@ -80,13 +80,13 @@ def protected():
     current_user = get_jwt_identity()
     return jsonify(logged_in_as=current_user), 200
 
-@public.route('/reset', methods=['POST'])
+@api.route('/reset', methods=['POST'])
 def reset():
     email = request.json.get['email']
     UserService.reset(email)
     return json({"msg": "si un compte est associé à cette adresse, un mail a été envoyé"}), 200
 
-@public.route('/reset/<token>', methods=['GET', 'POST'])
+@api.route('/reset/<token>', methods=['GET', 'POST'])
 def resetting(token):
     try :
         user_id = UserService.get_id_from_token(token)
@@ -123,6 +123,6 @@ def resetting(token):
 
     return render_template('resetting.html', firstname=user.firstname)
 
-@public.route('/cgu')
+@api.route('/cgu')
 def cgu():
     return render_template('cgu.html')
