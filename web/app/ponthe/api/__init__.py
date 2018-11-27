@@ -1,15 +1,11 @@
 from flask import Blueprint
 
-api = Blueprint('api', __name__)
+# api = Blueprint('api', __name__)
+#
+# from . import routes
+from flask_restplus import Api
 
-from . import routes
-# from flask import Flask
-# from flask_restplus import Resource, Api
-#
-# app = Flask(__name__)
-# api = Api(app)
-#
-# @api.route('/hello')
-# class HelloWorld(Resource):
-#     def get(self):
-#         return {'hello': 'world'}
+api_blueprint = Blueprint('api', __name__)
+api = Api(api_blueprint)
+
+from .test import *
