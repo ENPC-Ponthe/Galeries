@@ -8,9 +8,6 @@ from ..persistence import UserDAO
 from flask import jsonify, request
 from .. import db, app
 from flask_jwt_extended import JWTManager, jwt_required, create_access_token, get_jwt_identity
-# from flask_restplus import Api
-
-# api = Api(app)
 
 jwt = JWTManager(app)
 
