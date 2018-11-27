@@ -3,9 +3,14 @@ import re
 import os, datetime
 from ..models import User
 from ..services import UserService
+from ..persistence import UserDAO
+
 from flask import jsonify, request
 from .. import db, app
 from flask_jwt_extended import JWTManager, jwt_required, create_access_token, get_jwt_identity
+# from flask_restplus import Api
+
+# api = Api(app)
 
 jwt = JWTManager(app)
 
@@ -44,7 +49,7 @@ def login():
     if user is None:
         return jsonify({"msg": "Identifiants incorrectes"}), 404
     if not user.email_confirmed:
-        if (datetime.utcnow()-user.created).total_seconds() > 3600:
+        if (datetime.datetime.utcnow()-user.created).total_seconds() > 3600:
             db.session.delete(user)
             db.session.commit()
         else:
@@ -64,9 +69,9 @@ def register():
     password = request.json.get('password')
     promotion = request.json.get('promotion')
     if password != request.json.get('confirmation_password'):
-        return jsonify({"msg": "les deux mot de passe ne correspondent pas"}), 401
+        return jsonify({"msg": "Les deux mot de passe ne correspondent pas"}), 401
     elif not re.fullmatch(r"[a-z0-9\-]+\.[a-z0-9\-]+", username):
-        return jsonify({"msg": "adresse non valide"}), 401
+        return jsonify({"msg": "Adresse non valide"}), 401
     else:
         try:
             new_user = UserService.register(username, firstname, lastname, password, promotion)
@@ -82,9 +87,9 @@ def protected():
 
 @api.route('/reset', methods=['POST'])
 def reset():
-    email = request.json.get['email']
+    email = request.json.get('email')
     UserService.reset(email)
-    return json({"msg": "si un compte est associé à cette adresse, un mail a été envoyé"}), 200
+    return jsonify({"msg": "Si un compte est associé à cette adresse, un mail a été envoyé"}), 200
 
 @api.route('/reset/<token>', methods=['GET', 'POST'])
 def resetting(token):
@@ -110,7 +115,6 @@ def resetting(token):
                 "body": "Le compte associé n'existe plus"
             }
         ), 401
-
     if request.method == 'POST':
         new_password = request.json.get('new_password')
         if new_password != request.json.get('confirmation_password'):
@@ -121,8 +125,44 @@ def resetting(token):
             db.session.commit()
             return jsonify({"msg": "Mot de passe réinitialisé avec succès"}), 200
 
-    return render_template('resetting.html', firstname=user.firstname)
+    return jsonify(
+        {
+            "msg": "utilisateur identifié",
+            "firstname": user.firstname,
+            "lastname": user.lastname
+        }
+    ), 201
+
+#@api.route('/')
 
 @api.route('/cgu')
 def cgu():
     return render_template('cgu.html')
+
+
+# @private.route('/materiel',methods=['GET','POST'])
+# def materiel():
+#     if request.method == 'POST':
+#         object = request.form['object']
+#         message = request.form.get('message')
+#         if not message:
+#             flash("Veuillez saisir un message", "error")
+#         else:
+#             msg = Message(subject=f"Demande d'emprunt de {object} par {current_user.firstname} {current_user.lastname}",
+#                           body=message,
+#                           sender=f"{current_user.full_name} <no-reply@ponthe.enpc.org>",
+#                           recipients=['ponthe@liste.enpc.fr'])
+#             mail.send(msg)
+#             flash("Mail envoyé !", "success")
+#     return render_template('materiel.html')
+
+
+# @api.route('/my-resource/<id>', endpoint='my-resource')
+# @api.doc(params={'id': 'An ID'})
+# class MyResource(Resource):
+#     def get(self, id):
+#         return {}
+#
+#     @api.doc(responses={403: 'Not Authorized'})
+#     def post(self, id):
+#         api.abort(403)
