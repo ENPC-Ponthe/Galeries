@@ -1,0 +1,174 @@
+[2018-11-05 00:34:27,719] WARNING in config: Galeries Ponthé starting in DEV mode
+[2018-11-05 00:34:45,264] WARNING in config: Galeries Ponthé starting in DEV mode
+[2018-11-05 00:37:42,081] ERROR in app: Exception on /moderation [GET]
+Traceback (most recent call last):
+  File "/home/philippe/virtenvs/ponthe/lib/python3.6/site-packages/flask/app.py", line 2292, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/home/philippe/virtenvs/ponthe/lib/python3.6/site-packages/flask/app.py", line 1815, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/home/philippe/virtenvs/ponthe/lib/python3.6/site-packages/flask/app.py", line 1718, in handle_user_exception
+    reraise(exc_type, exc_value, tb)
+  File "/home/philippe/virtenvs/ponthe/lib/python3.6/site-packages/flask/_compat.py", line 35, in reraise
+    raise value
+  File "/home/philippe/virtenvs/ponthe/lib/python3.6/site-packages/flask/app.py", line 1813, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/home/philippe/virtenvs/ponthe/lib/python3.6/site-packages/flask/app.py", line 1799, in dispatch_request
+    return self.view_functions[rule.endpoint](**req.view_args)
+  File "/home/philippe/Personnal/ponthe.enpc.org/web/app/ponthe/admin/views.py", line 63, in moderation
+    return render_template('moderation.html', pending_files_by_gallery=pending_files_by_gallery)
+  File "/home/philippe/virtenvs/ponthe/lib/python3.6/site-packages/flask/templating.py", line 135, in render_template
+    context, ctx.app)
+  File "/home/philippe/virtenvs/ponthe/lib/python3.6/site-packages/flask/templating.py", line 117, in _render
+    rv = template.render(context)
+  File "/home/philippe/virtenvs/ponthe/lib/python3.6/site-packages/jinja2/asyncsupport.py", line 76, in render
+    return original_render(self, *args, **kwargs)
+  File "/home/philippe/virtenvs/ponthe/lib/python3.6/site-packages/jinja2/environment.py", line 1008, in render
+    return self.environment.handle_exception(exc_info, True)
+  File "/home/philippe/virtenvs/ponthe/lib/python3.6/site-packages/jinja2/environment.py", line 780, in handle_exception
+    reraise(exc_type, exc_value, tb)
+  File "/home/philippe/virtenvs/ponthe/lib/python3.6/site-packages/jinja2/_compat.py", line 37, in reraise
+    raise value.with_traceback(tb)
+  File "/home/philippe/Personnal/ponthe.enpc.org/web/app/ponthe/templates/moderation.html", line 1, in top-level template code
+    {% extends "layout/layout.html" %}
+  File "/home/philippe/Personnal/ponthe.enpc.org/web/app/ponthe/templates/layout/layout.html", line 99, in top-level template code
+    {% block content %}
+  File "/home/philippe/Personnal/ponthe.enpc.org/web/app/ponthe/templates/moderation.html", line 39, in block "content"
+    <img src="{{ file | thumb }}">
+  File "/home/philippe/Personnal/ponthe.enpc.org/web/app/ponthe/views.py", line 11, in thumb_filter
+    return thumb.get_thumbnail(file.file_path, '226x226')
+  File "/home/philippe/virtenvs/ponthe/lib/python3.6/site-packages/flask_thumbnails/__init__.py", line 111, in get_thumbnail
+    image = Image.open(BytesIO(storage.read(original_filepath)))
+  File "/home/philippe/virtenvs/ponthe/lib/python3.6/site-packages/flask_thumbnails/storage_backends.py", line 25, in read
+    with open(filepath, mode) as f:
+FileNotFoundError: [Errno 2] No such file or directory: '/home/philippe/Personnal/ponthe.enpc.org/web/app/instance/uploads/slides/slide32.jpg'
+[2018-11-05 00:38:29,107] WARNING in config: Galeries Ponthé starting in DEV mode
+[2018-11-05 00:40:08,832] WARNING in config: Galeries Ponthé starting in DEV mode
+[2018-11-05 00:40:16,964] WARNING in config: Galeries Ponthé starting in DEV mode
+[2018-11-05 00:42:28,429] WARNING in config: Galeries Ponthé starting in DEV mode
+[2018-11-05 00:42:37,769] WARNING in config: Galeries Ponthé starting in DEV mode
+[2018-11-05 01:29:02,243] WARNING in config: Galeries Ponthé starting in DEV mode
+[2018-11-05 01:29:27,462] ERROR in app: Exception on /index [GET]
+Traceback (most recent call last):
+  File "/home/philippe/virtenvs/ponthe/lib/python3.6/site-packages/flask/app.py", line 2292, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/home/philippe/virtenvs/ponthe/lib/python3.6/site-packages/flask/app.py", line 1815, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/home/philippe/virtenvs/ponthe/lib/python3.6/site-packages/flask/app.py", line 1718, in handle_user_exception
+    reraise(exc_type, exc_value, tb)
+  File "/home/philippe/virtenvs/ponthe/lib/python3.6/site-packages/flask/_compat.py", line 35, in reraise
+    raise value
+  File "/home/philippe/virtenvs/ponthe/lib/python3.6/site-packages/flask/app.py", line 1813, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/home/philippe/virtenvs/ponthe/lib/python3.6/site-packages/flask/app.py", line 1799, in dispatch_request
+    return self.view_functions[rule.endpoint](**req.view_args)
+  File "/home/philippe/Personnal/ponthe.enpc.org/web/app/ponthe/private/views.py", line 40, in index
+    return render_template('index.html', categories=CategoryDAO().find_all())
+  File "/home/philippe/virtenvs/ponthe/lib/python3.6/site-packages/flask/templating.py", line 134, in render_template
+    return _render(ctx.app.jinja_env.get_or_select_template(template_name_or_list),
+  File "/home/philippe/virtenvs/ponthe/lib/python3.6/site-packages/jinja2/environment.py", line 869, in get_or_select_template
+    return self.get_template(template_name_or_list, parent, globals)
+  File "/home/philippe/virtenvs/ponthe/lib/python3.6/site-packages/jinja2/environment.py", line 830, in get_template
+    return self._load_template(name, self.make_globals(globals))
+  File "/home/philippe/virtenvs/ponthe/lib/python3.6/site-packages/jinja2/environment.py", line 804, in _load_template
+    template = self.loader.load(self, name, globals)
+  File "/home/philippe/virtenvs/ponthe/lib/python3.6/site-packages/jinja2/loaders.py", line 125, in load
+    code = environment.compile(source, name, filename)
+  File "/home/philippe/virtenvs/ponthe/lib/python3.6/site-packages/jinja2/environment.py", line 591, in compile
+    self.handle_exception(exc_info, source_hint=source_hint)
+  File "/home/philippe/virtenvs/ponthe/lib/python3.6/site-packages/jinja2/environment.py", line 780, in handle_exception
+    reraise(exc_type, exc_value, tb)
+  File "/home/philippe/virtenvs/ponthe/lib/python3.6/site-packages/jinja2/_compat.py", line 37, in reraise
+    raise value.with_traceback(tb)
+  File "/home/philippe/Personnal/ponthe.enpc.org/web/app/ponthe/templates/index.html", line 68, in template
+    <img src="{{ category.cover_image | category-thumb }}">
+  File "/home/philippe/virtenvs/ponthe/lib/python3.6/site-packages/jinja2/environment.py", line 543, in _generate
+    optimized=self.optimized)
+  File "/home/philippe/virtenvs/ponthe/lib/python3.6/site-packages/jinja2/compiler.py", line 82, in generate
+    generator.visit(node)
+  File "/home/philippe/virtenvs/ponthe/lib/python3.6/site-packages/jinja2/visitor.py", line 38, in visit
+    return f(node, *args, **kwargs)
+  File "/home/philippe/virtenvs/ponthe/lib/python3.6/site-packages/jinja2/compiler.py", line 799, in visit_Template
+    self.blockvisit(block.body, block_frame)
+  File "/home/philippe/virtenvs/ponthe/lib/python3.6/site-packages/jinja2/compiler.py", line 378, in blockvisit
+    self.visit(node, frame)
+  File "/home/philippe/virtenvs/ponthe/lib/python3.6/site-packages/jinja2/visitor.py", line 38, in visit
+    return f(node, *args, **kwargs)
+  File "/home/philippe/virtenvs/ponthe/lib/python3.6/site-packages/jinja2/compiler.py", line 1122, in visit_For
+    self.blockvisit(node.body, loop_frame)
+  File "/home/philippe/virtenvs/ponthe/lib/python3.6/site-packages/jinja2/compiler.py", line 378, in blockvisit
+    self.visit(node, frame)
+  File "/home/philippe/virtenvs/ponthe/lib/python3.6/site-packages/jinja2/visitor.py", line 38, in visit
+    return f(node, *args, **kwargs)
+  File "/home/philippe/virtenvs/ponthe/lib/python3.6/site-packages/jinja2/compiler.py", line 1358, in visit_Output
+    self.visit(argument, frame)
+  File "/home/philippe/virtenvs/ponthe/lib/python3.6/site-packages/jinja2/visitor.py", line 38, in visit
+    return f(node, *args, **kwargs)
+  File "/home/philippe/virtenvs/ponthe/lib/python3.6/site-packages/jinja2/compiler.py", line 70, in new_func
+    return f(self, node, frame, **kwargs)
+  File "/home/philippe/virtenvs/ponthe/lib/python3.6/site-packages/jinja2/compiler.py", line 1482, in visitor
+    self.visit(node.left, frame)
+  File "/home/philippe/virtenvs/ponthe/lib/python3.6/site-packages/jinja2/visitor.py", line 38, in visit
+    return f(node, *args, **kwargs)
+  File "/home/philippe/virtenvs/ponthe/lib/python3.6/site-packages/jinja2/compiler.py", line 70, in new_func
+    return f(self, node, frame, **kwargs)
+  File "/home/philippe/virtenvs/ponthe/lib/python3.6/site-packages/jinja2/compiler.py", line 1578, in visit_Filter
+    self.fail('no filter named %r' % node.name, node.lineno)
+  File "/home/philippe/virtenvs/ponthe/lib/python3.6/site-packages/jinja2/compiler.py", line 315, in fail
+    raise TemplateAssertionError(msg, lineno, self.name, self.filename)
+jinja2.exceptions.TemplateAssertionError: no filter named 'category'
+[2018-11-05 01:30:00,821] WARNING in config: Galeries Ponthé starting in DEV mode
+[2018-11-05 01:33:25,916] WARNING in config: Galeries Ponthé starting in DEV mode
+[2018-11-05 01:36:42,442] WARNING in config: Galeries Ponthé starting in DEV mode
+[2018-11-05 01:37:12,005] WARNING in config: Galeries Ponthé starting in DEV mode
+[2018-11-05 01:37:56,583] WARNING in config: Galeries Ponthé starting in DEV mode
+[2018-11-05 01:38:57,134] WARNING in config: Galeries Ponthé starting in DEV mode
+[2018-11-05 01:40:55,503] WARNING in config: Galeries Ponthé starting in DEV mode
+[2018-11-05 01:41:17,556] WARNING in config: Galeries Ponthé starting in DEV mode
+[2018-11-05 01:41:44,288] WARNING in config: Galeries Ponthé starting in DEV mode
+[2018-11-05 01:43:37,376] WARNING in config: Galeries Ponthé starting in DEV mode
+[2018-11-05 22:27:19,792] WARNING in config: Galeries Ponthé starting in DEV mode
+[2018-11-05 22:27:37,818] ERROR in app: Exception on /dashboard [GET]
+Traceback (most recent call last):
+  File "/home/philippe/virtenvs/ponthe/lib/python3.6/site-packages/flask/app.py", line 2292, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/home/philippe/virtenvs/ponthe/lib/python3.6/site-packages/flask/app.py", line 1815, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/home/philippe/virtenvs/ponthe/lib/python3.6/site-packages/flask/app.py", line 1718, in handle_user_exception
+    reraise(exc_type, exc_value, tb)
+  File "/home/philippe/virtenvs/ponthe/lib/python3.6/site-packages/flask/_compat.py", line 35, in reraise
+    raise value
+  File "/home/philippe/virtenvs/ponthe/lib/python3.6/site-packages/flask/app.py", line 1813, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/home/philippe/virtenvs/ponthe/lib/python3.6/site-packages/flask/app.py", line 1799, in dispatch_request
+    return self.view_functions[rule.endpoint](**req.view_args)
+  File "/home/philippe/Personnal/ponthe.enpc.org/web/app/ponthe/private/views.py", line 89, in dashboard
+    return render_template('dashboard.html', pending_files_by_gallery=pending_files_by_gallery, confirmed_files_by_gallery=confirmed_files_by_gallery)
+  File "/home/philippe/virtenvs/ponthe/lib/python3.6/site-packages/flask/templating.py", line 135, in render_template
+    context, ctx.app)
+  File "/home/philippe/virtenvs/ponthe/lib/python3.6/site-packages/flask/templating.py", line 117, in _render
+    rv = template.render(context)
+  File "/home/philippe/virtenvs/ponthe/lib/python3.6/site-packages/jinja2/asyncsupport.py", line 76, in render
+    return original_render(self, *args, **kwargs)
+  File "/home/philippe/virtenvs/ponthe/lib/python3.6/site-packages/jinja2/environment.py", line 1008, in render
+    return self.environment.handle_exception(exc_info, True)
+  File "/home/philippe/virtenvs/ponthe/lib/python3.6/site-packages/jinja2/environment.py", line 780, in handle_exception
+    reraise(exc_type, exc_value, tb)
+  File "/home/philippe/virtenvs/ponthe/lib/python3.6/site-packages/jinja2/_compat.py", line 37, in reraise
+    raise value.with_traceback(tb)
+  File "/home/philippe/Personnal/ponthe.enpc.org/web/app/ponthe/templates/dashboard.html", line 1, in top-level template code
+    {% extends "layout/layout.html" %}
+  File "/home/philippe/Personnal/ponthe.enpc.org/web/app/ponthe/templates/layout/layout.html", line 99, in top-level template code
+    {% block content %}
+  File "/home/philippe/Personnal/ponthe.enpc.org/web/app/ponthe/templates/dashboard.html", line 156, in block "content"
+    <img src="{{ file | thumb }}">
+  File "/home/philippe/Personnal/ponthe.enpc.org/web/app/ponthe/views.py", line 11, in thumb_filter
+    return thumb.get_thumbnail(file.file_path, '226x226')
+  File "/home/philippe/virtenvs/ponthe/lib/python3.6/site-packages/flask_thumbnails/__init__.py", line 111, in get_thumbnail
+    image = Image.open(BytesIO(storage.read(original_filepath)))
+  File "/home/philippe/virtenvs/ponthe/lib/python3.6/site-packages/flask_thumbnails/storage_backends.py", line 25, in read
+    with open(filepath, mode) as f:
+FileNotFoundError: [Errno 2] No such file or directory: '/home/philippe/Personnal/ponthe.enpc.org/web/app/instance/uploads/fillers/filler2.jpg'
+[2018-11-05 22:28:16,227] WARNING in config: Galeries Ponthé starting in DEV mode
+[2018-11-05 22:36:15,165] WARNING in config: Galeries Ponthé starting in DEV mode
+[2018-11-05 22:37:46,461] WARNING in config: Galeries Ponthé starting in DEV mode
+[2018-11-05 23:09:47,473] WARNING in config: Galeries Ponthé starting in DEV mode

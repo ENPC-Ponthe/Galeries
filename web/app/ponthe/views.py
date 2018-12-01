@@ -1,4 +1,4 @@
-from flask import redirect, send_from_directory, send_file, render_template
+from flask import redirect, send_file, render_template
 from flask_login import login_required, current_user
 import os
 from werkzeug.exceptions import NotFound
@@ -41,16 +41,6 @@ def thumbnails(file_path):
 def assets(file_path):
     try:
         return send_file(os.path.join(app.config['ASSET_ROOT'], file_path))
-    except FileNotFoundError:
-        raise NotFound()
-
-@app.route('/apk/<path:filename>')
-def apk(filename):
-    try:
-        return send_from_directory(
-            os.path.join(app.instance_path, 'club_folder', 'apk'),
-            filename
-        )
     except FileNotFoundError:
         raise NotFound()
 

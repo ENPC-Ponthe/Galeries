@@ -1,0 +1,60 @@
+[2018-10-31 00:29:58,350] WARNING in config: Galeries Ponthé starting in DEV mode
+[2018-10-31 00:34:28,690] WARNING in config: Galeries Ponthé starting in DEV mode
+[2018-10-31 00:34:37,703] ERROR in app: Exception on /moderation [GET]
+Traceback (most recent call last):
+  File "/home/philippe/virtenvs/ponthe/lib/python3.6/site-packages/flask/app.py", line 2292, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/home/philippe/virtenvs/ponthe/lib/python3.6/site-packages/flask/app.py", line 1815, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/home/philippe/virtenvs/ponthe/lib/python3.6/site-packages/flask/app.py", line 1718, in handle_user_exception
+    reraise(exc_type, exc_value, tb)
+  File "/home/philippe/virtenvs/ponthe/lib/python3.6/site-packages/flask/_compat.py", line 35, in reraise
+    raise value
+  File "/home/philippe/virtenvs/ponthe/lib/python3.6/site-packages/flask/app.py", line 1813, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/home/philippe/virtenvs/ponthe/lib/python3.6/site-packages/flask/app.py", line 1799, in dispatch_request
+    return self.view_functions[rule.endpoint](**req.view_args)
+  File "/home/philippe/Personnal/ponthe.enpc.org/web/app/ponthe/admin/views.py", line 67, in moderation
+    pending_files_by_gallery = GalleryService.get_pending_files_by_gallery()
+  File "/home/philippe/Personnal/ponthe.enpc.org/web/app/ponthe/services/GalleryService.py", line 104, in get_pending_files_by_gallery
+    for pending_gallery in filter(lambda gallery: gallery.is_pending, GalleryDAO.find_all()):
+TypeError: find_all() missing 1 required positional argument: 'self'
+[2018-10-31 00:35:13,435] WARNING in config: Galeries Ponthé starting in DEV mode
+[2018-10-31 00:35:15,524] ERROR in app: Exception on /moderation [GET]
+Traceback (most recent call last):
+  File "/home/philippe/virtenvs/ponthe/lib/python3.6/site-packages/flask/app.py", line 2292, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/home/philippe/virtenvs/ponthe/lib/python3.6/site-packages/flask/app.py", line 1816, in full_dispatch_request
+    return self.finalize_request(rv)
+  File "/home/philippe/virtenvs/ponthe/lib/python3.6/site-packages/flask/app.py", line 1831, in finalize_request
+    response = self.make_response(rv)
+  File "/home/philippe/virtenvs/ponthe/lib/python3.6/site-packages/flask/app.py", line 1957, in make_response
+    'The view function did not return a valid response. The'
+TypeError: The view function did not return a valid response. The function either returned None or ended without a return statement.
+[2018-10-31 00:36:00,939] ERROR in app: Exception on /moderation [GET]
+Traceback (most recent call last):
+  File "/home/philippe/virtenvs/ponthe/lib/python3.6/site-packages/flask/app.py", line 2292, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/home/philippe/virtenvs/ponthe/lib/python3.6/site-packages/flask/app.py", line 1816, in full_dispatch_request
+    return self.finalize_request(rv)
+  File "/home/philippe/virtenvs/ponthe/lib/python3.6/site-packages/flask/app.py", line 1831, in finalize_request
+    response = self.make_response(rv)
+  File "/home/philippe/virtenvs/ponthe/lib/python3.6/site-packages/flask/app.py", line 1957, in make_response
+    'The view function did not return a valid response. The'
+TypeError: The view function did not return a valid response. The function either returned None or ended without a return statement.
+[2018-10-31 00:36:04,221] WARNING in config: Galeries Ponthé starting in DEV mode
+[2018-10-31 00:37:00,423] WARNING in config: Galeries Ponthé starting in DEV mode
+[2018-10-31 00:40:23,376] WARNING in config: Galeries Ponthé starting in DEV mode
+[2018-10-31 00:47:05,722] WARNING in config: Galeries Ponthé starting in DEV mode
+[2018-10-31 00:48:58,854] WARNING in config: Galeries Ponthé starting in DEV mode
+[2018-10-31 00:49:49,192] WARNING in config: Galeries Ponthé starting in DEV mode
+[2018-10-31 00:57:27,000] WARNING in config: Galeries Ponthé starting in DEV mode
+[2018-10-31 01:00:45,209] WARNING in config: Galeries Ponthé starting in DEV mode
+[2018-10-31 01:02:04,526] WARNING in config: Galeries Ponthé starting in DEV mode
+[2018-10-31 01:06:14,262] WARNING in config: Galeries Ponthé starting in DEV mode
+[2018-10-31 01:12:22,853] WARNING in config: Galeries Ponthé starting in DEV mode
+[2018-10-31 01:16:17,181] WARNING in config: Galeries Ponthé starting in DEV mode
+[2018-10-31 01:16:34,363] WARNING in config: Galeries Ponthé starting in DEV mode
+[2018-10-31 01:17:28,884] WARNING in config: Galeries Ponthé starting in DEV mode
+[2018-10-31 01:17:50,682] WARNING in config: Galeries Ponthé starting in DEV mode
+[2018-10-31 01:18:13,777] WARNING in config: Galeries Ponthé starting in DEV mode

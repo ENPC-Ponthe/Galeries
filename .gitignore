@@ -8,11 +8,12 @@ web/venv/
 web/ponthe.prod.cfg
 .env
 
-# Instance Folder - used for configuration parameters and uploads / fixtures files
-web/app/instance/club_folder
-web/app/instance/upload_tmp
+# Instance Folder - used for configuration parameters and to serve static files
+web/app/instance/tmp
+web/app/instance/keys
 web/app/instance/thumbs
 web/app/instance/uploads
+web/app/instance/logs
 
 # Coverqge
 web/app/.coverage
