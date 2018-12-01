@@ -46,14 +46,9 @@ def load_fixtures():
         delete_folders_in_folder("thumbs")
         copy_folders_in_folder("test/uploads", "uploads")
         copy_data()
-        copy_file("test/accounts.csv", "accounts.csv")
+        copy_file("test/tmp/accounts.csv", "tmp/accounts.csv")
     else:
         app.logger.info("Abandon, exiting")
-
-
-@app.cli.command(help="Mass import from waiting zone")
-def batch_upload():
-    GalleryService.batch_upload(None)
 
 
 def persist_data():
@@ -79,7 +74,7 @@ def load_data():
 
 @app.cli.command(help="Create accounts based on accounts.csv in club_folder")
 def create_accounts():
-    csv_file = os.path.join(app.instance_path, 'club_folder', 'accounts.csv')
+    csv_file = os.path.join(app.instance_path, 'tmp', 'accounts.csv')
     with open(csv_file, "r") as input:
         csv_reader = csv.reader(input)
         for gender, lastname, firstname, email, origin, department, promotion in csv_reader:
