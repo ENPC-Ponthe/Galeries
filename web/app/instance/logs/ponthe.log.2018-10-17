@@ -1,0 +1,47 @@
+[2018-10-17 20:48:50,380] WARNING in config: Galeries Ponthé starting in DEV mode
+[2018-10-17 20:51:06,207] WARNING in config: Galeries Ponthé starting in DEV mode
+[2018-10-17 20:51:52,596] WARNING in config: Galeries Ponthé starting in DEV mode
+[2018-10-17 20:52:38,946] WARNING in config: Galeries Ponthé starting in DEV mode
+[2018-10-17 21:27:16,606] WARNING in config: Galeries Ponthé starting in DEV mode
+[2018-10-17 21:27:17,240] WARNING in cli: Account can't be created. User Philippe FERREIRA DE SOUSA already exists.
+[2018-10-17 21:27:47,234] WARNING in config: Galeries Ponthé starting in DEV mode
+[2018-10-17 21:29:14,564] WARNING in config: Galeries Ponthé starting in DEV mode
+[2018-10-17 21:32:52,788] WARNING in config: Galeries Ponthé starting in DEV mode
+[2018-10-17 21:36:29,318] WARNING in config: Galeries Ponthé starting in DEV mode
+[2018-10-17 21:36:32,134] ERROR in cli: Account creation canceled for user Philippe FERREIRA DE SOUSA because email could not be sent to philippe.ferreira-de-sousa@eleves.enpc.fr.
+[2018-10-17 21:38:37,210] WARNING in config: Galeries Ponthé starting in DEV mode
+[2018-10-17 21:46:39,171] WARNING in config: Galeries Ponthé starting in DEV mode
+[2018-10-17 21:48:00,280] WARNING in config: Galeries Ponthé starting in DEV mode
+[2018-10-17 21:48:01,555] WARNING in config: Galeries Ponthé starting in DEV mode
+[2018-10-17 21:48:01,852] WARNING in _internal:  * Debugger is active!
+[2018-10-17 21:48:09,950] ERROR in _internal: 127.0.0.1 - - [17/Oct/2018 21:48:09] code 400, message Bad request version ('¦\\Y¶³^\x9c\x91©«%½ÎîgñÿÈû,h-i\x11çu«V°\x06A©\x00$\x13\x01\x13\x03\x13\x02À+À/Ì©Ì¨À,À0À')
+[2018-10-17 21:48:09,962] ERROR in _internal: 127.0.0.1 - - [17/Oct/2018 21:48:09] code 400, message Bad HTTP/0.9 request type ('\x16\x03\x01\x02\x00\x01\x00\x01ü\x03\x03\x90AûRa\x13r\x06~tÕ/î,^-\x14\x92Xõ´÷Í\x1a\x14\x81±µ·\xadeø')
+[2018-10-17 21:51:11,192] WARNING in config: Galeries Ponthé starting in DEV mode
+[2018-10-17 21:51:11,493] WARNING in _internal:  * Debugger is active!
+[2018-10-17 21:51:33,235] WARNING in config: Galeries Ponthé starting in DEV mode
+[2018-10-17 21:51:33,546] WARNING in _internal:  * Debugger is active!
+[2018-10-17 21:51:56,034] WARNING in config: Galeries Ponthé starting in DEV mode
+[2018-10-17 21:51:56,331] WARNING in _internal:  * Debugger is active!
+[2018-10-17 21:52:11,809] WARNING in config: Galeries Ponthé starting in DEV mode
+[2018-10-17 21:52:12,105] WARNING in _internal:  * Debugger is active!
+[2018-10-17 21:52:43,766] WARNING in config: Galeries Ponthé starting in DEV mode
+[2018-10-17 21:52:44,071] WARNING in _internal:  * Debugger is active!
+[2018-10-17 21:53:13,675] WARNING in config: Galeries Ponthé starting in DEV mode
+[2018-10-17 21:53:13,967] WARNING in _internal:  * Debugger is active!
+[2018-10-17 21:53:21,251] WARNING in config: Galeries Ponthé starting in DEV mode
+[2018-10-17 21:53:21,547] WARNING in _internal:  * Debugger is active!
+[2018-10-17 22:00:10,259] WARNING in config: Galeries Ponthé starting in DEV mode
+[2018-10-17 22:00:10,551] WARNING in _internal:  * Debugger is active!
+[2018-10-17 22:00:52,867] WARNING in config: Galeries Ponthé starting in DEV mode
+[2018-10-17 22:00:58,262] WARNING in config: Galeries Ponthé starting in DEV mode
+[2018-10-17 22:00:58,852] WARNING in cli: Account can't be created. User Philippe FERREIRA DE SOUSA already exists.
+[2018-10-17 22:01:21,905] WARNING in config: Galeries Ponthé starting in DEV mode
+[2018-10-17 22:01:22,202] WARNING in _internal:  * Debugger is active!
+[2018-10-17 22:01:22,615] WARNING in config: Galeries Ponthé starting in DEV mode
+[2018-10-17 22:01:23,318] WARNING in cli: Account can't be created. User Philippe FERREIRA DE SOUSA already exists.
+[2018-10-17 22:01:41,750] WARNING in config: Galeries Ponthé starting in DEV mode
+[2018-10-17 22:01:42,042] WARNING in _internal:  * Debugger is active!
+[2018-10-17 22:02:30,230] WARNING in config: Galeries Ponthé starting in DEV mode
+[2018-10-17 22:02:53,325] WARNING in config: Galeries Ponthé starting in DEV mode
+[2018-10-17 22:02:53,616] WARNING in _internal:  * Debugger is active!
+[2018-10-17 23:05:42,862] WARNING in config: Galeries Ponthé starting in DEV mode

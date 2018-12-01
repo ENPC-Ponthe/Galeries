@@ -7,9 +7,11 @@ TIMEOUT=5
 
 service redis-server start
 
-mkdir -p /app/instance/club_folder/logs
-mkdir -p /app/instance/club_folder/waiting_zone
-mkdir -p /app/instance/club_folder/apk
+mkdir -p /app/instance/logs
+mkdir -p /app/instance/keys
+mkdir -p /app/instance/uploads
+mkdir -p /app/instance/thumbs
+mkdir -p /app/instance/tmp/uploads
 
 cd /app/instance/keys
 if [ ! -f "./jwtRS256-public.pem" ]; then

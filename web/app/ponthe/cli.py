@@ -42,16 +42,11 @@ def load_fixtures():
         db.session.commit()
         app.logger.info("Overwriting files...")
         os.chdir(app.instance_path)
-        # Can't rm club_folder in docker because a volume is mounted on it : busy
-        create_folder("club_folder")
-        delete_folder("club_folder/waiting_zone")
-        create_folder("upload_tmp")
         delete_folders_in_folder("uploads")
         delete_folders_in_folder("thumbs")
-        copy_folder("test/club_folder/waiting_zone", "club_folder/waiting_zone")
         copy_folders_in_folder("test/uploads", "uploads")
         copy_data()
-        copy_file("test/club_folder/accounts.csv", "club_folder/accounts.csv")
+        copy_file("test/accounts.csv", "accounts.csv")
     else:
         app.logger.info("Abandon, exiting")
 
