@@ -1,16 +1,14 @@
 from datetime import datetime
-
 from itsdangerous import URLSafeTimedSerializer
-from .MailService import MailService
-
-from ..persistence import UserDAO
 from sqlalchemy.exc import IntegrityError
 
-from ..models import User
-
 from .. import app, db
+from ..models import User
+from ..persistence import UserDAO
+from .MailService import MailService
 
 serializer=URLSafeTimedSerializer(app.secret_key)
+
 
 class UserService:
     @staticmethod
@@ -57,7 +55,7 @@ class UserService:
         return new_user
 
     @classmethod
-    def reset(cls, email:str):
+    def reset(cls, email: str):
         user = UserDAO.find_by_email(email)
         if user is not None and user.email_confirmed:
             reset_link = cls.get_reset_link(user)

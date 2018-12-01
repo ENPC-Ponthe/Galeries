@@ -2,9 +2,8 @@ from flask import request, redirect, flash, abort, render_template
 from flask_login import current_user, login_required
 
 from ..persistence import CategoryDAO
-
-from . import admin
 from ..services import YearService, EventService, GalleryService, FileService
+from . import admin
 
 
 @admin.before_request     # login en tant qu'admin nécessaire pour tout le blueprint

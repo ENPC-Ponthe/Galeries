@@ -1,8 +1,8 @@
 import os
 
 from ..models import User, Gallery
-from ..file_helper import delete_folder, create_folder
-from . import FileService
+from ..file_helper import delete_folder
+from .FileService import FileService
 from ..persistence import GalleryDAO, YearDAO, EventDAO, FileDAO
 from .. import app, db
 
@@ -101,4 +101,4 @@ class GalleryService:
     def approve(gallery_slug):
         gallery = GalleryDAO().find_by_slug(gallery_slug)
         for file in gallery.files:
-            FileService.FileService.approve(file)
+            FileService.approve(file)
