@@ -134,7 +134,6 @@ où TOSS est un répertoire de photos et vidéos
 
 ## Mobile app
 
-L'application sera téléchargeable en se rendant à partir d'un téléphone android à l'url https://ponthe.enpc.org/apk/djfh2qp71qhsLK82Z92tyHNn-v1.0.0-release.apk
 Run the below command to avoid ENOSPC :
 ```
 echo fs.inotify.max_user_watches=524288 | sudo tee -a /etc/sysctl.conf && sudo sysctl -p
@@ -155,7 +154,7 @@ Compiler et installer l'application sur un android :
 * Installer l'application React en installant *yarn* puis en lançant `yarn` dans *mobile/*
 * Lancer `react-native run-android` depuis *mobile/*
 
-Cela installe l'application sous forme de .apk sur le téléphone et exécute les commande pour connecter le téléphone au serveur Meteor sur l'ordinateur par USB, du type :
+Cela installe l'application sous forme de .apk sur le téléphone et exécute les commandes pour connecter le téléphone au serveur Meteor sur l'ordinateur par USB, du type :
 ```
 adb -s 9b52109f reverse tcp:8081 tcp:8081
 adb -s 9b52109f shell am start -n fr.ponthe.galeries/fr.ponthe.galeries.MainActivity
@@ -209,17 +208,11 @@ Générer l'apk à `android/app/build/outputs/apk/app-release.apk` avec:
 ```
 cd android && ./gradlew assembleRelease
 ```
-Le mettre en ligne à https://ponthe.enpc.org/apk/{token}-v{version number}-release.apk
-Le *token* de 24 lettres est aléatoire pour que personne n'ayant pas l'adresse puisse installer l'app, le numéro de version est de la forme [v?.?.?](https://semver.org) :
-```
-scp -P 7502 app/build/outputs/apk/app-release.apk ponthe@ponthe.enpc.org:apk/{token}-v{version number}-release.apk
-```
 
 Après désinstallation de la version debug, on installe la version release sur le téléphone avec :
 ```
 react-native run-android --variant=release
 ```
-ou en allant sur le lien de l'apk;
 
 Tha launcher icons and more can be generated from an image with http://romannurik.github.io/AndroidAssetStudio/.
 

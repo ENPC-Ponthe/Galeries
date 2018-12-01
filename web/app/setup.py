@@ -32,12 +32,6 @@ setup(
     packages=['ponthe'],
     test_suite='py.test',
     include_package_data=True,
-    install_requires=[
-        *install_requires,
-        'Flask-Tus-Ponthe'
-    ],
-    dependency_links=[
-        'https://github.com/ENPC-Ponthe/Flask-Tus/tarball/master#egg=Flask-Tus-Ponthe-1.0.0',
-    ],
+    install_requires=install_requires,
     zip_safe=False
 )

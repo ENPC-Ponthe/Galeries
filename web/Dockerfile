@@ -11,11 +11,12 @@ COPY ./app /app
 
 RUN mkdir -p /app/instance/uploads; \
     mkdir -p /app/instance/thumbs; \
-    mkdir -p /app/instance/upload_tmp; \
+    mkdir -p /app/instance/tmp/uploads; \
     mkdir -p /app/instance/keys
 
-RUN pip install /app  --process-dependency-links
+RUN pip install /app
 
-VOLUME /app/instance/club_folder
+VOLUME /app/instance/logs
 VOLUME /app/instance/uploads
 VOLUME /app/instance/thumbs
+VOLUME /app/instance/keys
