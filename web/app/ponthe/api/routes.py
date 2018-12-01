@@ -1,14 +1,16 @@
-from . import api
-import os, datetime
-from ..models import User
+from datetime import datetime
 from flask import jsonify, request
-from .. import db, app
 from flask_jwt_extended import JWTManager, jwt_required, create_access_token, get_jwt_identity
+
+from .. import db, app
+from ..models import User
+from . import api
 
 jwt = JWTManager(app)
 
+
 @jwt.user_claims_loader
-def add_claims_to_access_token(user):
+def add_claims_to_access_token(user: User):
     return {
         "username" : user.username,
         "firstname" : user.firstname,
@@ -16,14 +18,17 @@ def add_claims_to_access_token(user):
         "roles" : ["USER", "ADMIN"] if user.admin else ["USER"]
     }
 
+
 @jwt.user_identity_loader
-def user_identity(user):
+def user_identity(user: User):
     return user.id
+
 
 # Returned user accessed using the get_current_user() function, or directly with the current_user LocalProxy
 @jwt.user_loader_callback_loader
-def user_loader_callback(identity):
+def user_loader_callback(identity: int):
     return User.query.filter_by(id=identity).first()
+
 
 @api.route('/login', methods=['POST'])
 def login():
@@ -53,6 +58,7 @@ def login():
         return jsonify(token=access_token), 200
     else:
         return jsonify({"msg": "Bad email or password"}), 401
+
 
 @api.route('/protected', methods=['GET'])
 @jwt_required

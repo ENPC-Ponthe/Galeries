@@ -2,6 +2,7 @@ from .. import db
 from ..models import Event, User
 from ..persistence import CategoryDAO
 
+
 class EventService():
     @staticmethod
     def create(name: str, description: str, category_slug: str, author: User):

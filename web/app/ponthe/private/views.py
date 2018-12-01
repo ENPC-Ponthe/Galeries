@@ -31,7 +31,7 @@ def before_request():
 
 
 @private.route('/')
-def getHome():
+def get_home():
     return redirect('/index')
 
 
