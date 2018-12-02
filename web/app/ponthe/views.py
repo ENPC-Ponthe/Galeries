@@ -6,7 +6,7 @@ from werkzeug.exceptions import NotFound
 
 from . import app, thumb
 from .models import File
-from .services.GalleryService import GalleryService
+from .services import GalleryService
 
 
 @app.template_filter('thumb')

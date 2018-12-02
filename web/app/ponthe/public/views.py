@@ -12,7 +12,7 @@ from . import public
 from .. import app, db, login_manager
 from ..private.views import get_home
 from ..services import UserService
-from ..config import constants
+from ..config import Constants
 from ..persistence import UserDAO
 
 
@@ -98,7 +98,7 @@ def register():
                 return render_template('register.html')
             flash("Email de confirmation envoyé à {}".format(new_user.email), "success")
 
-    return render_template('register.html', AVAILABLE_PROMOTIONS=constants.AVAILABLE_PROMOTIONS)
+    return render_template('register.html', AVAILABLE_PROMOTIONS=Constants.AVAILABLE_PROMOTIONS)
 
 
 @public.route('/register/<token>')
