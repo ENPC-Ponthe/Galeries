@@ -2,8 +2,9 @@ import os
 from flask import Flask
 
 
-class constants:
+class Constants:
     AVAILABLE_PROMOTIONS = ["021", "020", "019", "018"]
+
 
 def load(app: Flask):
     if os.environ.get('PROD_MODE') == 'true':
