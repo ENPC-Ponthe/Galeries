@@ -132,9 +132,7 @@ def resetting(token):
 
 #@api.route('/')
 
-@api.route('/cgu')
-def cgu():
-    return render_template('cgu.html')
+
 
 
 # @private.route('/materiel',methods=['GET','POST'])

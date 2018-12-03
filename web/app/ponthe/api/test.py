@@ -1,14 +1,15 @@
 from . import api
 from flask_restplus import Resource, reqparse
+from flask_mail import Message
 import re
 import os, datetime
 from ..models import User
 from ..services import UserService
 from ..persistence import UserDAO
 import json
-from flask import jsonify, request, Response
-from .. import db, app
-from flask_jwt_extended import JWTManager, jwt_required, create_access_token, get_jwt_identity
+from flask import jsonify, request, Response, json
+from .. import db, app, mail
+from flask_jwt_extended import JWTManager, jwt_required, create_access_token, get_jwt_identity, current_user
 
 
 jwt = JWTManager(app)
@@ -135,3 +136,31 @@ class PasswordResetForm(Resource):
                     "firstname": user.firstname,
                     "lastname": user.lastname
                 }, 201
+
+@api.route('/cgu')
+class Cgu(Resource):
+    def get(self):
+        SITE_ROOT = os.path.realpath(os.path.dirname(__file__))
+        cgu = open(os.path.join(SITE_ROOT, "/app/ponthe/templates", "cgu.json"))
+        return json.load(cgu, strict=False)
+
+@api.route('/materiel')
+class Materiel(Resource):
+    @jwt_required
+    def post(self):
+        object = request.json.get('object')
+        message = request.json.get('message')
+        if not message:
+            return  {
+                "title": "Erreur - Aucun message",
+                "body": "Veuillez saisir un message"
+            }, 406
+        current_user = UserDAO.get_by_id(get_jwt_identity())
+        msg = Message(subject=f"Demande d'emprunt de {object} par {current_user.firstname} {current_user.lastname}",
+                      body=message,
+                      sender=f"{current_user.full_name} <no-reply@ponthe.enpc.org>",
+                      recipients=['alexperez3498@hotmail.fr'])#['ponthe@liste.enpc.fr'])
+        mail.send(msg)
+        return  {
+            "msg": "Mail envoyé !"
+        }, 200
