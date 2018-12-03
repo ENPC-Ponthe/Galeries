@@ -38,14 +38,16 @@ class HelloWorld(Resource):
     def get(self):
         return {'hello': 'world'}, 213
 
-
 @api.route('/login')
 @api.doc(params=    {
                         'email': 'the first part of the email. Example : jean.dupont',
                         'password': 'your password'
                     })
 class Login(Resource):
-    @api.doc(responses={403: 'Not Authorized'})
+    @api.response(200, 'Success')
+    @api.response(400, 'Request incorrect')
+    @api.response(403, 'Not authorized')
+    @api.response(401, 'User not identified')
     def post(self):
         if not request.is_json:
             return {"msg": "Missing JSON in request"}, 400
@@ -60,13 +62,13 @@ class Login(Resource):
         user = User.query.filter_by(email=email).first()
 
         if user is None:
-            return {"msg": "Identifiants incorrectes"}, 404
+            return {"msg": "Identifiants incorrectes"}, 401
         if not user.email_confirmed:
             if (datetime.datetime.utcnow()-user.created).total_seconds() > 3600:
                 db.session.delete(user)
                 db.session.commit()
             else:
-                return {"msg": "Compte en attente de confirmation par email"}, 400
+                return {"msg": "Compte en attente de confirmation par email"}, 403
         if user.check_password(password):
             app.logger.debug("User authenticating on API :", user)
             access_token = create_access_token(identity=user)
@@ -104,6 +106,7 @@ class ResetPasswordSendMail(Resource):
 @api.route('/reset/<token>')
 class PasswordResetForm(Resource):
     def post(self, token):
+
         try:
             user_id = UserService.get_id_from_token(token)
             if user_id is None:
