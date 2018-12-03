@@ -137,6 +137,34 @@ def cgu():
     return render_template('cgu.html')
 
 
+@private.route('/dashboard', methods=['GET', 'POST'])
+def dashboard():
+    if request.method == 'POST':
+        if request.form.get('option') == 'create_event':
+            return redirect('/create-event')
+        if request.form.get('option') == 'create_year':
+            return redirect('/create-year')
+        if request.form.get('option') == 'create_gallery':
+            return redirect('/create-gallery')
+        if request.form.get('option') == 'moderate':
+            return redirect('/moderation')
+        if 'delete_file' in request.form:
+            file_slug = request.form['delete_file']
+            FileService.delete(file_slug)
+        if 'make_gallery_public' in request.form:
+            gallery_slug = request.form['make_gallery_public']
+            GalleryService.make_public(gallery_slug)
+        if 'make_gallery_private' in request.form:
+            gallery_slug = request.form['make_gallery_private']
+            GalleryService.make_private(gallery_slug)
+
+    pending_files_by_gallery, confirmed_files_by_gallery = GalleryService.get_own_pending_and_approved_files_by_gallery(current_user)
+
+    return render_template('dashboard.html', pending_files_by_gallery=pending_files_by_gallery, confirmed_files_by_gallery=confirmed_files_by_gallery)
+
+
+
+
 # @private.route('/materiel',methods=['GET','POST'])
 # def materiel():
 #     if request.method == 'POST':
