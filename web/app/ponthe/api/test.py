@@ -4,7 +4,7 @@ from flask_mail import Message
 import re
 import os, datetime
 from ..models import User
-from ..services import UserService
+from ..services import UserService, GalleryService
 from ..persistence import UserDAO
 import json
 from flask import jsonify, request, Response, json
@@ -157,7 +157,7 @@ class Materiel(Resource):
             return  {
                 "title": "Erreur - Aucun message",
                 "body": "Veuillez saisir un message"
-            }, 406
+            }, 401
         current_user = UserDAO.get_by_id(get_jwt_identity())
         msg = Message(subject=f"Demande d'emprunt de {object} par {current_user.firstname} {current_user.lastname}",
                       body=message,
@@ -167,3 +167,34 @@ class Materiel(Resource):
         return  {
             "msg": "Mail envoyé !"
         }, 200
+
+@api.route('/create-gallery')
+class CreateGallery(Resource):
+    @jwt_required
+    def post(self):
+        gallery_name = request.json.get('name')
+        gallery_description = request.json.get('description')
+        year_slug = request.json.get('year_slug')
+        event_slug = request.json.get('event_slug')
+        private = request.json.get('private')
+
+
+        if not gallery_name:
+            return  {
+                "title": "Erreur - Paramètre manquant",
+                "body": "Veuillez renseigner le nom de la nouvelle galerie"
+            }, 401
+
+        current_user = UserDAO.get_by_id(get_jwt_identity())
+
+        try:
+            GalleryService.create(gallery_name, current_user, gallery_description, private == "on", year_slug, event_slug)
+        except Exception as e:
+            return  {
+                "title": "Erreur - Impossible de créer la gallerie",
+                "body": "Une erreur est survenue lors de la création de la gallerie. Probablement qu'un des objets donné n'existe pas (year ou event)."
+            }, 401
+
+        return {
+            "msg": "Gallerie créée"
+        }, 201
