@@ -1,17 +1,16 @@
-# from . import api
-# from flask_restplus import Resource, reqparse
-# from flask_mail import Message
-# import re
-# import os, datetime
-# from ..models import User
-# from ..services import UserService
-# from ..persistence import UserDAO
-# import json
-# from flask import jsonify, request, Response, json
-# from .. import db, app, mail
-# from flask_jwt_extended import JWTManager, jwt_required, create_access_token, get_jwt_identity, current_user
-# from itsdangerous import SignatureExpired, BadSignature
-#
+from . import api
+from flask_restplus import Resource, reqparse
+from flask_mail import Message
+import re
+import os, datetime
+from ..models import User
+from ..services import UserService, GalleryService
+from ..persistence import UserDAO
+import json
+from flask import jsonify, request, Response, json
+from .. import db, app, mail
+from flask_jwt_extended import JWTManager, jwt_required, create_access_token, get_jwt_identity, current_user
+
 #
 # jwt = JWTManager(app)
 #
@@ -41,14 +40,14 @@
 #
 # @api.route('/login')
 # @api.doc(params=    {
-#                         'email': 'the whole email. Example : jean.dupont@eleves.enpc.fr',
+#                         'email': 'the first part of the email. Example : jean.dupont',
 #                         'password': 'your password'
 #                     })
 # class Login(Resource):
 #     @api.response(200, 'Success')
-#     @api.response(400, 'Request incorrect - JSON not valid')
-#     @api.response(403, 'Not authorized - account not valid')
-#     @api.response(401, 'User not identified - incorrect email or password')
+#     @api.response(400, 'Request incorrect')
+#     @api.response(403, 'Not authorized')
+#     @api.response(401, 'User not identified')
 #     def post(self):
 #         if not request.is_json:
 #             return {"msg": "Missing JSON in request"}, 400
@@ -77,19 +76,7 @@
 #         else:
 #             return {"msg": "Bad email or password"}, 401
 #
-#
 # @api.route('/register')
-# @api.response(200, 'Success')
-# @api.response(400, 'Request incorrect - JSON not valid. Email not allowed or password and confirmation_password not equals')
-# @api.response(403, 'Unauthorized - account already exists')
-# @api.doc(params=    {
-#                         'lastname': '-',
-#                         'firstname': '-',
-#                         'email': '1st part of the email. Example : jean.dupont',
-#                         'password': 'your password',
-#                         'confirmation_password': 'confirmation of your password',
-#                         'promotion': 'the year you graduate. Example : 020'
-#                     })
 # class Register(Resource):
 #     def post(self):
 #         lastname = request.json.get('lastname')
@@ -98,22 +85,18 @@
 #         password = request.json.get('password')
 #         promotion = request.json.get('promotion')
 #         if password != request.json.get('confirmation_password'):
-#             return {"msg": "Les deux mot de passe ne correspondent pas"}, 400
+#             return {"msg": "Les deux mot de passe ne correspondent pas"}, 401
 #         elif not re.fullmatch(r"[a-z0-9\-]+\.[a-z0-9\-]+", username):
-#             return {"msg": "Adresse non valide"}, 400
+#             return {"msg": "Adresse non valide"}, 401
 #         else:
 #             try:
 #                 new_user = UserService.register(username, firstname, lastname, password, promotion)
 #             except ValueError:
-#                 return {"msg": "Il existe déjà un compte pour cet adresse email"}, 403
+#                 return {"msg": "Il existe déjà un compte pour cet adresse email"}, 401
 #         return {"msg": "utilisateur créé"}, 200
 #
 #
 # @api.route('/reset/')
-# @api.response(200, 'Success - Password Resel Email sent.')
-# @api.doc(params=    {
-#                         'email': 'the whole email. Example : jean.dupont@eleves.enpc.fr',
-#                     })
 # class ResetPasswordSendMail(Resource):
 #     def post(self):
 #         email = request.json.get('email')
@@ -121,17 +104,9 @@
 #         return {"msg": "Si un compte est associé à cette adresse, un mail a été envoyé"}, 200
 #
 # @api.route('/reset/<token>')
-# @api.response(200, 'Success - Password updated')
-# @api.response(404, 'Not Found - invalid token')
-# @api.response(403, 'Unauthorized - token expired')
-# @api.response(401, 'User not identified - account not found')
-# @api.response(400, 'Bad Request - new_password and confirmation_password not equals')
-# @api.doc(params=    {
-#                         'new_password': '-',
-#                         'confirmation_password': 'confirmation of your new password'
-#                     })
 # class PasswordResetForm(Resource):
 #     def post(self, token):
+#
 #         try:
 #             user_id = UserService.get_id_from_token(token)
 #             if user_id is None:
@@ -142,23 +117,28 @@
 #             return  {
 #                         "title": "Le token est expiré",
 #                         "body": "Tu as dépassé le délai de 24h."
-#                     }, 403
+#                     }, 401
 #         user = UserDAO.get_by_id(user_id)
 #         if user is None:
 #             return  {
 #                         "title": "Erreur - Aucun utilisateur correspondant",
 #                         "body": "Le compte associé n'existe plus"
 #                     }, 401
+#         if request.method == 'POST':
+#             new_password = request.json.get('new_password')
+#             if new_password != request.json.get('confirmation_password'):
+#                 return {"msg": "Les deux mots de passe ne correspondent pas"}, 401
+#             else:
+#                 user.set_password(new_password)
+#                 db.session.add(user)
+#                 db.session.commit()
+#                 return {"msg": "Mot de passe réinitialisé avec succès"}, 200
 #
-#         new_password = request.json.get('new_password')
-#         if new_password != request.json.get('confirmation_password'):
-#             return {"msg": "Les deux mots de passe ne correspondent pas"}, 400
-#         else:
-#             user.set_password(new_password)
-#             db.session.add(user)
-#             db.session.commit()
-#             return {"msg": "Mot de passe réinitialisé avec succès"}, 200
-#
+#         return  {
+#                     "msg": "utilisateur identifié",
+#                     "firstname": user.firstname,
+#                     "lastname": user.lastname
+#                 }, 201
 #
 # @api.route('/cgu')
 # class Cgu(Resource):
@@ -177,7 +157,7 @@
 #             return  {
 #                 "title": "Erreur - Aucun message",
 #                 "body": "Veuillez saisir un message"
-#             }, 406
+#             }, 401
 #         current_user = UserDAO.get_by_id(get_jwt_identity())
 #         msg = Message(subject=f"Demande d'emprunt de {object} par {current_user.firstname} {current_user.lastname}",
 #                       body=message,
@@ -187,3 +167,34 @@
 #         return  {
 #             "msg": "Mail envoyé !"
 #         }, 200
+
+@api.route('/create-gallery')
+class CreateGallery(Resource):
+    @jwt_required
+    def post(self):
+        gallery_name = request.json.get('name')
+        gallery_description = request.json.get('description')
+        year_slug = request.json.get('year_slug')
+        event_slug = request.json.get('event_slug')
+        private = request.json.get('private')
+
+
+        if not gallery_name:
+            return  {
+                "title": "Erreur - Paramètre manquant",
+                "body": "Veuillez renseigner le nom de la nouvelle galerie"
+            }, 401
+
+        current_user = UserDAO.get_by_id(get_jwt_identity())
+
+        try:
+            GalleryService.create(gallery_name, current_user, gallery_description, private == "on", year_slug, event_slug)
+        except Exception as e:
+            return  {
+                "title": "Erreur - Impossible de créer la gallerie",
+                "body": "Une erreur est survenue lors de la création de la gallerie. Probablement qu'un des objets donné n'existe pas (year ou event)."
+            }, 401
+
+        return {
+            "msg": "Gallerie créée"
+        }, 201
