@@ -10,6 +10,7 @@
 # from flask import jsonify, request, Response, json
 # from .. import db, app, mail
 # from flask_jwt_extended import JWTManager, jwt_required, create_access_token, get_jwt_identity, current_user
+# from itsdangerous import SignatureExpired, BadSignature
 #
 #
 # jwt = JWTManager(app)
@@ -134,9 +135,9 @@
 #         try:
 #             user_id = UserService.get_id_from_token(token)
 #             if user_id is None:
-#                 abort(404)
+#                 return {"msg": "compte introuvable"}, 404
 #         except BadSignature:
-#             abort(404)
+#             return {"msg": "token invalide"}, 404
 #         except SignatureExpired :
 #             return  {
 #                         "title": "Le token est expiré",
