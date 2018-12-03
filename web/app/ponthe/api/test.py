@@ -39,14 +39,14 @@ class HelloWorld(Resource):
 
 @api.route('/login')
 @api.doc(params=    {
-                        'email': 'the first part of the email. Example : jean.dupont',
+                        'email': 'the whole email. Example : jean.dupont@eleves.enpc.fr',
                         'password': 'your password'
                     })
 class Login(Resource):
     @api.response(200, 'Success')
-    @api.response(400, 'Request incorrect')
-    @api.response(403, 'Not authorized')
-    @api.response(401, 'User not identified')
+    @api.response(400, 'Request incorrect - JSON not valid')
+    @api.response(403, 'Not authorized - account not valid')
+    @api.response(401, 'User not identified - incorrect email or password')
     def post(self):
         if not request.is_json:
             return {"msg": "Missing JSON in request"}, 400
@@ -75,7 +75,19 @@ class Login(Resource):
         else:
             return {"msg": "Bad email or password"}, 401
 
+
 @api.route('/register')
+@api.response(200, 'Success')
+@api.response(400, 'Request incorrect - JSON not valid. Email not allowed or password and confirmation_password not equals')
+@api.response(403, 'Unauthorized - account already exists')
+@api.doc(params=    {
+                        'lastname': '-',
+                        'firstname': '-',
+                        'email': '1st part of the email. Example : jean.dupont',
+                        'password': 'your password',
+                        'confirmation_password': 'confirmation of your password',
+                        'promotion': 'the year you graduate. Example : 020'
+                    })
 class Register(Resource):
     def post(self):
         lastname = request.json.get('lastname')
@@ -84,18 +96,22 @@ class Register(Resource):
         password = request.json.get('password')
         promotion = request.json.get('promotion')
         if password != request.json.get('confirmation_password'):
-            return {"msg": "Les deux mot de passe ne correspondent pas"}, 401
+            return {"msg": "Les deux mot de passe ne correspondent pas"}, 400
         elif not re.fullmatch(r"[a-z0-9\-]+\.[a-z0-9\-]+", username):
-            return {"msg": "Adresse non valide"}, 401
+            return {"msg": "Adresse non valide"}, 400
         else:
             try:
                 new_user = UserService.register(username, firstname, lastname, password, promotion)
             except ValueError:
-                return {"msg": "Il existe déjà un compte pour cet adresse email"}, 401
+                return {"msg": "Il existe déjà un compte pour cet adresse email"}, 403
         return {"msg": "utilisateur créé"}, 200
 
 
 @api.route('/reset/')
+@api.response(200, 'Success - Password Resel Email sent.')
+@api.doc(params=    {
+                        'email': 'the whole email. Example : jean.dupont@eleves.enpc.fr',
+                    })
 class ResetPasswordSendMail(Resource):
     def post(self):
         email = request.json.get('email')
@@ -103,6 +119,15 @@ class ResetPasswordSendMail(Resource):
         return {"msg": "Si un compte est associé à cette adresse, un mail a été envoyé"}, 200
 
 @api.route('/reset/<token>')
+@api.response(200, 'Success - Password updated')
+@api.response(404, 'Not Found - invalid token')
+@api.response(403, 'Unauthorized - token expired')
+@api.response(401, 'User not identified - account not found')
+@api.response(400, 'Bad Request - new_password and confirmation_password not equals')
+@api.doc(params=    {
+                        'new_password': '-',
+                        'confirmation_password': 'confirmation of your new password'
+                    })
 class PasswordResetForm(Resource):
     def post(self, token):
 
@@ -116,25 +141,45 @@ class PasswordResetForm(Resource):
             return  {
                         "title": "Le token est expiré",
                         "body": "Tu as dépassé le délai de 24h."
-                    }, 401
+                    }, 403
         user = UserDAO.get_by_id(user_id)
         if user is None:
             return  {
                         "title": "Erreur - Aucun utilisateur correspondant",
                         "body": "Le compte associé n'existe plus"
                     }, 401
-        if request.method == 'POST':
-            new_password = request.json.get('new_password')
-            if new_password != request.json.get('confirmation_password'):
-                return {"msg": "Les deux mots de passe ne correspondent pas"}, 401
-            else:
-                user.set_password(new_password)
-                db.session.add(user)
-                db.session.commit()
-                return {"msg": "Mot de passe réinitialisé avec succès"}, 200
 
-        return  {
-                    "msg": "utilisateur identifié",
-                    "firstname": user.firstname,
-                    "lastname": user.lastname
-                }, 201
+        new_password = request.json.get('new_password')
+        if new_password != request.json.get('confirmation_password'):
+            return {"msg": "Les deux mots de passe ne correspondent pas"}, 400
+        else:
+            user.set_password(new_password)
+            db.session.add(user)
+            db.session.commit()
+            return {"msg": "Mot de passe réinitialisé avec succès"}, 200
+
+
+@private.route('/dashboard', methods=['GET', 'POST'])
+def dashboard():
+    if request.method == 'POST':
+        if request.form.get('option') == 'create_event':
+            return redirect('/create-event')
+        if request.form.get('option') == 'create_year':
+            return redirect('/create-year')
+        if request.form.get('option') == 'create_gallery':
+            return redirect('/create-gallery')
+        if request.form.get('option') == 'moderate':
+            return redirect('/moderation')
+        if 'delete_file' in request.form:
+            file_slug = request.form['delete_file']
+            FileService.delete(file_slug)
+        if 'make_gallery_public' in request.form:
+            gallery_slug = request.form['make_gallery_public']
+            GalleryService.make_public(gallery_slug)
+        if 'make_gallery_private' in request.form:
+            gallery_slug = request.form['make_gallery_private']
+            GalleryService.make_private(gallery_slug)
+
+    pending_files_by_gallery, confirmed_files_by_gallery = GalleryService.get_own_pending_and_approved_files_by_gallery(current_user)
+
+    return render_template('dashboard.html', pending_files_by_gallery=pending_files_by_gallery, confirmed_files_by_gallery=confirmed_files_by_gallery)
