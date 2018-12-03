@@ -3,7 +3,7 @@ import re
 import os, datetime
 from ..models import User
 from ..services import UserService
-from flask import jsonify, request
+from flask import jsonify, request, json
 from .. import db, app
 from flask_jwt_extended import JWTManager, jwt_required, create_access_token, get_jwt_identity
 
@@ -125,4 +125,6 @@ def resetting(token):
 
 @api.route('/cgu')
 def cgu():
-    return render_template('cgu.html')
+    SITE_ROOT = os.path.realpath(os.path.dirname(__file__))
+    cgu = open(os.path.join(SITE_ROOT, "/app/ponthe/templates", "cgu.json"))
+    return jsonify(json.load(cgu, strict=False))#jsonify("cgu_json.json")#jsonify({"chibre": "a"})
