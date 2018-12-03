@@ -198,3 +198,11 @@ class CreateGallery(Resource):
         return {
             "msg": "Gallerie créée"
         }, 201
+
+@api.route('/members')
+class Members(Resource):
+    @jwt_required
+    def get(self):
+        SITE_ROOT = os.path.realpath(os.path.dirname(__file__))
+        cgu = open(os.path.join(SITE_ROOT, "/app/ponthe/templates", "members.json"))
+        return json.load(cgu, strict=False)
