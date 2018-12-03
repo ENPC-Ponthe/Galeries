@@ -110,9 +110,9 @@ from flask_jwt_extended import JWTManager, jwt_required, create_access_token, ge
 #         try:
 #             user_id = UserService.get_id_from_token(token)
 #             if user_id is None:
-#                 abort(404)
+#                 return {"msg": "compte introuvable"}, 404
 #         except BadSignature:
-#             abort(404)
+#             return {"msg": "token invalide"}, 404
 #         except SignatureExpired :
 #             return  {
 #                         "title": "Le token est expiré",
