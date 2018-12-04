@@ -1,9 +1,10 @@
 from flask_jwt_extended import JWTManager, jwt_required, get_jwt_identity
 from .. import api
 from flask_restplus import Resource
-from ...persistence import UserDAO, YearDAO
+from ...persistence import UserDAO, YearDAO, EventDAO
 from itsdangerous import SignatureExpired, BadSignature
 from ...config import constants
+from sqlalchemy.orm.exc import NoResultFound
 import re
 # from urllib.parse import urlparse, urljoin
 # from flask_login import login_user, current_user
@@ -95,3 +96,62 @@ class Members(Resource):
         SITE_ROOT = os.path.realpath(os.path.dirname(__file__))
         members = open(os.path.join(SITE_ROOT, "/app/ponthe/templates", "members.json"))
         return json.load(members, strict=False)
+
+@api.route('/delete-event/<event_slug>')
+class DeleteEvent(Resource):
+    @jwt_required
+    def post(self, event_slug):
+        event_dao = EventDAO()
+
+        current_user = UserDAO.get_by_id(get_jwt_identity())
+
+        if current_user.admin:
+            try:
+                event_dao.delete_detaching_galleries(event_slug)
+            except Exception as e:
+                return {
+                    "title": "Erreur - Impossible de supprimer l'événement",
+                    "body": "Erreur lors de la suppresion"
+                }, 401
+            return {
+                "msg": "Événement supprimé"
+            }, 201
+
+        return {
+            "title": "Erreur - Impossible de supprimer l'événement",
+            "body": "L'utilisateur n'est pas administrateur"
+        }, 401
+
+@api.route('/get-event/<event_slug>')
+class Events(Resource):
+    @jwt_required
+    def post(self, event_slug):
+        event_dao = EventDAO()
+
+        try:
+            event = event_dao.find_by_slug(event_slug)
+        except NoResultFound:
+            return {
+                "title": "Erreur - Impossible de trouver l'événement",
+                "body": "Aucun événement ne correspond à : "+event_slug
+            }, 404
+
+        galleries_by_year = {}
+        other_galleries = []
+        for gallery in event.galleries:
+            if gallery.private:
+                continue
+            year = gallery.year
+            if year is not None:
+                if year not in galleries_by_year:
+                    galleries_by_year[year] = []
+                galleries_by_year[year].append(gallery)
+            else:
+                other_galleries.append(gallery)
+
+
+        return {
+            "event": jsonify(event),
+            "galleries_by_year": jsonify(event),
+            "other_galleries": jsonify(other_galleries)
+        }, 200
