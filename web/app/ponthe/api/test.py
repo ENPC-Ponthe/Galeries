@@ -168,33 +168,41 @@ from flask_jwt_extended import JWTManager, jwt_required, create_access_token, ge
 #             "msg": "Mail envoyé !"
 #         }, 200
 
-@api.route('/create-gallery')
-class CreateGallery(Resource):
-    @jwt_required
-    def post(self):
-        gallery_name = request.json.get('name')
-        gallery_description = request.json.get('description')
-        year_slug = request.json.get('year_slug')
-        event_slug = request.json.get('event_slug')
-        private = request.json.get('private')
-
-
-        if not gallery_name:
-            return  {
-                "title": "Erreur - Paramètre manquant",
-                "body": "Veuillez renseigner le nom de la nouvelle galerie"
-            }, 401
-
-        current_user = UserDAO.get_by_id(get_jwt_identity())
-
-        try:
-            GalleryService.create(gallery_name, current_user, gallery_description, private == "on", year_slug, event_slug)
-        except Exception as e:
-            return  {
-                "title": "Erreur - Impossible de créer la gallerie",
-                "body": "Une erreur est survenue lors de la création de la gallerie. Probablement qu'un des objets donné n'existe pas (year ou event)."
-            }, 401
-
-        return {
-            "msg": "Gallerie créée"
-        }, 201
+# @api.route('/create-gallery')
+# class CreateGallery(Resource):
+#     @jwt_required
+#     def post(self):
+#         gallery_name = request.json.get('name')
+#         gallery_description = request.json.get('description')
+#         year_slug = request.json.get('year_slug')
+#         event_slug = request.json.get('event_slug')
+#         private = request.json.get('private')
+#
+#
+#         if not gallery_name:
+#             return  {
+#                 "title": "Erreur - Paramètre manquant",
+#                 "body": "Veuillez renseigner le nom de la nouvelle galerie"
+#             }, 401
+#
+#         current_user = UserDAO.get_by_id(get_jwt_identity())
+#
+#         try:
+#             GalleryService.create(gallery_name, current_user, gallery_description, private == "on", year_slug, event_slug)
+#         except Exception as e:
+#             return  {
+#                 "title": "Erreur - Impossible de créer la gallerie",
+#                 "body": "Une erreur est survenue lors de la création de la gallerie. Probablement qu'un des objets donné n'existe pas (year ou event)."
+#             }, 401
+#
+#         return {
+#             "msg": "Gallerie créée"
+#         }, 201
+#
+# @api.route('/members')
+# class Members(Resource):
+#     @jwt_required
+#     def get(self):
+#         SITE_ROOT = os.path.realpath(os.path.dirname(__file__))
+#         members = open(os.path.join(SITE_ROOT, "/app/ponthe/templates", "members.json"))
+#         return json.load(members, strict=False)
