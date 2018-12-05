@@ -15,8 +15,8 @@ from datetime import datetime
 
 # from . import public
 from ... import app, db, login_manager
-from ...services import UserService
-from flask import request, send_file
+from ...services import UserService, GalleryService
+from flask import request
 
 
 @api.route('/materiel')
@@ -119,7 +119,7 @@ class CreateGallery(Resource):
         except Exception as e:
             return  {
                 "title": "Erreur - Impossible de créer la gallerie",
-                "body": "Une erreur est survenue lors de la création de la gallerie. Probablement qu'un des objets donné n'existe pas (year ou event)."
+                "body": "Une erreur est survenue lors de la création de la gallerie. Probablement qu'un des objets donné n'existe pas (year ou event). "+str(e)
             }, 401
 
         return {
@@ -137,7 +137,7 @@ class Members(Resource):
 @api.route('/delete-event/<event_slug>')
 class DeleteEvent(Resource):
     @jwt_required
-    def post(self, event_slug):
+    def delete(self, event_slug):
         event_dao = EventDAO()
 
         current_user = UserDAO.get_by_id(get_jwt_identity())
