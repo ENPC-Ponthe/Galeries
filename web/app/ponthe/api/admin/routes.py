@@ -13,7 +13,7 @@ from datetime import datetime
 
 # from . import public
 from ... import app, db, login_manager
-from ...services import UserService, EventService
+from ...services import UserService, EventService, YearService
 from flask import request
 
 @api.route('/create-event')
@@ -36,4 +36,31 @@ class CreateEvent(Resource):
 
         return {
             "msg": "Événement créé"
+        }, 201
+
+@api.route('/create-year')
+class CreateYear(Resource):
+    @jwt_required
+    def post(self):
+        year_value = request.json.get('value')
+        year_description = request.json.get('description')
+
+        if not year_value:
+            return {
+                "title": "Erreur - Impossible de créer l'année",
+                "body": "Veuillez renseigner une valeur pour l'année."
+            }, 401
+
+        current_user = UserDAO.get_by_id(get_jwt_identity())
+
+        try:
+            YearService.create(year_value, year_description, current_user)
+        except Exception as e:
+            return {
+                "title": "Erreur - Impossible de créer l'année",
+                "body": "Une erreur est survenue lors de la création de l'année'."
+            }, 401
+
+        return {
+            "msg": "Année créée"
         }, 201
