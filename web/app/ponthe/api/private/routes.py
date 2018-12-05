@@ -16,7 +16,7 @@ from datetime import datetime
 # from . import public
 from ... import app, db, login_manager
 from ...services import UserService
-from flask import request
+from flask import request, send_file
 
 
 @api.route('/materiel')
@@ -69,7 +69,7 @@ class Year(Resource):
         # ('year_gallery.html', year=year, public_galleries=public_galleries)
 
 @api.route('/years')
-class Year(Resource):
+class Test(Resource):
     def post(self):
         # year_dao = YearDAO()
         # current_user = UserDao().get_by_id(get_jwt_identity)
@@ -83,7 +83,7 @@ class Year(Resource):
         table = request.json.get('Employees')
         print(table)
         print(table[0])
-        print(table[1])
+        print(table[1]["firstName"])
         # ('year_gallery.html', year=year, public_galleries=public_galleries)
 
     @jwt_required
