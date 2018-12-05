@@ -134,30 +134,7 @@ class Members(Resource):
         members = open(os.path.join(SITE_ROOT, "/app/ponthe/templates", "members.json"))
         return json.load(members, strict=False)
 
-@api.route('/delete-event/<event_slug>')
-class DeleteEvent(Resource):
-    @jwt_required
-    def delete(self, event_slug):
-        event_dao = EventDAO()
 
-        current_user = UserDAO.get_by_id(get_jwt_identity())
-
-        if current_user.admin:
-            try:
-                event_dao.delete_detaching_galleries(event_slug)
-            except Exception as e:
-                return {
-                    "title": "Erreur - Impossible de supprimer l'événement",
-                    "body": "Erreur lors de la suppresion"
-                }, 401
-            return {
-                "msg": "Événement supprimé"
-            }, 201
-
-        return {
-            "title": "Erreur - Impossible de supprimer l'événement",
-            "body": "L'utilisateur n'est pas administrateur"
-        }, 401
 
 @api.route('/get-event/<event_slug>')
 class Events(Resource):
@@ -192,3 +169,21 @@ class Events(Resource):
             "galleries_by_year": jsonify(event),
             "other_galleries": jsonify(other_galleries)
         }, 200
+
+@api.route('/dashboard')
+class Dashboard(Resource):
+    @jwt_required
+    def post(self):
+        current_user = UserDAO.get_by_id(get_jwt_identity())
+        try:
+            pending_files_by_gallery, confirmed_files_by_gallery = GalleryService.get_own_pending_and_approved_files_by_gallery(current_user)
+        except Exception as e:
+            return {
+                "title": "Erreur - Impossible de récupérer les données.",
+                "body": "Une erreur est survenue : "+str(e)
+            }, 401
+
+        return {
+            "pending_files_by_gallery": pending_files_by_gallery,
+            "confirmed_files_by_gallery": confirmed_files_by_gallery
+        }, 201
