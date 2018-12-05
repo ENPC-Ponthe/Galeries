@@ -14,6 +14,7 @@ from datetime import datetime
 # from . import public
 from ... import app, db, login_manager
 from ...services import UserService
+from flask import request
 
 
 @api.route('/materiel')
