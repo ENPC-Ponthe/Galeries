@@ -6,6 +6,8 @@ from itsdangerous import SignatureExpired, BadSignature
 from ...config import constants
 from sqlalchemy.orm.exc import NoResultFound
 import re
+import json
+from flask import jsonify
 # from urllib.parse import urlparse, urljoin
 # from flask_login import login_user, current_user
 from itsdangerous import SignatureExpired, BadSignature
@@ -42,22 +44,56 @@ class Materiel(Resource):
 class Year(Resource):
     @jwt_required
     def post(self, year_slug):
-        year_dao = YearDAO()
-        current_user = UserDao().get_by_id(get_jwt_identity)
-        if request.method == 'POST' and "delete" in request.form and current_user.admin:
-            year_dao.delete_detaching_galleries(year_slug)
-            return redirect("/index")
-        try:
-            year = year_dao.find_by_slug(year_slug)
-        except NoResultFound:
-            return {'msg': 'year not found'}, 404
-        public_galleries = list(filter(lambda gallery: not gallery.private, year.galleries))
-        return render_template('year_gallery.html', year=year, public_galleries=public_galleries)
+        # year_dao = YearDAO()
+        # current_user = UserDao().get_by_id(get_jwt_identity)
+        # try:
+        #     year = year_dao.find_by_slug(year_slug)
+        # except NoResultFound:
+        #     return {'msg': 'year not found'}, 404
+        #
+        # public_galleries = list(filter(lambda gallery: not gallery.private, year.galleries))
 
+        employeeList = []
+
+        # create a instances for filling up employee list
+        for i in range(0,2):
+            empDict = {
+                'firstName': 'Roy',
+                'lastName': 'Augustine'
+            }
+            employeeList.append(empDict)
+        # convert to json data
+
+
+        return jsonify(Employees=employeeList)
+        # ('year_gallery.html', year=year, public_galleries=public_galleries)
+
+@api.route('/years')
+class Year(Resource):
+    def post(self):
+        # year_dao = YearDAO()
+        # current_user = UserDao().get_by_id(get_jwt_identity)
+        # try:
+        #     year = year_dao.find_by_slug(year_slug)
+        # except NoResultFound:
+        #     return {'msg': 'year not found'}, 404
+        #
+        # public_galleries = list(filter(lambda gallery: not gallery.private, year.galleries))
+
+        table = request.json.get('Employees')
+        print(table)
+        print(table[0])
+        print(table[1])
+        # ('year_gallery.html', year=year, public_galleries=public_galleries)
+
+    @jwt_required
     def delete(self, year_slug):
         if current_user.admin:
-            year_dao.delete_detaching_galleries(year_slug)
-            return 200
+            try:
+                year_dao.delete_detaching_galleries(year_slug)
+                return 200
+            except:
+                return 200
 
 @api.route('/create-gallery')
 class CreateGallery(Resource):
