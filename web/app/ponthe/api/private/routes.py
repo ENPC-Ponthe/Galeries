@@ -13,7 +13,7 @@ from datetime import datetime
 
 # from . import public
 from ... import app, db, login_manager
-from ...services import UserService
+from ...services import UserService, GalleryService
 from flask import request
 
 
@@ -83,7 +83,7 @@ class CreateGallery(Resource):
         except Exception as e:
             return  {
                 "title": "Erreur - Impossible de créer la gallerie",
-                "body": "Une erreur est survenue lors de la création de la gallerie. Probablement qu'un des objets donné n'existe pas (year ou event)."
+                "body": "Une erreur est survenue lors de la création de la gallerie. Probablement qu'un des objets donné n'existe pas (year ou event). "+str(e)
             }, 401
 
         return {
