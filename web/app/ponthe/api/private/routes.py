@@ -137,7 +137,7 @@ class Members(Resource):
 @api.route('/delete-event/<event_slug>')
 class DeleteEvent(Resource):
     @jwt_required
-    def post(self, event_slug):
+    def delete(self, event_slug):
         event_dao = EventDAO()
 
         current_user = UserDAO.get_by_id(get_jwt_identity())
