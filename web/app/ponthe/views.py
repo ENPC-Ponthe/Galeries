@@ -26,7 +26,7 @@ def inject_top_menu_gallery_variables():
     return dict()
 
 
-@app.route('/uploads/<path:file_path>')  # utilisé en dev, en prod c'est servi par le serveur web
+@app.route('/uploads/<path:file_path>')
 @login_required
 def uploads(file_path: str):
     try:

@@ -1,6 +1,6 @@
 from .. import db
 from ..models import Event, User
-from ..persistence import CategoryDAO
+from ..dao import CategoryDAO
 
 
 class EventService():

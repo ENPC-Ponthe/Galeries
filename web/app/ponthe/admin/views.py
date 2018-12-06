@@ -1,7 +1,7 @@
 from flask import request, redirect, flash, abort, render_template
 from flask_login import current_user, login_required
 
-from ..persistence import CategoryDAO
+from ..dao import CategoryDAO
 from ..services import YearService, EventService, GalleryService, FileService
 from . import admin
 
