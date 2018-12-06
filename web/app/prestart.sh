@@ -23,3 +23,6 @@ cd /app
 until /wait-for-it/wait-for-it.sh --host=${HOST} --port=${PORT} --timeout=${TIMEOUT} --quiet; do
     >&2 echo "Connection not available on ${HOST}:${PORT} - waiting ${TIMEOUT} seconds"
 done
+
+echo "Check for upgrade of database schema"
+flask db upgrade

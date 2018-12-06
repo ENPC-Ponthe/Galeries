@@ -85,7 +85,7 @@ Juste faire `./deploy.sh` pour faire une sauvegarde de la bdd et redéployer. Po
 
 Pour rebuild l'image web après modification des fichiers copiés :
 ```
-docker-compose up --build
+docker build -t quay.io/enpcponthe/galeries-web:testing ./web
 ```
 
 Après modification du .env :
