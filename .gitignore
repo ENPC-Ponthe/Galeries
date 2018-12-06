@@ -4,8 +4,7 @@
 # Virtual environment
 web/venv/
 
-# Credentials : Mysql / Email
-web/ponthe.prod.cfg
+
 .env
 
 # Instance Folder - used for configuration parameters and to serve static files
