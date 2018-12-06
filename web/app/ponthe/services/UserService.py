@@ -4,7 +4,7 @@ from sqlalchemy.exc import IntegrityError
 
 from .. import app, db
 from ..models import User
-from ..persistence import UserDAO
+from ..dao import UserDAO
 from .MailService import MailService
 
 serializer=URLSafeTimedSerializer(app.secret_key)

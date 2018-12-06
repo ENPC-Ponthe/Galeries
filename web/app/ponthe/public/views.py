@@ -13,7 +13,7 @@ from .. import app, db, login_manager
 from ..private.views import get_home
 from ..services import UserService
 from ..config import Constants
-from ..persistence import UserDAO
+from ..dao import UserDAO
 
 
 def is_safe_url(target: str):  # empêche les redirections malicieuses

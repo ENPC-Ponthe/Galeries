@@ -1,7 +1,7 @@
 import os
 
 from .. import app, db
-from ..persistence import FileDAO, GalleryDAO
+from ..dao import FileDAO, GalleryDAO
 from ..models import File, User
 from ..file_helper import create_folder, move_file, is_image, is_video, get_extension
 from ..views import thumb_filter
