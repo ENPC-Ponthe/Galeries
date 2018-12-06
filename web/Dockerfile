@@ -9,14 +9,9 @@ RUN git clone https://github.com/vishnubob/wait-for-it.git /wait-for-it
 
 COPY ./app /app
 
-RUN mkdir -p /app/instance/uploads; \
-    mkdir -p /app/instance/thumbs; \
-    mkdir -p /app/instance/tmp/uploads; \
-    mkdir -p /app/instance/keys
+RUN mkdir -p /app/instance/static
+RUN mkdir -p /app/instance/tmp/uploads
 
 RUN pip install /app
 
-VOLUME /app/instance/logs
-VOLUME /app/instance/uploads
-VOLUME /app/instance/thumbs
-VOLUME /app/instance/keys
+VOLUME /app/instance/static

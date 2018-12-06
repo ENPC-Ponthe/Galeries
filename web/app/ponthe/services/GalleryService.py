@@ -3,7 +3,7 @@ import os
 from ..models import User, Gallery
 from ..file_helper import delete_folder
 from .FileService import FileService
-from ..persistence import GalleryDAO, YearDAO, EventDAO, FileDAO
+from ..dao import GalleryDAO, YearDAO, EventDAO, FileDAO
 from .. import app, db
 
 UPLOAD_FOLDER = app.config['MEDIA_ROOT']

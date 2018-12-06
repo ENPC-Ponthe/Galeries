@@ -10,7 +10,7 @@ from werkzeug.exceptions import NotFound
 
 from . import private
 from .. import app, mail
-from ..persistence import EventDAO, YearDAO, CategoryDAO, GalleryDAO
+from ..dao import EventDAO, YearDAO, CategoryDAO, GalleryDAO
 from ..services import FileService, GalleryService
 
 UPLOAD_FOLDER = app.config['MEDIA_ROOT']
