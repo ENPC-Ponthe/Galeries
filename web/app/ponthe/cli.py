@@ -1,6 +1,6 @@
 #!/bin/env python
 # coding=utf-8
-import click, os, subprocess, csv, glob
+import click, os, csv
 
 from flask import render_template
 from flask_mail import Message
@@ -9,9 +9,9 @@ from smtplib import SMTPException
 from sqlalchemy.exc import IntegrityError
 
 from . import app, mail, db
-from .file_helper import create_folder, delete_folder, copy_folder, delete_folders_in_folder,copy_folders_in_folder, copy_file
+from .file_helper import create_folder, copy_folder, delete_folders_in_folder,copy_folders_in_folder, copy_file
 from .models import User
-from .services import UserService, GalleryService
+from .services import UserService
 
 
 def _drop_and_recreate_db():
@@ -42,9 +42,9 @@ def load_fixtures():
         db.session.commit()
         app.logger.info("Overwriting files...")
         os.chdir(app.instance_path)
-        delete_folders_in_folder("uploads")
-        delete_folders_in_folder("thumbs")
-        copy_folders_in_folder("test/uploads", "uploads")
+        create_folder("static")
+        delete_folders_in_folder("static")
+        copy_folder("test/uploads", "static/uploads")
         copy_data()
         copy_file("test/tmp/accounts.csv", "tmp/accounts.csv")
     else:
@@ -62,7 +62,9 @@ def persist_data():
 
 def copy_data():
     app.logger.info("Copying files...")
-    copy_folders_in_folder("../ponthe/data/galleries", "uploads")
+    copy_folders_in_folder("../ponthe/data/galleries", "static/uploads")
+    create_folder("static/thumbs")
+    create_folder("tmp/uploads")
 
 
 @app.cli.command(help="Load initial data of the app like categories")
