@@ -10,22 +10,15 @@
 from setuptools import setup
 from os.path import join, dirname
 
-#def readme():
-#    with open('../README.md') as f:
-#        return f.read()
-
-with open(join(dirname(__file__), 'ponthe/version.py'), 'r') as f:
-    exec(f.read())
-
 with open (join(dirname(__file__), 'requirements.txt'), 'r') as f:
     install_requires = f.read().split("\n")
 
 setup(
     name='Galeries Ponthe',
-    version=__version__,
+    version='DEV',
     description='Site du Ponthé',
     keywords='ponthé club cinéma audivisuel',
-    url='https://github.com/PhilippeFerreiraDeSousa/ponthe.enpc.org',
+    url='https://github.com/ENPC-Ponthe/Galeries',
     author=['Philippe Ferreira De Sousa'],
     author_email='philippe@fdesousa.fr',
     license='MIT',

@@ -95,6 +95,11 @@ class Fixtures():
         slug="thumbsgallery",
         year=year_2017,
     )
+    gallery8 = Gallery(
+        name="Chats",
+        slug="chats",
+        year=year_2017,
+    )
 
     file1 = File(
         type="IMAGE",
@@ -337,5 +342,40 @@ class Fixtures():
         author=user_ponthe,
         gallery=gallery7,
         filename="image09.jpg",
+        pending=False
+    )
+    file35 = File(
+        type="IMAGE",
+        author=user_philippe,
+        gallery=gallery8,
+        filename="4-ways-cheer-up-depressed-cat.jpg",
+        pending=False
+    )
+    file36 = File(
+        type="IMAGE",
+        author=user_ponthe,
+        gallery=gallery8,
+        filename="image.jpg",
+        pending=False
+    )
+    file37 = File(
+        type="IMAGE",
+        author=user_philippe,
+        gallery=gallery8,
+        filename="images.jpg",
+        pending=False
+    )
+    file38 = File(
+        type="IMAGE",
+        author=user_philippe,
+        gallery=gallery8,
+        filename="index.jpg",
+        pending=False
+    )
+    file39 = File(
+        type="IMAGE",
+        author=user_philippe,
+        gallery=gallery8,
+        filename="pretty-cat.jpg",
         pending=False
     )

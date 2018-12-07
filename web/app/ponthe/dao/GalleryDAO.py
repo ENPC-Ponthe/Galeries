@@ -1,6 +1,7 @@
 from .ResourceDAO import ResourceDAO
 from ..models import Gallery, Year, Event
 
+
 class GalleryDAO(ResourceDAO):
     def __init__(self):
         super().__init__(Gallery)
