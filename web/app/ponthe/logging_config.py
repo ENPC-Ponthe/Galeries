@@ -4,6 +4,12 @@ import os
 LOG_FILE = "ponthe.log"
 LOG_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "instance", "logs", LOG_FILE)
 
+def get_handler_list():
+    handler_list = ['console', 'rotating']
+    if os.environ.get('PROD_MODE') == 'true':
+        handler_list.append('slack')
+
+    return handler_list
 
 def logging_init():
     config.dictConfig({
@@ -41,6 +47,6 @@ def logging_init():
             }
         },
         'root': {
-            'handlers': ['console', 'rotating', 'slack']
+            'handlers': get_handler_list()
         }
     })
