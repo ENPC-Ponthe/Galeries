@@ -40,7 +40,7 @@ class GalleryService:
             db.session.commit()
 
     @staticmethod
-    def create(name: str, author: User, description: str, private: bool, year_slug: str, event_slug: str):
+    def create(name: str, author: User, description: str, private: bool, year_slug: str, event_slug: str) -> Gallery:
         gallery = Gallery(name=name, author=author)
         if year_slug:
             year = YearDAO().find_by_slug(slug=year_slug)
@@ -55,6 +55,8 @@ class GalleryService:
 
         db.session.add(gallery)
         db.session.commit()
+
+        return gallery
 
     @staticmethod
     def get_galleries_by_year():

@@ -22,7 +22,7 @@ def thumb_filter(file: File):
 @app.context_processor
 def inject_top_menu_gallery_variables():
     if current_user.is_authenticated:
-        return dict(top_menu_galleries_by_year=GalleryService.get_galleries_by_year())
+        return dict(top_menu_galleries_by_year=GalleryService.GalleryService.get_galleries_by_year())
     return dict()
 
 
