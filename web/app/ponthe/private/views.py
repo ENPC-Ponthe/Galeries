@@ -180,7 +180,7 @@ def create_gallery():
         event_slug = request.form.get('event_slug')
         private = request.form.get('private')
         if gallery_name:
-            GalleryService.create(gallery_name, current_user, gallery_description, private == "on", year_slug, event_slug)
+            gallery = GalleryService.create(gallery_name, current_user, gallery_description, private == "on", year_slug, event_slug)
             return redirect(f"/galleries/{gallery.slug}")
         else:
             flash("Veuillez indiquer le nom de la nouvelle galerie", "error")
