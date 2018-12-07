@@ -1,10 +1,9 @@
 from flask import request, redirect, flash, abort, render_template
 from flask_login import current_user, login_required
 
-from ..persistence import CategoryDAO
-
-from . import admin
+from ..dao import CategoryDAO
 from ..services import YearService, EventService, GalleryService, FileService
+from . import admin
 
 
 @admin.before_request     # login en tant qu'admin nécessaire pour tout le blueprint
@@ -26,7 +25,7 @@ def create_event():
         else:
             flash("Veuillez indiquer le nom du nouvel événement","error")
 
-    categories = CategoryDAO.find_all()
+    categories = CategoryDAO().find_all()
     return render_template('create_event.html', categories=categories)
 
 

@@ -1,5 +1,7 @@
 # coding=utf-8
 from datetime import datetime
+from typing import List
+
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 import codecs, translitcodec, enum, re, string, random
@@ -11,10 +13,12 @@ from . import db
 _punct_re = re.compile(r'[\t !"#$%&\'()*\-/<=>?@\[\\\]^_`{|},.]+')  #   Les slug DSI enlève les ' au lieu de les remplacer par un -
 ALPHANUMERIC_LIST = string.ascii_letters+string.digits
 
-def generate_random_string(size, char_list=ALPHANUMERIC_LIST):
+
+def generate_random_string(size: int, char_list: List[str]=ALPHANUMERIC_LIST):
     return "".join([char_list[random.randint(0,len(char_list)-1)] for i in range(size)])
 
-def slugify(text, delim=u'-'):
+
+def slugify(text: str, delim: str=u'-'):
     """Generates an ASCII-only slug."""
     result = []
     for word in _punct_re.split(text.lower()):
@@ -23,6 +27,7 @@ def slugify(text, delim=u'-'):
             result.append(word)
     return str(delim.join(result))
 
+
 class ReactionEnum(enum.Enum):
     LIKE = 1
     DISLIKE = 2
@@ -30,19 +35,23 @@ class ReactionEnum(enum.Enum):
     HAPPY = 4
     SAD = 5
 
+
 class FileTypeEnum(enum.Enum):
     IMAGE = 1
     VIDEO = 2
 
+
 class GenderEnum(enum.Enum):
     M = 1
     F = 2
+
 
 # See http://flask-sqlalchemy.pocoo.org/2.3/models/#many-to-many-relationships for query usage about many-to-many ralations
 membership = db.Table('membership',
     db.Column('user_id', db.Integer, db.ForeignKey('users.id'), primary_key=True),
     db.Column('group_id', db.Integer, db.ForeignKey('groups.id'), primary_key=True)
 )
+
 
 class User(UserMixin, db.Model):
     __tablename__ = 'users'
@@ -101,9 +110,11 @@ class User(UserMixin, db.Model):
     def __repr__(self):
         return '{} {}'.format(self.firstname, self.lastname)
 
+
 class TimestampMixin(object):
     created = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     updated = db.Column(db.DateTime, onupdate=datetime.utcnow)
+
 
 class Resource(TimestampMixin, db.Model):
     # __abstract__ = True
@@ -158,6 +169,7 @@ class Resource(TimestampMixin, db.Model):
     def __repr__(self):
         return '<Resource {}>'.format(self.name)
 
+
 class Group(Resource):
     __tablename__ = 'groups'
     __mapper_args__ = {
@@ -175,6 +187,7 @@ class Group(Resource):
             self.gallery_id = gallery_id
         elif gallery:
             self.gallery = gallery
+
 
 class Reaction(TimestampMixin, db.Model):   # relation many-to-many type Slack, don't mess with MRO chain
     __tablename__ = 'reactions'
@@ -196,6 +209,7 @@ class Reaction(TimestampMixin, db.Model):   # relation many-to-many type Slack, 
         elif resource:
             self.resource = resource
         self.type = type
+
 
 class Comment(Resource):
     __tablename__ = 'comments'
@@ -223,6 +237,7 @@ class Comment(Resource):
     def __repr__(self):
         return '<Comment {}>'.format(self.id)
 
+
 class Category(Resource):
     __tablename__ = 'categories'
     __mapper_args__ = {
@@ -244,6 +259,7 @@ class Category(Resource):
 
     def __repr__(self):
         return '<Category {}>'.format(self.name)
+
 
 class Event(Resource):
     __tablename__ = 'events'
@@ -284,6 +300,7 @@ class Event(Resource):
     def __repr__(self):
         return '<Event {}>'.format(self.name)
 
+
 class Year(Resource):
     __tablename__ = 'years'
 
@@ -309,6 +326,7 @@ class Year(Resource):
 
     def __repr__(self):
         return '<Year {}>'.format(self.value)
+
 
 class Gallery(Resource):
     __tablename__ = 'galleries'
@@ -359,10 +377,12 @@ class Gallery(Resource):
     def __repr__(self):
         return '<Gallery {}>'.format(self.name)
 
+
 file_tag = db.Table('file_tag',
     db.Column('tag_id', db.Integer, db.ForeignKey('tags.id', name='fk_file_tags_tag'), primary_key=True),
     db.Column('file_id', db.Integer, db.ForeignKey('files.id', name='fk_file_tags_file'), primary_key=True)
 )
+
 
 class File(Resource):
     __tablename__ = 'files'
@@ -407,6 +427,7 @@ class File(Resource):
 
     def __repr__(self):
         return '<File {}>'.format(self.file_path)
+
 
 class Tag(Resource):
     __tablename__ = 'tags'

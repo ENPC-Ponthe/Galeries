@@ -21,10 +21,9 @@ jobs:
       - checkout
       - restore_cache:
           key: deps1-{{ .Branch }}-{{ checksum "web/app/dev.requirements.txt" }}
-      - run: mkdir web/app/instance/keys/ && mkdir web/app/instance/club_folder/ && mkdir web/app/instance/club_folder/logs/
       - run: cd web/app/instance/keys/ && openssl genrsa -out jwtRS256-private.pem 2048 && openssl rsa -in jwtRS256-private.pem -pubout -out jwtRS256-public.pem
       - run: cd web/app && sudo pip install -r dev.requirements.txt
-      - run: py.test --cov-report term --cov=ponthe web/app/ponthe/tests/
+      - run: py.test --cov-report term --cov=ponthe web/app/test/
       - store_artifacts:
           path: test-reports/
           destination: tr1
@@ -37,13 +36,11 @@ jobs:
     steps:
       - setup_remote_docker:
             docker_layer_caching: true
-      - run: apk --no-cache add py-pip && pip install 'docker-compose==1.18.0'
       - checkout
       - run: docker login -u $DOCKER_USER -p $DOCKER_PASSWORD quay.io
       - run: |
-          export TAG=${CIRCLE_BRANCH}
-          docker build -t quay.io/enpcponthe/galeries-web:${TAG} ./web
-          docker push quay.io/enpcponthe/galeries-web:${TAG}
+          docker build -t quay.io/enpcponthe/galeries-web:${CIRCLE_BRANCH} ./web
+          docker push quay.io/enpcponthe/galeries-web:${CIRCLE_BRANCH}
 
 workflows:
   version: 2

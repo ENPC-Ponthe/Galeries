@@ -7,7 +7,7 @@ class EventDAO(ResourceDAO):
     def __init__(self):
         super().__init__(Event)
 
-    def delete_detaching_galleries(self, event_slug):
+    def delete_detaching_galleries(self, event_slug: str):
         event = self.find_by_slug(event_slug)
         for gallery in event.galleries:
             gallery.event=None

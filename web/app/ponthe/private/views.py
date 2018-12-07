@@ -4,18 +4,17 @@ from flask_login import logout_user, current_user, login_required
 from flask_mail import Message
 from flask_tus_ponthe import tus_manager
 from sqlalchemy.orm.exc import NoResultFound
-import os
 
 from werkzeug.exceptions import NotFound
 
 from . import private
 from .. import app, mail
-from ..persistence import EventDAO, YearDAO, CategoryDAO, GalleryDAO
+from ..dao import EventDAO, YearDAO, CategoryDAO, GalleryDAO
 from ..services import FileService, GalleryService
 
 UPLOAD_FOLDER = app.config['MEDIA_ROOT']
-UPLOAD_TMP_FOLDER = os.path.join(app.instance_path, 'upload_tmp')
-
+UPLOAD_TMP_FOLDER = app.config['UPLOAD_TMP_ROOT']
+print(UPLOAD_TMP_FOLDER)
 tm = tus_manager(private, upload_url='/file-upload', upload_folder=UPLOAD_TMP_FOLDER)
 
 
@@ -31,7 +30,7 @@ def before_request():
 
 
 @private.route('/')
-def getHome():
+def get_home():
     return redirect('/index')
 
 
@@ -180,7 +179,7 @@ def create_gallery():
         event_slug = request.form.get('event_slug')
         private = request.form.get('private')
         if gallery_name:
-            GalleryService.create(gallery_name, current_user, gallery_description, private == "on", year_slug, event_slug)
+            gallery = GalleryService.create(gallery_name, current_user, gallery_description, private == "on", year_slug, event_slug)
             return redirect(f"/galleries/{gallery.slug}")
         else:
             flash("Veuillez indiquer le nom de la nouvelle galerie", "error")
