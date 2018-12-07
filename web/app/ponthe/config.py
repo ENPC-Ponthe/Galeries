@@ -31,6 +31,7 @@ def load(app: Flask):
     with open(os.path.join(app.instance_path, "keys", "jwtRS256-private.pem"), 'r') as private_key:
         app.config['JWT_PRIVATE_KEY'] = private_key.read()
     app.config['ASSET_ROOT'] = os.path.join(app.instance_path, 'assets')
+    app.config['UPLOAD_TMP_ROOT'] = os.path.join(app.instance_path, 'tmp', 'uploads')
 
     # Flask-Thumbnail configuration
     app.config['MEDIA_ROOT'] = os.path.join(app.instance_path, 'static', 'uploads')
