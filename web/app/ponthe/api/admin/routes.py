@@ -1,4 +1,5 @@
 from flask_jwt_extended import JWTManager, jwt_required, get_jwt_identity
+from flask_login import current_user, login_required
 from .. import api
 from flask_restplus import Resource
 from ...persistence import UserDAO, YearDAO, EventDAO
@@ -15,6 +16,16 @@ from datetime import datetime
 from ... import app, db, login_manager
 from ...services import UserService, EventService, YearService, GalleryService, FileService
 from flask import request, jsonify
+# 
+# @app.before_request     # login en tant qu'admin nécessaire pour tout le blueprint
+# def before_request():
+#     current_user = UserDAO.get_by_id(get_jwt_identity())
+#     if not current_user.admin:
+#         return {
+#             "title": "Erreur - Impossible de supprimer l'événement",
+#             "body": "L'utilisateur n'est pas administrateur"
+#         }, 401
+#         # abort(401)
 
 @api.route('/create-event')
 class CreateEvent(Resource):
@@ -126,3 +137,22 @@ class Moderation(Resource):
         return {
             "msg": "Toutes les modérations ont été effectuées."
         }, 200
+
+@api.route('/delete-event/<event_slug>')
+class DeleteEvent(Resource):
+    @jwt_required
+    def delete(self, event_slug):
+        event_dao = EventDAO()
+
+        current_user = UserDAO.get_by_id(get_jwt_identity())
+
+        try:
+            event_dao.delete_detaching_galleries(event_slug)
+        except Exception as e:
+            return {
+                "title": "Erreur - Impossible de supprimer l'événement",
+                "body": "Erreur lors de la suppresion"
+            }, 401
+        return {
+            "msg": "Événement supprimé"
+        }, 201
