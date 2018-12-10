@@ -281,6 +281,16 @@ class Event(Resource):
                     return gallery.files[0]
             return File.query.filter_by(slug="default-image").one()
 
+    def serialize(self):
+        return {
+            # "id": self.id,
+            # "category_id": self.category_id,
+            # "cover_image_id": self.cover_image_id,
+            "description": self.description,
+            "slug": self.slug,
+            "name": self.name
+        }
+
     def __repr__(self):
         return '<Event {}>'.format(self.name)
 
@@ -359,6 +369,19 @@ class Gallery(Resource):
     def __repr__(self):
         return '<Gallery {}>'.format(self.name)
 
+    def serialize(self):
+        return {
+            # "id": self.id,
+            # "year_id": self.year_id,
+            # "event_id": self.event_id,
+            # "event": self.event,
+            "cover_image_id": self.cover_image_id,
+            "description": self.description,
+            # "private": self.private,
+            "slug": self.slug,
+            "name": self.name
+        }
+
 file_tag = db.Table('file_tag',
     db.Column('tag_id', db.Integer, db.ForeignKey('tags.id', name='fk_file_tags_tag'), primary_key=True),
     db.Column('file_id', db.Integer, db.ForeignKey('files.id', name='fk_file_tags_file'), primary_key=True)
@@ -415,3 +438,18 @@ class Tag(Resource):
     }
 
     id = db.Column(db.Integer, db.ForeignKey('resources.id', onupdate="CASCADE", ondelete="CASCADE"), primary_key=True)
+
+
+# def serialize(obj):
+#     """JSON serializer for objects not serializable by default json code"""
+#
+#     if isinstance(obj, Event):
+#         return obj.serialize()
+#
+#     if isinstance(obj, Gallery):
+#         return obj.serialize()
+#
+#     if isinstance(obj, Year):
+#         return {"year_slug": bite}
+#
+#     return obj.__dict__
