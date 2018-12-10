@@ -1,7 +1,7 @@
 from flask_jwt_extended import JWTManager, jwt_required, get_jwt_identity
 from .. import api
 from flask_restplus import Resource
-from ...persistence import UserDAO, YearDAO, EventDAO
+from ...persistence import UserDAO, YearDAO, EventDAO, GalleryDAO
 from itsdangerous import SignatureExpired, BadSignature
 from ...config import constants
 from sqlalchemy.orm.exc import NoResultFound
@@ -17,7 +17,7 @@ from datetime import datetime
 from ... import app, db, login_manager
 from ...services import UserService, GalleryService
 from flask import request
-
+# from ...models import serialize
 
 @api.route('/materiel')
 class Materiel(Resource):
@@ -136,10 +136,10 @@ class Members(Resource):
 
 
 
-@api.route('/get-event/<event_slug>')
-class Events(Resource):
+@api.route('/get-galleries/<event_slug>')
+class GetGalleries(Resource):
     @jwt_required
-    def post(self, event_slug):
+    def get(self, event_slug):
         event_dao = EventDAO()
 
         try:
@@ -163,12 +163,40 @@ class Events(Resource):
             else:
                 other_galleries.append(gallery)
 
+        # Building json encodable dict and list for response
+        gby_dict = dict()
+        for year, galleries in galleries_by_year.items():
+            gby_dict[year.slug] = [gallery.serialize() for gallery in galleries]
+
+        og_list=[gallery.serialize() for gallery in other_galleries]
 
         return {
-            "event": jsonify(event),
-            "galleries_by_year": jsonify(event),
-            "other_galleries": jsonify(other_galleries)
+            "event": event.serialize(),
+            "galleries_by_year": gby_dict,
+            "other_galleries": og_list
         }, 200
+
+@api.route('/get-imagies/<gallery_slug>')
+class GetImagies(Resource):
+    @jwt_required
+    def get(self, gallery_slug):
+        try:
+            gallery = GalleryDAO().find_by_slug(gallery_slug)
+        except NoResultFound:
+            return {
+                "title": "Erreur - Not found",
+                "body": "Aucune gallerie ne correspond à : "+gallery_slug
+            }, 404
+        if gallery.private and not GalleryDAO.has_right_on(gallery):
+            return {
+                "title": "Erreur - Forbidden",
+                "body": "Vous n'avez pas les droits pour accéder à : "+gallery_slug
+            }, 403
+        return {
+            "gallery": gallery.serialize(),
+            "approved_files": list(filter(lambda file: not file.pending, gallery.files))
+        }, 200
+
 
 @api.route('/dashboard')
 class Dashboard(Resource):
