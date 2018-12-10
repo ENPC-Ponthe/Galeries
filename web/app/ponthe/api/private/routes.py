@@ -192,3 +192,67 @@ class Events(Resource):
             "galleries_by_year": jsonify(event),
             "other_galleries": jsonify(other_galleries)
         }, 200
+
+@api.route('/galleries/<gallery_slug>')
+class Gallery(Resource):
+    def post(self, gallery_slug):
+        try:
+            gallery = GalleryDAO().find_by_slug(gallery_slug)
+        except NoResultFound:
+            return {"msg": "Error: "}
+        if gallery.private and not GalleryDAO.has_right_on(gallery):
+            raise NotFound()
+        return render_template('gallery.html', gallery=gallery, approved_files=filter(lambda file: not file.pending, gallery.files))
+    @jwt_required
+    def delete(self, gallery_slug):
+        current_user = UserDao().get_by_id(get_jwt_identity)
+        if current_user.admin:
+            try:
+                GalleryService.delete(gallery_slug)
+            except:
+                return {'msg': 'Galleries does not exist'}, 404
+
+
+@api.route('/galleries/makepublic')
+class MakeGalleryPublic(Resource):
+    def post(self):
+        current_user = UserDao().get_by_id(get_jwt_identity)
+        if not current_user.admin:
+            return {"msg": "Unauthorized: you're not an admin"}, 403
+        ListOfGallerySlugs = request.json.get('gallery_slugs')
+        ListOfGalleryFailedToMakePublic = []
+        for gallery_slug in ListOfGallerySlugs:
+            try:
+                GalleryService.make_public(gallery_slug)
+            except:
+                ListOfGalleryFailedToMakePublic.append(gallery_slug)
+        if len(ListOfGalleryFailedToMakePublic)!=0:
+            response = {
+                            "msg": "Error failed to make galleries public",
+                            "failed_with": ListOfGalleryFailedToMakePublic
+                        }
+            return response, 400
+        response = {"msg": "success"}
+        return response, 200
+
+@api.route('/galleries/makeprivate')
+class MakeGalleryPublic(Resource):
+    def post(self):
+        current_user = UserDao().get_by_id(get_jwt_identity)
+        if not current_user.admin:
+            return {"msg": "Unauthorized: you're not an admin"}, 403
+        ListOfGallerySlugs = request.json.get('gallery_slugs')
+        ListOfGalleryFailedToMakePublic = []
+        for gallery_slug in ListOfGallerySlugs:
+            try:
+                GalleryService.make_private(gallery_slug)
+            except:
+                ListOfGalleryFailedToMakePublic.append(gallery_slug)
+        if len(ListOfGalleryFailedToMakePublic)!=0:
+            response = {
+                            "msg": "Error failed to make galleries public",
+                            "failed_with": ListOfGalleryFailedToMakePublic
+                        }
+            return response, 400
+        response = {"msg": "success"}
+        return response, 200
