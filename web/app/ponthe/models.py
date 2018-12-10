@@ -310,6 +310,9 @@ class Year(Resource):
     def __repr__(self):
         return '<Year {}>'.format(self.value)
 
+    # def serialize(self):
+    #
+
 class Gallery(Resource):
     __tablename__ = 'galleries'
     __mapper_args__ = {
