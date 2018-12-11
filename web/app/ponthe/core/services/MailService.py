@@ -1,7 +1,7 @@
 from flask import render_template, url_for
 from flask_mail import Message
 
-from .. import mail
+from ... import mail
 
 
 class MailService:

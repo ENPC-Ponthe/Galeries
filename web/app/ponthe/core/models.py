@@ -6,9 +6,9 @@ from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 import codecs, translitcodec, enum, re, string, random
 
-from .file_helper import split_filename
+from ..file_helper import split_filename
 
-from . import db
+from .. import db
 
 _punct_re = re.compile(r'[\t !"#$%&\'()*\-/<=>?@\[\\\]^_`{|},.]+')  #   Les slug DSI enlève les ' au lieu de les remplacer par un -
 ALPHANUMERIC_LIST = string.ascii_letters+string.digits

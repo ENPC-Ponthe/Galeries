@@ -1,4 +1,4 @@
-from .. import db
+from ponthe import db
 from ..models import Event, User
 from ..dao import CategoryDAO
 

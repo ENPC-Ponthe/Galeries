@@ -1,4 +1,4 @@
-from ponthe.models import Category
+from ..models import Category
 
 from .ResourceDAO import ResourceDAO
 

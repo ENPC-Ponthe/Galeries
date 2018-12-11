@@ -1,8 +1,8 @@
 from flask_thumbnails import utils
 
 from .ResourceDAO import ResourceDAO
-from .. import app, db
-from ..file_helper import delete_file
+from ... import app, db
+from ...file_helper import delete_file
 from ..models import File
 
 import os

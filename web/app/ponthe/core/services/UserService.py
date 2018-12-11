@@ -2,7 +2,7 @@ from datetime import datetime
 from itsdangerous import URLSafeTimedSerializer
 from sqlalchemy.exc import IntegrityError
 
-from .. import app, db
+from ... import app, db
 from ..models import User
 from ..dao import UserDAO
 from .MailService import MailService

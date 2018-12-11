@@ -9,10 +9,10 @@ from itsdangerous import SignatureExpired, BadSignature
 from datetime import datetime
 
 from . import public
-from .. import app, db, login_manager
+from ... import app, db, login_manager
 from ..private.views import get_home
 from ..services import UserService
-from ..config import Constants
+from ...config import Constants
 from ..dao import UserDAO
 
 

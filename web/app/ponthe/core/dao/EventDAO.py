@@ -1,5 +1,5 @@
 from .ResourceDAO import ResourceDAO
-from .. import db
+from ... import db
 from ..models import Event
 
 

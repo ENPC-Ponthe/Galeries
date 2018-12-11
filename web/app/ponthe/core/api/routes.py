@@ -1,12 +1,10 @@
 from datetime import datetime
 from flask import jsonify, request
-from flask_jwt_extended import JWTManager, jwt_required, create_access_token, get_jwt_identity
+from flask_jwt_extended import jwt_required, create_access_token, get_jwt_identity
 
-from .. import db, app
+from ... import db, app, jwt
 from ..models import User
 from . import api
-
-jwt = JWTManager(app)
 
 
 @jwt.user_claims_loader

@@ -10,8 +10,8 @@ from sqlalchemy.exc import IntegrityError
 
 from . import app, mail, db
 from .file_helper import create_folder, copy_folder, delete_folders_in_folder,copy_folders_in_folder, copy_file
-from .models import User
-from .services import UserService
+from .core.models import User
+from .core.services import UserService
 
 
 def _drop_and_recreate_db():
