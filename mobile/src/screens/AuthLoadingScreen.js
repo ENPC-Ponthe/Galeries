@@ -15,7 +15,6 @@ export default class AuthLoadingScreen extends Component {
 
     bootstrapAuth () {
         deviceStorage.getJWT().then((userToken) => {
-            console.log("hey");
             this.props.navigation.navigate(userToken ? 'App' : 'Login');
         });
     };
