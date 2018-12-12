@@ -1,4 +1,4 @@
-from ..models import User, Event, Year, File, Gallery, Category
+from ..core.models import User, Event, Year, File, Gallery, Category
 
 class Fixtures():
     user_philippe = User(

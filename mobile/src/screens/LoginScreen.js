@@ -75,7 +75,7 @@ export default class LoginScreen extends Component {
 
     loginUser() {
         console.log("Let's login !");
-        axios.post(API_URL + "login",{
+        axios.post(API_URL + "/login",{
             email: this.state.email,
             password: this.state.password
         }).then((response) => {

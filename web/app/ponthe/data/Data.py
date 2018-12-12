@@ -1,5 +1,5 @@
 # coding=utf-8
-from ..models import Category, File, Gallery
+from ..core.models import Category, File, Gallery
 
 class Data():
     category_gallery = Gallery(

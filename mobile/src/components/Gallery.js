@@ -1,30 +1,54 @@
 import ImageBrowser, {ImageSource} from 'react-native-interactive-image-gallery'
 import React, {PureComponent} from 'react';
+import {ActivityIndicator, View} from 'react-native';
+import {API_URL, BASE_URL} from "../constants";
 
 export default class Gallery extends PureComponent<Props> {
+    loadGallery = async () => {
+        try {
+            let response = await fetch(
+                API_URL + '/galleries/chats',
+            )
+            let responseJson = await response.json()
+            console.log(responseJson)
+            this.setState({
+                isLoading: false,
+                gallery: responseJson,
+            })
+        } catch (error) {
+            console.error(error)
+        }
+    }
+
+    constructor(props) {
+        super(props)
+        this.state ={ isLoading: true }
+    }
+
+    componentDidMount(){
+        this.loadGallery()
+    }
+
+
     render() {
-        const images: Array<ImageSource> = [{
-            uri: 'https://ponthe.enpc.org/uploads/ndlr/ofDiA4d4uzxSytQBLEx6.JPG',
-            id: 1,
-            thumbnail: 'https://ponthe.enpc.org/thumbs/ndlr/ofDiA4d4uzxSytQBLEx6_226x226_fit_90.JPG',
-            title: "wesh",
-            description: "Des barres la NDLR",
-        }, {
-            uri: 'https://ponthe.enpc.org/uploads/ndlr/X2vi1PYT7l2br1VZvtJa.JPG',
-            id: 1,
-            thumbnail: 'https://ponthe.enpc.org/thumbs/ndlr/X2vi1PYT7l2br1VZvtJa_226x226_fit_90.JPG',
-            title: "hey",
-            description: "Trop kali",
-        }]
-        const imageURLs: Array<ImageSource> = images.map(
+        if(this.state.isLoading){
+            return(
+                <View style={{flex: 1, padding: 20}}>
+                    <ActivityIndicator/>
+                </View>
+            )
+        }
+
+        const imageURLs: Array<ImageSource> = this.state.gallery.files.map(
             (img: ImageSource, index: number) => ({
-                URI: img.uri,
-                thumbnail: img.thumbnail,
+                URI: BASE_URL + img.uri,
+                thumbnail: BASE_URL + img.thumbnail,
                 id: String(index),
-                title: img.title,
+                title: img.name,
                 description: img.description
             })
         )
+
         return <ImageBrowser images={imageURLs} />
     }
 }

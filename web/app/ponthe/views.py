@@ -36,7 +36,6 @@ def uploads(file_path: str):
 
 
 @app.route('/thumbs/<path:file_path>')  # utilisé en dev, en prod c'est servi par le serveur web
-@login_required
 def thumbnails(file_path: str):
     try:
         return send_file(os.path.join(app.config['THUMBNAIL_MEDIA_THUMBNAIL_ROOT'], file_path))

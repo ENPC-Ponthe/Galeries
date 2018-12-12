@@ -1,9 +1,14 @@
+import os
 from datetime import datetime
-from flask import jsonify, request
+from flask import jsonify, request, send_file
 from flask_jwt_extended import jwt_required, create_access_token, get_jwt_identity
+from sqlalchemy.orm.exc import NoResultFound
+from werkzeug.exceptions import NotFound
 
 from ... import db, app, jwt
 from ..models import User
+from ..dao import GalleryDAO
+from .schema import gallery_schema
 from . import api
 
 
@@ -64,3 +69,21 @@ def protected():
     # Access the identity of the current user with get_jwt_identity
     current_user = get_jwt_identity()
     return jsonify(logged_in_as=current_user), 200
+
+
+@api.route('/galleries/<gallery_slug>', methods=['GET'])
+def image_sources(gallery_slug):
+    try:
+        gallery = GalleryDAO().find_by_slug(gallery_slug)
+
+        return gallery_schema.jsonify(gallery)
+    except NoResultFound:
+        raise NotFound()
+
+
+@api.route('/uploads/<path:file_path>')
+def uploads(file_path: str):
+    try:
+        return send_file(os.path.join(app.config['MEDIA_ROOT'], file_path))
+    except FileNotFoundError:
+        raise NotFound()
