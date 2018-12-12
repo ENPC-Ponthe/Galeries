@@ -6,6 +6,7 @@ import {
 } from 'react-native';
 import styles from './styles'
 import deviceStorage from '../services/deviceStorage'
+import {App as firebase} from "react-native-firebase";
 
 export default class AuthLoadingScreen extends Component {
     constructor(props) {
@@ -15,6 +16,14 @@ export default class AuthLoadingScreen extends Component {
 
     bootstrapAuth () {
         deviceStorage.getJWT().then((userToken) => {
+            if (userToken) {
+                firebase.messaging().hasPermission()
+                    .then(enabled => {
+                        if (!enabled) {
+                            firebase.messaging().requestPermission()
+                        }
+                    });
+            }
             this.props.navigation.navigate(userToken ? 'App' : 'Login');
         });
     };
