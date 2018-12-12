@@ -6,11 +6,22 @@ import deviceStorage from "../services/deviceStorage";
 export default class HomeScreen extends Component {
   async removeJWT() {
     await deviceStorage.unsetJWT();
-    this.props.navigation.navigate('Login');
+    deviceStorage.getJWT().then((jwt) => {
+          console.log(jwt)
+    })
+    this.props.navigation.navigate('Login')
+
+    deviceStorage.getJWT().then((jwt) => {
+        console.log(jwt)
+    })
+    console.log("Not good")
   }
 
   logout() {
     console.log("Let's logout !");
+      deviceStorage.getJWT().then((jwt) => {
+          console.log(jwt)
+      })
     this.removeJWT().catch((error) => {
         console.log(error);
     })

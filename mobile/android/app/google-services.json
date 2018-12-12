@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "287612741139",
+    "firebase_url": "https://enpc-d6bbe.firebaseio.com",
+    "project_id": "enpc-d6bbe",
+    "storage_bucket": "enpc-d6bbe.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:287612741139:android:00bf3b15c117c841",
+        "android_client_info": {
+          "package_name": "fr.ponthe.galeries"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "287612741139-tkcbu8gah5v8qemd0ak83svnrrq7b9k3.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBLL2upEVdkoJG6V1OnAaOcdZH8Jv0lPhg"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

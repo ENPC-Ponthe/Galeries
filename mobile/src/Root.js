@@ -1,13 +1,13 @@
 import React from 'react'
 import {createSwitchNavigator} from 'react-navigation'
-import AppStack from './components/AppStack'
+import App from './components/App'
 import AuthLoadingScreen from "./screens/AuthLoadingScreen";
 import LoginScreen from "./screens/LoginScreen";
 
 export default Root = createSwitchNavigator(
     {
         AuthLoading: AuthLoadingScreen,
-        App: AppStack,
+        App: App,
         Login: LoginScreen,
     },
     {
