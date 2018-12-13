@@ -6,6 +6,7 @@ import type { Notification } from 'react-native-firebase';
 import {Text} from "react-native-elements";
 import Gallery from "./Gallery";
 import Galleries from "../screens/Galleries";
+import CaptureImage from "../screens/CaptureImage";
 
 function navigationOptions(title) {
     return () => ({
@@ -30,6 +31,9 @@ const AppStack = createDrawerNavigator({
     Galleries: {
         screen: Galleries,
     },
+    Upload: {
+        screen: CaptureImage,
+    }
 }, {
     headerMode: 'float',
 })

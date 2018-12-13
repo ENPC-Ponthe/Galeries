@@ -10,9 +10,12 @@
     "axios": "^0.18.0",
     "react": "16.5.0",
     "react-native": "0.57.1",
+    "react-native-camera": "^1.6.2",
     "react-native-elements": "^0.19.1",
     "react-native-firebase": "^5.1.1",
+    "react-native-image-picker": "^0.27.2",
     "react-native-interactive-image-gallery": "^0.1.2",
+    "react-native-tus-client": "^1.0.3",
     "react-native-vector-icons": "^6.1.0",
     "react-navigation": "^2.16.0"
   },

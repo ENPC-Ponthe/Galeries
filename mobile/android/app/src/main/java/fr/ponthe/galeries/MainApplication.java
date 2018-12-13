@@ -3,6 +3,9 @@ package fr.ponthe.galeries;
 import android.app.Application;
 
 import com.facebook.react.ReactApplication;
+import org.reactnative.camera.RNCameraPackage;
+import com.imagepicker.ImagePickerPackage;
+import com.vinzscam.rntusclient.RNTusClientPackage;
 import io.invertase.firebase.RNFirebasePackage;
 import io.invertase.firebase.messaging.RNFirebaseMessagingPackage;
 import io.invertase.firebase.notifications.RNFirebaseNotificationsPackage;
@@ -28,6 +31,9 @@ public class MainApplication extends Application implements ReactApplication {
     protected List<ReactPackage> getPackages() {
       return Arrays.<ReactPackage>asList(
           new MainReactPackage(),
+            new RNCameraPackage(),
+            new ImagePickerPackage(),
+            new RNTusClientPackage(),
             new RNFirebasePackage(),
             new VectorIconsPackage(),
             new RNFirebaseMessagingPackage(),
