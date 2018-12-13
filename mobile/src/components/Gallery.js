@@ -4,10 +4,19 @@ import {ActivityIndicator, View} from 'react-native';
 import {API_URL, BASE_URL} from "../constants";
 
 export default class Gallery extends PureComponent<Props> {
-    loadGallery = async () => {
+    constructor(props) {
+        super(props)
+        this.state ={
+            isLoading: true,
+            gallery_slug: this.props.navigation.getParam('gallery_slug')
+        }
+        console.log(this.state.gallery_slug)
+    }
+
+    async componentDidMount(){
         try {
             let response = await fetch(
-                API_URL + '/galleries/chats',
+                API_URL + '/galleries/' + this.state.gallery_slug,
             )
             let responseJson = await response.json()
             console.log(responseJson)
@@ -18,15 +27,6 @@ export default class Gallery extends PureComponent<Props> {
         } catch (error) {
             console.error(error)
         }
-    }
-
-    constructor(props) {
-        super(props)
-        this.state ={ isLoading: true }
-    }
-
-    componentDidMount(){
-        this.loadGallery()
     }
 
 

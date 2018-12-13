@@ -8,7 +8,7 @@ from werkzeug.exceptions import NotFound
 from ... import db, app, jwt
 from ..models import User
 from ..dao import GalleryDAO
-from .schema import gallery_schema
+from .schema import gallery_schema, galleries_schema
 from . import api
 
 
@@ -63,7 +63,7 @@ def login():
         return jsonify({"msg": "Bad email or password"}), 401
 
 
-@api.route('/protected', methods=['GET'])
+@api.route('/protected')
 @jwt_required
 def protected():
     # Access the identity of the current user with get_jwt_identity
@@ -71,14 +71,21 @@ def protected():
     return jsonify(logged_in_as=current_user), 200
 
 
-@api.route('/galleries/<gallery_slug>', methods=['GET'])
-def image_sources(gallery_slug):
+@api.route('/galleries/<gallery_slug>')
+def gallery(gallery_slug):
     try:
         gallery = GalleryDAO().find_by_slug(gallery_slug)
 
         return gallery_schema.jsonify(gallery)
     except NoResultFound:
         raise NotFound()
+
+
+@api.route('/galleries')
+def galleries():
+    gallery = GalleryDAO().find_all()
+
+    return galleries_schema.jsonify(gallery)
 
 
 @api.route('/uploads/<path:file_path>')

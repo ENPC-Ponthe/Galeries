@@ -5,6 +5,7 @@ import firebase from "react-native-firebase";
 import type { Notification } from 'react-native-firebase';
 import {Text} from "react-native-elements";
 import Gallery from "./Gallery";
+import Galleries from "../screens/Galleries";
 
 function navigationOptions(title) {
     return () => ({
@@ -23,8 +24,11 @@ const AppStack = createDrawerNavigator({
         screen: HomeScreen,
         navigationOptions: navigationOptions('Galeries Ponthé')
     },
-    Galerie: {
+    Gallery: {
         screen: Gallery,
+    },
+    Galleries: {
+        screen: Galleries,
     },
 }, {
     headerMode: 'float',

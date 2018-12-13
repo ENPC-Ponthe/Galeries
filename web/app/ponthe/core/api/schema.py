@@ -1,4 +1,5 @@
 from flask import url_for
+from ..models import Gallery
 
 from ...views import thumb_filter
 from ... import ma
@@ -14,8 +15,10 @@ class ImageSourceSchema(ma.Schema):
 
 class GallerySchema(ma.Schema):
     class Meta:
-        fields = ('files', 'name', 'description')
+        model = Gallery
     files = ma.List(ma.Nested(ImageSourceSchema()))
+    cover_uri = ma.Function(lambda gallery: thumb_filter(gallery.cover))
 
 
-gallery_schema = GallerySchema()
+gallery_schema = GallerySchema(only=['name', 'description', 'files'])
+galleries_schema = GallerySchema(many=True, only=['name', 'slug', 'cover_uri'])
