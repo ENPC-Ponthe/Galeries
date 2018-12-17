@@ -50,6 +50,10 @@ class CreateEvent(Resource):
         }, 201
 
 @api.route('/create-year')
+@api.doc(params=    {
+                        'value': 'Example : 2018',
+                        'description': ''
+                    })
 class CreateYear(Resource):
     @jwt_required
     def post(self):
