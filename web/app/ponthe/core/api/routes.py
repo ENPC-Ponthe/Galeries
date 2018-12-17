@@ -1,15 +1,26 @@
 import os
 from datetime import datetime
 from flask import jsonify, request, send_file
-from flask_jwt_extended import jwt_required, create_access_token, get_jwt_identity
+from flask_jwt_extended import jwt_required, create_access_token, get_jwt_identity, current_user
+from flask_tus_ponthe import tus_manager
 from sqlalchemy.orm.exc import NoResultFound
 from werkzeug.exceptions import NotFound
 
 from ... import db, app, jwt
 from ..models import User
+from ..services import FileService
 from ..dao import GalleryDAO
 from .schema import gallery_schema, galleries_schema
 from . import api
+
+UPLOAD_TMP_FOLDER = app.config['UPLOAD_TMP_ROOT']
+
+
+tm = tus_manager(api, upload_url='/file-upload', upload_folder=UPLOAD_TMP_FOLDER, decorator=jwt_required)
+
+@tm.upload_file_handler
+def upload_file_handler(upload_file_path, filename, gallery_slug):
+    FileService.create(upload_file_path, filename, gallery_slug, current_user)
 
 
 @jwt.user_claims_loader

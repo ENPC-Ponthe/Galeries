@@ -21,4 +21,4 @@ class GalleryDAO(ResourceDAO):
 
     @classmethod
     def find_public(cls):
-        return Gallery.query.filter_by(private=True).all()
+        return Gallery.query.filter_by(private=False).all()

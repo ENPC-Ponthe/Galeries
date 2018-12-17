@@ -8,6 +8,9 @@ import Icon from 'react-native-vector-icons/FontAwesome'
 import IconEntypo from 'react-native-vector-icons/Entypo'
 import ImagePicker from 'react-native-image-picker'
 import styles from './capture-styles.js'
+import {BASE_URL} from "../services/HttpClient";
+import { Upload } from 'react-native-tus-client';
+import DeviceStorage from "../services/DeviceStorage";
 
 var options = {
   storageOptions: {
@@ -29,7 +32,28 @@ class PreviewScreen extends Component {
     if (this.camera) {
       const data = await this.camera.takePictureAsync(options)
       this.props.updateImage(data.base64)
+      this.tusUpload(data.uri)
     }
+  }
+
+  async tusUpload(file) {
+      const jwt = await DeviceStorage.getJWT()
+      const upload = new Upload(file, {
+          endpoint: BASE_URL + '/api/file-upload/' + 'chats',
+          headers: {
+            'Authorization': 'Bearer ' + jwt
+          },
+          metadata: {
+            filename: "mobile",
+          },
+          onError: error => console.log('error', error),
+          onSuccess: () => {
+              console.log('Upload completed. File url:', upload.url);
+          },
+          onProgress: (uploaded, total) => console.log(
+              `Progress: ${(uploaded/total*100)|0}%`)
+      });
+      upload.start();
   }
 
   launchCamera() {
@@ -43,6 +67,7 @@ class PreviewScreen extends Component {
       else {
         console.log('Photo taken at '+response.path)
         this.props.updateImage(response.data)
+        this.tusUpload(response.path)
       }
     })
   }
@@ -76,17 +101,17 @@ class PreviewScreen extends Component {
           permissionDialogMessage={'We need your permission to use your camera phone'}
         />
         <View style={styles.buttonPannel}>
+            <TouchableOpacity
+              onPress={this.launchCamera.bind(this)}
+              style={styles.button}
+            >
+              <Icon name="mobile-phone" size={30}/>
+            </TouchableOpacity>
           <TouchableOpacity
             onPress={this.takePhoto.bind(this)}
             style={styles.button}
           >
             <Icon name="camera" size={30}/>
-          </TouchableOpacity>
-          <TouchableOpacity
-            onPress={this.launchCamera.bind(this)}
-            style={styles.button}
-          >
-            <Icon name="mobile-phone" size={30}/>
           </TouchableOpacity>
           <TouchableOpacity
             onPress={this.launchLibrary.bind(this)}
