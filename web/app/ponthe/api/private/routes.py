@@ -23,6 +23,8 @@ from flask import request
 @api.route('/get_user_by_jwt')
 class GetUser(Resource):
     @jwt_required
+    @api.response(200, 'Success')
+    @api.response(403, 'Not authorized - account not valid')
     def get(self):
         current_user = UserDAO.get_by_id(get_jwt_identity())
         return {
@@ -74,18 +76,25 @@ class Materiel(Resource):
 
 
 @api.route('/years/<year_slug>')
+@api.doc(params=    {
+                        'year_slug': 'Example : 2018'
+                    })
 class Year(Resource):
     @jwt_required
+    @api.response(200, 'Success')
     def get(self, year_slug):
         year_dao = YearDAO()
         try:
-            year = year_dao.find_by_slug(year_slug)
-            return year.serialize(), 200
+            return year_dao.serialize(year_slug), 200
         except NoResultFound:
             return {'msg': 'year not found'}, 404
 
     @jwt_required
-    def delete(self):
+    @api.response(200, 'Success')
+    @api.response(40, 'Request incorrect - JSON not valid')
+    @api.response(403, 'Not authorized - not admin')
+    @api.response(401, 'User not identified - incorrect email or password')
+    def delete(self, year_slug):
         year_dao = YearDAO()
         current_user = UserDao().get_by_id(get_jwt_identity)
         if current_user.admin:
