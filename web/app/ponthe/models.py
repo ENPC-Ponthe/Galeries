@@ -7,6 +7,7 @@ import codecs, translitcodec, enum, re, string, random
 from .file_helper import split_filename
 
 from . import db
+# from .persistence.FileDAO import FileDAO
 
 _punct_re = re.compile(r'[\t !"#$%&\'()*\-/<=>?@\[\\\]^_`{|},.]+')  #   Les slug DSI enlève les ' au lieu de les remplacer par un -
 ALPHANUMERIC_LIST = string.ascii_letters+string.digits
@@ -310,8 +311,20 @@ class Year(Resource):
     def __repr__(self):
         return '<Year {}>'.format(self.value)
 
-    # def serialize(self):
-    #
+    def serialize(self):
+        file_dao = FileDAO()
+        if cover_image is not None:
+            url_to_image = cover_image.file_path()
+        elif cover_image_id is not None:
+            image_file = file_dao.find_by_id(cover_image_id)
+            url_to_image = image_file.file_path()
+        else:
+            url_to_image = "null"
+        return  {
+                    'year_id': self.id,
+                    'cover_image_url': url_to_image,
+                    'year_slug': self.value
+                }
 
 class Gallery(Resource):
     __tablename__ = 'galleries'

@@ -40,60 +40,43 @@ class Materiel(Resource):
             "msg": "Mail envoyé !"
         }, 200
 
+# @private.route('/years/<year_slug>', methods=['GET', 'POST'])
+# def year_gallery(year_slug):
+#     year_dao = YearDAO()
+#     if request.method == 'POST' and "delete" in request.form and current_user.admin:
+#         year_dao.delete_detaching_galleries(year_slug)
+#         return redirect("/index")
+#     try:
+#         year = year_dao.find_by_slug(year_slug)
+#     except NoResultFound:
+#         raise NotFound()
+#     public_galleries = list(filter(lambda gallery: not gallery.private, year.galleries))
+#     return render_template('year_gallery.html', year=year, public_galleries=public_galleries)
+
+
 @api.route('/years/<year_slug>')
 class Year(Resource):
     @jwt_required
-    def post(self, year_slug):
-        # year_dao = YearDAO()
-        # current_user = UserDao().get_by_id(get_jwt_identity)
-        # try:
-        #     year = year_dao.find_by_slug(year_slug)
-        # except NoResultFound:
-        #     return {'msg': 'year not found'}, 404
-        #
-        # public_galleries = list(filter(lambda gallery: not gallery.private, year.galleries))
-
-        employeeList = []
-
-        # create a instances for filling up employee list
-        for i in range(0,2):
-            empDict = {
-                'firstName': 'Roy',
-                'lastName': 'Augustine'
-            }
-            employeeList.append(empDict)
-        # convert to json data
-
-
-        return jsonify(Employees=employeeList)
-        # ('year_gallery.html', year=year, public_galleries=public_galleries)
-
-@api.route('/years')
-class Test(Resource):
-    def post(self):
-        # year_dao = YearDAO()
-        # current_user = UserDao().get_by_id(get_jwt_identity)
-        # try:
-        #     year = year_dao.find_by_slug(year_slug)
-        # except NoResultFound:
-        #     return {'msg': 'year not found'}, 404
-        #
-        # public_galleries = list(filter(lambda gallery: not gallery.private, year.galleries))
-
-        table = request.json.get('Employees')
-        print(table)
-        print(table[0])
-        print(table[1]["firstName"])
-        # ('year_gallery.html', year=year, public_galleries=public_galleries)
+    def get(self, year_slug):
+        year_dao = YearDAO()
+        try:
+            year = year_dao.find_by_slug(year_slug)
+            return year.serialize(), 200
+        except NoResultFound:
+            return {'msg': 'year not found'}, 404
 
     @jwt_required
-    def delete(self, year_slug):
+    def delete(self):
+        year_dao = YearDAO()
+        current_user = UserDao().get_by_id(get_jwt_identity)
         if current_user.admin:
             try:
-                year_dao.delete_detaching_galleries(year_slug)
-                return 200
-            except:
-                return 200
+                 year_dao.delete_detaching_galleries(year_slug)
+                 return {'msg': 'year deleted'}, 200
+            except NoResultFound:
+                 return {'msg': 'year not found'}, 404
+        return {'msg': 'not admin'}, 403
+
 
 @api.route('/create-gallery')
 class CreateGallery(Resource):
