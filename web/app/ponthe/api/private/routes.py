@@ -19,9 +19,28 @@ from ...services import UserService, GalleryService
 from flask import request
 
 
+
+@api.route('/get_user_by_jwt')
+class GetUser(Resource):
+    @jwt_required
+    def get(self):
+        current_user = UserDAO.get_by_id(get_jwt_identity())
+        return {
+                    "firstname": current_user.firstname,
+                    "lastname": current_user.lastname,
+                    "email": current_user.email
+                }, 200
+
 @api.route('/materiel')
+@api.doc(params=    {
+                        'object': 'object you would like to borrow to the club',
+                        'message': 'your message'
+                    })
 class Materiel(Resource):
     @jwt_required
+    @api.response(200, 'Success - Mail sent')
+    @api.response(400, 'Request incorrect - JSON not valid')
+    @api.response(403, 'Not authorized - account not valid')
     def post(self):
         object = request.json.get('object')
         message = request.json.get('message')
@@ -29,7 +48,7 @@ class Materiel(Resource):
             return  {
                 "title": "Erreur - Aucun message",
                 "body": "Veuillez saisir un message"
-            }, 406
+            }, 400
         current_user = UserDAO.get_by_id(get_jwt_identity())
         msg = Message(subject=f"Demande d'emprunt de {object} par {current_user.firstname} {current_user.lastname}",
                       body=message,
