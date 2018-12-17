@@ -1,8 +1,7 @@
 import axios from "axios";
 import DeviceStorage from "./DeviceStorage";
 
-export const BASE_URL = 'http://192.168.1.38:5000'
-// export const BASE_URL = 'https://ponthe.enpc.org'
+export const BASE_URL = 'https://ponthe.enpc.org'
 
 
 export const url = (path: string, prefix: string = '') => {

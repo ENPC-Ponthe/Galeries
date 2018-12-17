@@ -137,9 +137,9 @@ android {
 }
 
 dependencies {
-    compile project(':react-native-camera')
-    compile project(':react-native-image-picker')
-    compile project(':react-native-tus-client')
+    implementation project(':react-native-camera')
+    implementation project(':react-native-image-picker')
+    implementation project(':react-native-tus-client')
     implementation project(':react-native-firebase')
     implementation project(':react-native-vector-icons')
     implementation fileTree(dir: "libs", include: ["*.jar"])
