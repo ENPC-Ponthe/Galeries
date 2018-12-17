@@ -1,7 +1,7 @@
 from flask import url_for
 from ..models import Gallery
 
-from ...views import thumb_filter
+from ...views import thumb_filter, mobile_thumb_filter
 from ... import ma
 
 
@@ -10,7 +10,7 @@ class ImageSourceSchema(ma.Schema):
         fields = ('uri', 'id', 'thumbnail', 'name')
 
     uri = ma.Function(lambda file: url_for('api.uploads', file_path=file.file_path))
-    thumbnail = ma.Function(lambda file: thumb_filter(file))
+    thumbnail = ma.Function(lambda file: mobile_thumb_filter(file))
 
 
 class GallerySchema(ma.Schema):

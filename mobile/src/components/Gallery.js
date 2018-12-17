@@ -1,7 +1,7 @@
 import ImageBrowser, {ImageSource} from 'react-native-interactive-image-gallery'
 import React, {PureComponent} from 'react';
 import {ActivityIndicator, View} from 'react-native';
-import {API_URL, BASE_URL} from "../constants";
+import {url, get} from "../services/HttpClient";
 
 export default class Gallery extends PureComponent<Props> {
     constructor(props) {
@@ -13,20 +13,15 @@ export default class Gallery extends PureComponent<Props> {
         console.log(this.state.gallery_slug)
     }
 
+    onFetch = (data) => {
+        this.setState({
+            isLoading: false,
+            data,
+        })
+    }
+
     async componentDidMount(){
-        try {
-            let response = await fetch(
-                API_URL + '/galleries/' + this.state.gallery_slug,
-            )
-            let responseJson = await response.json()
-            console.log(responseJson)
-            this.setState({
-                isLoading: false,
-                gallery: responseJson,
-            })
-        } catch (error) {
-            console.error(error)
-        }
+        get('/galleries/' + this.state.gallery_slug, this.onFetch)
     }
 
 
@@ -39,16 +34,17 @@ export default class Gallery extends PureComponent<Props> {
             )
         }
 
-        const imageURLs: Array<ImageSource> = this.state.gallery.files.map(
-            (img: ImageSource, index: number) => ({
-                URI: BASE_URL + img.uri,
-                thumbnail: BASE_URL + img.thumbnail,
+        const imageURLs: Array<ImageSource> = this.state.data.files.map(
+            (img: Object, index: number) => ({
+                URI: url(img.uri),
+                thumbnail: url(img.thumbnail),
                 id: String(index),
                 title: img.name,
                 description: img.description
             })
         )
 
-        return <ImageBrowser images={imageURLs} />
+        const { navigate } = this.props.navigation
+        return <ImageBrowser images={imageURLs} closeText="Retour" />
     }
 }

@@ -5,7 +5,7 @@ import {
     View,
 } from 'react-native';
 import styles from './styles'
-import deviceStorage from '../services/deviceStorage'
+import DeviceStorage from '../services/DeviceStorage'
 
 export default class AuthLoadingScreen extends Component {
     constructor(props) {
@@ -14,7 +14,7 @@ export default class AuthLoadingScreen extends Component {
     }
 
     bootstrapAuth () {
-        deviceStorage.getJWT().then((userToken) => {
+        DeviceStorage.getJWT().then((userToken) => {
             console.log("bootstrapping")
             console.log(userToken)
             this.props.navigation.navigate(userToken ? 'App' : 'Login');

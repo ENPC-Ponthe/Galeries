@@ -11,8 +11,9 @@ export default Root = createSwitchNavigator(
         Login: LoginScreen,
     },
     {
+        headerMode: 'none',
         initialRouteName: 'AuthLoading',
     }
-);
+)
 
 console.disableYellowBox = true

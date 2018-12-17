@@ -15,8 +15,12 @@ def thumb_filter(file: File):
 
 
 @app.template_filter('category_thumb')
-def thumb_filter(file: File):
+def category_thumb_filter(file: File):
     return thumb.get_thumbnail(file.file_path, '630x500')
+
+
+def mobile_thumb_filter(file: File):
+    return thumb.get_thumbnail(file.file_path, '411x411')
 
 
 @app.context_processor

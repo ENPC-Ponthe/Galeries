@@ -72,6 +72,7 @@ def protected():
 
 
 @api.route('/galleries/<gallery_slug>')
+@jwt_required
 def gallery(gallery_slug):
     try:
         gallery = GalleryDAO().find_by_slug(gallery_slug)
@@ -82,10 +83,11 @@ def gallery(gallery_slug):
 
 
 @api.route('/galleries')
+@jwt_required
 def galleries():
-    gallery = GalleryDAO().find_all()
+    galleries = GalleryDAO().find_public()
 
-    return galleries_schema.jsonify(gallery)
+    return galleries_schema.jsonify(galleries)
 
 
 @api.route('/uploads/<path:file_path>')

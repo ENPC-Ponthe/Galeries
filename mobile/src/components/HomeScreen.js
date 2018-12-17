@@ -1,17 +1,17 @@
 import React, { Component } from 'react'
 import { View } from 'react-native'
 import { Button } from 'react-native-elements'
-import deviceStorage from "../services/deviceStorage";
+import DeviceStorage from "../services/DeviceStorage";
 
 export default class HomeScreen extends Component {
   async removeJWT() {
-    await deviceStorage.unsetJWT();
-    deviceStorage.getJWT().then((jwt) => {
+    await DeviceStorage.unsetJWT();
+    DeviceStorage.getJWT().then((jwt) => {
           console.log(jwt)
     })
     this.props.navigation.navigate('Login')
 
-    deviceStorage.getJWT().then((jwt) => {
+    DeviceStorage.getJWT().then((jwt) => {
         console.log(jwt)
     })
     console.log("Not good")
@@ -19,7 +19,7 @@ export default class HomeScreen extends Component {
 
   logout() {
     console.log("Let's logout !");
-      deviceStorage.getJWT().then((jwt) => {
+      DeviceStorage.getJWT().then((jwt) => {
           console.log(jwt)
       })
     this.removeJWT().catch((error) => {

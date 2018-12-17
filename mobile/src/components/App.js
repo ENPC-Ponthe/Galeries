@@ -5,7 +5,7 @@ import firebase from "react-native-firebase";
 import type { Notification } from 'react-native-firebase';
 import {Text} from "react-native-elements";
 import Gallery from "./Gallery";
-import Galleries from "../screens/Galleries";
+import Galleries from "./Galleries";
 import CaptureImage from "../screens/CaptureImage";
 
 function navigationOptions(title) {
@@ -21,22 +21,31 @@ function navigationOptions(title) {
 }
 
 const AppStack = createDrawerNavigator({
-    Home: {
-        screen: HomeScreen,
-        navigationOptions: navigationOptions('Galeries Ponthé')
-    },
-    Gallery: {
-        screen: Gallery,
-    },
-    Galleries: {
-        screen: Galleries,
-    },
-    Upload: {
-        screen: CaptureImage,
-    }
-}, {
-    headerMode: 'float',
-})
+        Home: {
+            screen: HomeScreen,
+            navigationOptions: navigationOptions('Accueil')
+        },
+        Gallery: {
+            screen: Gallery,
+            navigationOptions: {
+                drawerLabel: (props) => null
+            }
+        },
+        Galleries: {
+            screen: Galleries,
+            navigationOptions: {
+                title: 'Galeries'
+            }
+        },
+        Upload: {
+            screen: CaptureImage,
+            navigationOptions: {
+                title: 'Partager'
+            }
+        }
+    }, {
+        headerMode: 'float',
+    })
 
 export default class App extends Component {
     componentDidMount() {

@@ -9,9 +9,8 @@ import {
 import logo from '../assets/logo.png'
 import {Button} from "react-native-elements"
 import styles, { IMAGE_SIZE, IMAGE_HEIGHT_SMALL} from './styles'
-import deviceStorage from '../services/deviceStorage'
-import {API_URL} from '../constants'
-import axios from 'axios'
+import DeviceStorage from '../services/DeviceStorage'
+import {post} from "../services/HttpClient";
 
 export default class LoginScreen extends Component {
     constructor(props) {
@@ -24,8 +23,6 @@ export default class LoginScreen extends Component {
 
         this.keyboardHeight = new Animated.Value(0);
         this.imageSize = new Animated.Value(IMAGE_SIZE);
-
-        this.loginUser = this.loginUser.bind(this)
     }
 
     componentWillMount () {
@@ -68,21 +65,23 @@ export default class LoginScreen extends Component {
     };
 
     async loadJWT(token) {
-        await deviceStorage.setJWT(token);
+        await DeviceStorage.setJWT(token);
         console.log(token);
         this.props.navigation.navigate('App')
     }
 
-    loginUser() {
+    onAuth (response) {
+        this.loadJWT(response.data.token)
+    }
+
+    loginUser = () => {
         console.log("Let's login !");
-        axios.post(API_URL + "/login",{
+        post('/login', {
             email: this.state.email,
             password: this.state.password
-        }).then((response) => {
-            this.loadJWT(response.data.token)
-        }).catch((error) => {
-            console.log(error)
-        })
+        },
+            this.onAuth.bind(this)
+        )
     }
     render() {
         return (

@@ -1,6 +1,6 @@
 import { AsyncStorage } from 'react-native'
 
-export default class deviceStorage {
+export default class DeviceStorage {
     static USER_TOKEN_KEY = 'userToken';
 
     static async setJWT(value) {
