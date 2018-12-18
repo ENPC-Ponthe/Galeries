@@ -14,5 +14,5 @@ Flask-JWT-extended[asymmetric_crypto]
 click
 Flask-Thumbnails
 Pillow
-Flask-Tus-Ponthe==1.1.0
+Flask-Tus-Ponthe==1.1.1
 flask-marshmallow

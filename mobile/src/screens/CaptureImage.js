@@ -83,6 +83,7 @@ class PreviewScreen extends Component {
       else {
         console.log('Photo taken at '+response.path)
         this.props.updateImage(response.data)
+        this.tusUpload(response.path)
       }
     })
   }
