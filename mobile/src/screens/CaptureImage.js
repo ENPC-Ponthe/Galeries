@@ -36,15 +36,19 @@ class PreviewScreen extends Component {
     }
   }
 
-  async tusUpload(file) {
+  getFileName(path) {
+      return path.replace(/^.*\//, '')
+  }
+
+  async tusUpload(path) {
       const jwt = await DeviceStorage.getJWT()
-      const upload = new Upload(file, {
+      const upload = new Upload(path, {
           endpoint: BASE_URL + '/api/file-upload/' + 'chats',
           headers: {
             'Authorization': 'Bearer ' + jwt
           },
           metadata: {
-            filename: "mobile",
+            filename: this.getFileName(path),
           },
           onError: error => console.log('error', error),
           onSuccess: () => {
