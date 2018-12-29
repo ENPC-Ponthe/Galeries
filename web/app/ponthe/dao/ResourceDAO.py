@@ -1,5 +1,5 @@
 from flask_login import current_user
-from ponthe.models import Resource
+from ..models import Resource
 
 
 class ResourceDAO:
