@@ -6,7 +6,7 @@ from .. import mail
 
 class MailService:
     @staticmethod
-    def send_registering_email(firstname, email, token):
+    def send_registering_email(firstname: str, email: str, token: str):
         msg = Message('Confirme la validation de ton compte Ponthé', sender='Ponthé <no-reply@ponthe.enpc.org>',
                       recipients=[email])
         link = "https://ponthe.enpc.org" + url_for('public.registering', token=token)
@@ -15,7 +15,7 @@ class MailService:
         mail.send(msg)
 
     @staticmethod
-    def send_resetting_email(firstname, email, reset_link):
+    def send_resetting_email(firstname: str, email: str, reset_link: str):
         msg = Message('Réinitialise ton mot de passe Ponthé', sender='Ponthé <no-reply@ponthe.enpc.org>',
                       recipients=[email])
         msg.body = 'Pour réinitialiser ton mot de passe, clique sur le lien suivant : {}'.format(reset_link)

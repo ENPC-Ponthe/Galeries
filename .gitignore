@@ -4,15 +4,14 @@
 # Virtual environment
 web/venv/
 
-# Credentials : Mysql / Email
-web/ponthe.prod.cfg
+
 .env
 
-# Instance Folder - used for configuration parameters and uploads / fixtures files
-web/app/instance/club_folder
-web/app/instance/upload_tmp
-web/app/instance/thumbs
-web/app/instance/uploads
+# Instance Folder - used for configuration parameters and to serve static files
+web/app/instance/logs/ponthe.log*
+web/app/instance/keys/jwtRS256*
+web/app/instance/static
+web/app/instance/tmp
 
 # Coverqge
 web/app/.coverage
