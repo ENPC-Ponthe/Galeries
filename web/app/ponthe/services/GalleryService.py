@@ -1,14 +1,13 @@
 import os
 
 from ..models import User, Gallery
-from ..file_helper import delete_folder, create_folder
-from . import FileService
-from ..persistence import GalleryDAO, YearDAO, EventDAO, FileDAO
+from ..file_helper import delete_folder
+from .FileService import FileService
+from ..dao import GalleryDAO, YearDAO, EventDAO, FileDAO
 from .. import app, db
 
 UPLOAD_FOLDER = app.config['MEDIA_ROOT']
 THUMB_FOLDER = app.config['THUMBNAIL_MEDIA_THUMBNAIL_ROOT']
-WAITING_ZONE_FOLDER = os.path.join(app.instance_path, "club_folder", "waiting_zone")
 
 
 class GalleryService:
@@ -41,7 +40,7 @@ class GalleryService:
             db.session.commit()
 
     @staticmethod
-    def create(name: str, author: User, description: str, private: bool, year_slug: str, event_slug: str):
+    def create(name: str, author: User, description: str, private: bool, year_slug: str, event_slug: str) -> Gallery:
         gallery = Gallery(name=name, author=author)
         if year_slug:
             year = YearDAO().find_by_slug(slug=year_slug)
@@ -57,17 +56,7 @@ class GalleryService:
         db.session.add(gallery)
         db.session.commit()
 
-    @classmethod
-    def batch_upload(cls, author: User):
-        for gallery_slug in os.listdir(WAITING_ZONE_FOLDER):
-            gallery = GalleryDAO().find_by_slug(gallery_slug)
-            if gallery is None:
-                # read private, year_slug and event_slug in metadata.yaml in WAITING_ZONE_FOLDER/gallery_slug
-                cls.create(gallery_slug, author, False, None, None)
-                create_folder(os.path.join("uploads", gallery_slug))
-            WAITING_GALLERY_FOLDER = os.path.join(WAITING_ZONE_FOLDER, gallery_slug)
-            for filename in os.listdir(WAITING_GALLERY_FOLDER):
-                FileService.FileService.create(os.path.join(WAITING_GALLERY_FOLDER, filename), filename, gallery_slug, author)
+        return gallery
 
     @staticmethod
     def get_galleries_by_year():
@@ -114,4 +103,4 @@ class GalleryService:
     def approve(gallery_slug):
         gallery = GalleryDAO().find_by_slug(gallery_slug)
         for file in gallery.files:
-            FileService.FileService.approve(file)
+            FileService.approve(file)

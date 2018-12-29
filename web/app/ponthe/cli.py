@@ -1,6 +1,6 @@
 #!/bin/env python
 # coding=utf-8
-import click, os, subprocess, csv, glob
+import click, os, csv
 
 from flask import render_template
 from flask_mail import Message
@@ -9,13 +9,16 @@ from smtplib import SMTPException
 from sqlalchemy.exc import IntegrityError
 
 from . import app, mail, db
-from .file_helper import create_folder, delete_folder, copy_folder, delete_folders_in_folder,copy_folders_in_folder, copy_file
+from .file_helper import create_folder, copy_folder, delete_folders_in_folder,copy_folders_in_folder, copy_file
 from .models import User
-from .services import UserService, GalleryService
+from .services import UserService
 
 
 def _drop_and_recreate_db():
     click.echo("Emptying database...")
+    if os.environ.get("TAG") == "master":
+        app.logger.error("Environment variable TAG=master detected: you are on a production environment, database drop aborted")
+        exit()
     db.drop_all()
     db.create_all()
 
@@ -39,23 +42,13 @@ def load_fixtures():
         db.session.commit()
         app.logger.info("Overwriting files...")
         os.chdir(app.instance_path)
-        # Can't rm club_folder in docker because a volume is mounted on it : busy
-        create_folder("club_folder")
-        delete_folder("club_folder/waiting_zone")
-        create_folder("upload_tmp")
-        delete_folders_in_folder("uploads")
-        delete_folders_in_folder("thumbs")
-        copy_folder("test/club_folder/waiting_zone", "club_folder/waiting_zone")
-        copy_folders_in_folder("test/uploads", "uploads")
+        create_folder("static")
+        delete_folders_in_folder("static")
+        copy_folder("test/uploads", "static/uploads")
         copy_data()
-        copy_file("test/club_folder/accounts.csv", "club_folder/accounts.csv")
+        copy_file("test/tmp/accounts.csv", "tmp/accounts.csv")
     else:
         app.logger.info("Abandon, exiting")
-
-
-@app.cli.command(help="Mass import from waiting zone")
-def batch_upload():
-    GalleryService.batch_upload(None)
 
 
 def persist_data():
@@ -69,7 +62,9 @@ def persist_data():
 
 def copy_data():
     app.logger.info("Copying files...")
-    copy_folders_in_folder("../ponthe/data/galleries", "uploads")
+    copy_folders_in_folder("../ponthe/data/galleries", "static/uploads")
+    create_folder("static/thumbs")
+    create_folder("tmp/uploads")
 
 
 @app.cli.command(help="Load initial data of the app like categories")
@@ -81,7 +76,7 @@ def load_data():
 
 @app.cli.command(help="Create accounts based on accounts.csv in club_folder")
 def create_accounts():
-    csv_file = os.path.join(app.instance_path, 'club_folder', 'accounts.csv')
+    csv_file = os.path.join(app.instance_path, 'tmp', 'accounts.csv')
     with open(csv_file, "r") as input:
         csv_reader = csv.reader(input)
         for gender, lastname, firstname, email, origin, department, promotion in csv_reader:

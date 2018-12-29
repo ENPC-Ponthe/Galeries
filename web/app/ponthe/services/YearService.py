@@ -1,6 +1,7 @@
 from .. import db
 from ..models import User, Year
 
+
 class YearService:
     @staticmethod
     def create(value: int, description:str, author: User):
