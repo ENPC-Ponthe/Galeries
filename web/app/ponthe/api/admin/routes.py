@@ -16,7 +16,7 @@ from datetime import datetime
 from ... import app, db, login_manager
 from ...services import UserService, EventService, YearService, GalleryService, FileService
 from flask import request, jsonify
-# 
+
 # @app.before_request     # login en tant qu'admin nécessaire pour tout le blueprint
 # def before_request():
 #     current_user = UserDAO.get_by_id(get_jwt_identity())
@@ -50,6 +50,10 @@ class CreateEvent(Resource):
         }, 201
 
 @api.route('/create-year')
+@api.doc(params=    {
+                        'value': 'Example : 2018',
+                        'description': ''
+                    })
 class CreateYear(Resource):
     @jwt_required
     def post(self):
