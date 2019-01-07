@@ -8,6 +8,7 @@ from .file_helper import split_filename
 
 from . import db
 
+
 _punct_re = re.compile(r'[\t !"#$%&\'()*\-/<=>?@\[\\\]^_`{|},.]+')  #   Les slug DSI enlève les ' au lieu de les remplacer par un -
 ALPHANUMERIC_LIST = string.ascii_letters+string.digits
 
@@ -319,6 +320,7 @@ class Year(Resource):
 
     def __repr__(self):
         return '<Year {}>'.format(self.value)
+
 
 class Gallery(Resource):
     __tablename__ = 'galleries'
