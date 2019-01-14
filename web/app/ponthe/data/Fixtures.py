@@ -1,5 +1,5 @@
 from ponthe.models import User, Event, Year, File, Gallery, Category
-
+from .. import db
 class Fixtures():
     user_philippe = User(
         gender="M",
@@ -339,3 +339,7 @@ class Fixtures():
         filename="image09.jpg",
         pending=False
     )
+    elements = [user_philippe, user_ponthe, event_admissibles, event_coupe_de_l_X, event_random, year_2016, year_2017, gallery1, gallery2, gallery3, gallery4, gallery5, gallery6, gallery7, file1, file2, file3, file4, file5, file6, file7, file8, file9, file10, file11, file12, file13, file14, file15, file16, file17, file18, file19, file20, file21, file22, file23, file24, file25, file26, file27, file28, file29, file30, file31, file32, file33, file34]
+    for element in elements:
+        db.session.add(element)
+        db.session.commit()

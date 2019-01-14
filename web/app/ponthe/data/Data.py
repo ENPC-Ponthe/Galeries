@@ -1,6 +1,6 @@
 # coding=utf-8
 from ponthe.models import Category, File, Gallery
-
+from .. import db
 class Data():
     category_gallery = Gallery(
         name="Photos de couverture des catégories",
@@ -70,3 +70,7 @@ class Data():
         gallery=template_gallery,
         pending=False
     )
+    elements = [default_image, template_gallery, category_voyages, category_films, category_vie_associative, category_sports, voyages_cover_image, films_cover_image, vie_associative_cover_image, sports_cover_image, category_gallery]
+    for element in elements:
+        db.session.add(element)
+        db.session.commit()
