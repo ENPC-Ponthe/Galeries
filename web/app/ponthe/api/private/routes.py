@@ -86,8 +86,13 @@ class Year(Resource):
     @api.response(404, 'Year not found')
     def get(self, year_slug):
         year_dao = YearDAO()
+        year = year_dao.find_by_slug(year_slug)
         try:
-            return year_dao.serialize(year_slug), 200
+            public_galleries = list(filter(lambda gallery: not gallery.private, year.galleries))
+            return {
+                "year": year_dao.serialize(year_slug),
+                "public_galleries": [gallery.slug for gallery in public_galleries]
+            }, 200
         except NoResultFound:
             return {'msg': 'year not found'}, 404
 
