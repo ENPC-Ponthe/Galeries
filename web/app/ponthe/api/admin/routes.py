@@ -29,12 +29,16 @@ from flask import request, jsonify
 
 @api.route('/create-event')
 @api.doc(params=    {
-                        "name": "Example : WEI 2018",
-                        "category_slug": "",
-                        "event_description": ""
+                        'name': 'Example : WEI',
+                        'category_slug': '',
+                        'event_description': ''
                     })
 class CreateEvent(Resource):
     @jwt_required
+    @api.response(201, 'Success - Event created')
+    @api.response(400, 'Request incorrect - JSON not valid')
+    @api.response(403, 'Not authorized - account not valid')
+    @api.response(401, 'Request incorrect - Missing required parameter')
     def post(self):
         name = request.json.get('name')
         category_slug = request.json.get('category_slug')
@@ -117,8 +121,18 @@ class CreateCategory(Resource):
         }, 201
 
 @api.route('/moderation')
+@api.doc(params=    {
+                        'galeries_to_delete': 'Liste des slug de galeries à supprimer',
+                        'galeries_to_approve': 'Liste des slugs de galeries à approuver',
+                        'files_to_delete': 'Liste des slugs de fichiers à supprimer',
+                        'files_to_approve': 'Liste des slugs de fichiers à approuver'
+                    })
 class Moderation(Resource):
     @jwt_required
+    @api.response(200, 'Success - All moderations done')
+    # @api.response(400, 'Request incorrect - JSON not valid')
+    @api.response(403, 'Not authorized - account not valid')
+    @api.response(401, 'Request incorrect - Error while moderating')
     def post(self):
         galeries_to_delete = request.json.get('galeries_to_delete')
         galeries_to_approve = request.json.get('galeries_to_approve')
@@ -181,6 +195,8 @@ class Moderation(Resource):
 @api.route('/delete-event/<event_slug>')
 class DeleteEvent(Resource):
     @jwt_required
+    @api.response(201, 'Success - Event deleted')
+    @api.response(401, 'Request incorrect - Error while deleting')
     def delete(self, event_slug):
         event_dao = EventDAO()
 
