@@ -34,11 +34,6 @@ def user_loader_callback(identity):
     return User.query.filter_by(id=identity).first()
 
 
-@api.route('/hello')
-class HelloWorld(Resource):
-    def get(self):
-        return {'hello': 'world'}, 213
-
 @api.route('/login')
 @api.doc(params=    {
                         'email': 'the whole email. Example : jean.dupont@eleves.enpc.fr',
@@ -162,10 +157,6 @@ class PasswordResetForm(Resource):
 
 @api.route('/cgu')
 @api.response(200, 'Success')
-@api.doc(params=    {
-                        'new_password': '-',
-                        'confirmation_password': 'confirmation of your new password'
-                    })
 class Cgu(Resource):
     def get(self):
         SITE_ROOT = os.path.realpath(os.path.dirname(__file__))
