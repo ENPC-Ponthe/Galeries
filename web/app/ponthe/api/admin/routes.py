@@ -94,7 +94,7 @@ class CreateYear(Resource):
                         'galeries_to_delete': 'Liste des slug de galeries à supprimer',
                         'galeries_to_approve': 'Liste des slugs de galeries à approuver',
                         'files_to_delete': 'Liste des slugs de fichiers à supprimer',
-                        'files_to_approve' 'Liste des slugs de fichiers à approuver'
+                        'files_to_approve': 'Liste des slugs de fichiers à approuver'
                     })
 class Moderation(Resource):
     @jwt_required
