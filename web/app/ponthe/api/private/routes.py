@@ -219,9 +219,10 @@ class GetImagies(Resource):
                 "title": "Erreur - Forbidden",
                 "body": "Vous n'avez pas les droits pour accéder à : "+gallery_slug
             }, 403
+        list_of_files = list(filter(lambda file: not file.pending, gallery.files))
         return {
             "gallery": gallery.serialize(),
-            "approved_files": list(filter(lambda file: not file.pending, gallery.files))
+            "approved_files": [file.file_path for file in list_of_files]
         }, 200
 
 
