@@ -109,15 +109,16 @@ class Year(Resource):
 
 @api.route('/create-gallery')
 @api.doc(params=    {
-                        'name': 'name of the gallery',
-                        'description': 'description of the gallery',
-                        'year_slug': 'refers to the year associated to the gallery',
-                        'event_slug': 'refers to the year associated to the gallery'
+                        'name': 'Gallery name',
+                        'description': '',
+                        'year_slug': 'Slug of the year of the galery. Ex: 2019',
+                        'event_slug': 'Slug of the parent event of the galery.',
+                        'private': 'Boolean'
                     })
 class CreateGallery(Resource):
     @jwt_required
-    @api.response(201, 'Success')
-    @api.response(401, 'Request incorrect - JSON not valid')
+    @api.response(201, 'Success - Gallery created')
+    @api.response(401, 'Request incorrect - Error while creating gallery')
     def post(self):
         gallery_name = request.json.get('name')
         gallery_description = request.json.get('description')
@@ -164,6 +165,8 @@ class Image(Resource):
 @api.route('/get-galleries/<event_slug>')
 class GetGalleries(Resource):
     @jwt_required
+    @api.response(200, 'Success')
+    @api.response(404, 'No corresponding event to event_slug')
     def get(self, event_slug):
         event_dao = EventDAO()
 
@@ -204,6 +207,10 @@ class GetGalleries(Resource):
 @api.route('/get-imagies/<gallery_slug>')
 class GetImagies(Resource):
     @jwt_required
+    @api.response(200, 'Success')
+    @api.response(400, 'Request incorrect - JSON not valid')
+    @api.response(403, 'Not authorized - account not valid')
+    @api.response(404, 'Not found - No matching gallery_slug')
     def get(self, gallery_slug):
         try:
             gallery = GalleryDAO().find_by_slug(gallery_slug)
@@ -217,34 +224,42 @@ class GetImagies(Resource):
                 "title": "Erreur - Forbidden",
                 "body": "Vous n'avez pas les droits pour accéder à : "+gallery_slug
             }, 403
+        list_of_files = list(filter(lambda file: not file.pending, gallery.files))
         return {
             "gallery": gallery.serialize(),
-            "approved_files": list(filter(lambda file: not file.pending, gallery.files))
+            "approved_files": [file.file_path for file in list_of_files]
         }, 200
 
 
-@api.route('/galleries/<gallery_slug>')
-class Gallery(Resource):
-    def post(self, gallery_slug):
-        try:
-            gallery = GalleryDAO().find_by_slug(gallery_slug)
-        except NoResultFound:
-            return {"msg": "Error: "}
-        if gallery.private and not GalleryDAO.has_right_on(gallery):
-            raise NotFound()
-        return render_template('gallery.html', gallery=gallery, approved_files=filter(lambda file: not file.pending, gallery.files))
-    @jwt_required
-    def delete(self, gallery_slug):
-        current_user = UserDao().get_by_id(get_jwt_identity)
-        if current_user.admin:
-            try:
-                GalleryService.delete(gallery_slug)
-            except:
-                return {'msg': 'Galleries does not exist'}, 404
+# @api.route('/galleries/<gallery_slug>')
+# class Gallery(Resource):
+#     def post(self, gallery_slug):
+#         try:
+#             gallery = GalleryDAO().find_by_slug(gallery_slug)
+#         except NoResultFound:
+#             return {"msg": "Error: "}
+#         if gallery.private and not GalleryDAO.has_right_on(gallery):
+#             raise NotFound()
+#         return render_template('gallery.html', gallery=gallery, approved_files=filter(lambda file: not file.pending, gallery.files))
+#     @jwt_required
+#     def delete(self, gallery_slug):
+#         current_user = UserDao().get_by_id(get_jwt_identity)
+#         if current_user.admin:
+#             try:
+#                 GalleryService.delete(gallery_slug)
+#             except:
+#                 return {'msg': 'Galleries does not exist'}, 404
 
 
 @api.route('/galleries/makepublic')
+@api.doc(params=    {
+                        'gallery_slug': 'Slug of the gallery to be set public'
+                    })
 class MakeGalleryPublic(Resource):
+    @jwt_required
+    @api.response(200, 'Success')
+    @api.response(400, 'Request incorrect - JSON not valid')
+    @api.response(403, 'Not authorized - account not valid')
     def post(self):
         current_user = UserDao().get_by_id(get_jwt_identity)
         if not current_user.admin:
@@ -266,7 +281,13 @@ class MakeGalleryPublic(Resource):
         return response, 200
 
 @api.route('/galleries/makeprivate')
+@api.doc(params=    {
+                        'gallery_slug': 'Slug of the gallery to be set private'
+                    })
 class MakeGalleryPublic(Resource):
+    @jwt_required
+    @api.response(200, 'Success')
+    @api.response(400, 'Request incorrect - JSON not valid')
     def post(self):
         current_user = UserDao().get_by_id(get_jwt_identity)
         if not current_user.admin:
@@ -290,6 +311,8 @@ class MakeGalleryPublic(Resource):
 @api.route('/dashboard')
 class Dashboard(Resource):
     @jwt_required
+    @api.response(200, 'Success')
+    @api.response(401, 'Error while fetching datas')
     def post(self):
         current_user = UserDAO.get_by_id(get_jwt_identity())
         try:
@@ -303,4 +326,4 @@ class Dashboard(Resource):
         return {
             "pending_files_by_gallery": pending_files_by_gallery,
             "confirmed_files_by_gallery": confirmed_files_by_gallery
-        }, 201
+        }, 200
