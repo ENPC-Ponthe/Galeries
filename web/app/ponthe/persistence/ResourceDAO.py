@@ -1,5 +1,6 @@
 from flask_login import current_user
 from ponthe.models import Resource
+from sqlalchemy import desc
 
 
 class ResourceDAO:
@@ -14,6 +15,9 @@ class ResourceDAO:
 
     def find_all(self):
         return self.SubResource.query.all()
+
+    def find_all_sorted_by_date(self):
+        return self.SubResource.query.order_by(desc(self.SubResource.created)).limit(10).all()
 
     @staticmethod
     def has_right_on(resource: Resource):
