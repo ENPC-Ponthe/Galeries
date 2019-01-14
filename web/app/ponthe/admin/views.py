@@ -26,7 +26,7 @@ def create_event():
         else:
             flash("Veuillez indiquer le nom du nouvel événement","error")
 
-    categories = CategoryDAO.find_all()
+    categories = CategoryDAO().find_all()
     return render_template('create_event.html', categories=categories)
 
 

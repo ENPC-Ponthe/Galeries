@@ -164,7 +164,7 @@ class Members(Resource):
 @api.route('/get_image')
 class Image(Resource):
     def get(self):
-        file = FileDAO.find_by_slug("photo_du_template")
+        file = FileDAO().find_by_slug("photo_du_template")
         return {"url": url_for('uploads', file_path=file.file_path)}, 200
 
 @api.route('/get-galleries/<event_slug>')
