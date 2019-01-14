@@ -209,7 +209,7 @@ class GetGalleries(Resource):
             "other_galleries": og_list
         }, 200
 
-@api.route('/get-imagies/<gallery_slug>')
+@api.route('/get-images/<gallery_slug>')
 class GetImagies(Resource):
     @jwt_required
     @api.response(200, 'Success')
