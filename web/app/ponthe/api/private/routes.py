@@ -18,7 +18,7 @@ from ... import app, db, login_manager
 from ...services import UserService, GalleryService
 from flask import request
 # from ...models import serialize
-
+import random
 
 
 @api.route('/get_user_by_jwt')
@@ -233,6 +233,33 @@ class GetImagies(Resource):
         return {
             "gallery": gallery.serialize(),
             "approved_files": [file.file_path for file in list_of_files]
+        }, 200
+
+@api.route('/get-random-image/<gallery_slug>')
+class GetRandomImage(Resource):
+    @jwt_required
+    @api.response(200, 'Success')
+    @api.response(400, 'Request incorrect - JSON not valid')
+    @api.response(403, 'Not authorized - account not valid')
+    @api.response(404, 'Not found - No matching gallery_slug')
+    def get(self, gallery_slug):
+        try:
+            gallery = GalleryDAO().find_by_slug(gallery_slug)
+        except NoResultFound:
+            return {
+                "title": "Erreur - Not found",
+                "body": "Aucune gallerie ne correspond à : "+gallery_slug
+            }, 404
+        if gallery.private and not GalleryDAO.has_right_on(gallery):
+            return {
+                "title": "Erreur - Forbidden",
+                "body": "Vous n'avez pas les droits pour accéder à : "+gallery_slug
+            }, 403
+        list_of_files = list(filter(lambda file: not file.pending, gallery.files))
+        i = random.randint(0, len(list_of_files)-1)
+        return {
+            "gallery": gallery.serialize(),
+            "random_file": list_of_files[i].file_path
         }, 200
 
 
