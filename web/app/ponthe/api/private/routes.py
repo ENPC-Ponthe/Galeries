@@ -1,7 +1,7 @@
 from flask_jwt_extended import JWTManager, jwt_required, get_jwt_identity
 from .. import api
 from flask_restplus import Resource
-from ...persistence import UserDAO, YearDAO, EventDAO, GalleryDAO
+from ...persistence import UserDAO, YearDAO, EventDAO, GalleryDAO, FileDAO
 from itsdangerous import SignatureExpired, BadSignature
 from ...config import constants
 from sqlalchemy.orm.exc import NoResultFound
@@ -83,6 +83,7 @@ class Materiel(Resource):
 class Year(Resource):
     @jwt_required
     @api.response(200, 'Success')
+    @api.response(404, 'Year not found')
     def get(self, year_slug):
         year_dao = YearDAO()
         try:
@@ -94,7 +95,6 @@ class Year(Resource):
     @api.response(200, 'Success')
     @api.response(40, 'Request incorrect - JSON not valid')
     @api.response(403, 'Not authorized - not admin')
-    @api.response(401, 'User not identified - incorrect email or password')
     def delete(self, year_slug):
         year_dao = YearDAO()
         current_user = UserDao().get_by_id(get_jwt_identity)
@@ -108,15 +108,22 @@ class Year(Resource):
 
 
 @api.route('/create-gallery')
+@api.doc(params=    {
+                        'name': 'name of the gallery',
+                        'description': 'description of the gallery',
+                        'year_slug': 'refers to the year associated to the gallery',
+                        'event_slug': 'refers to the year associated to the gallery'
+                    })
 class CreateGallery(Resource):
     @jwt_required
+    @api.response(201, 'Success')
+    @api.response(401, 'Request incorrect - JSON not valid')
     def post(self):
         gallery_name = request.json.get('name')
         gallery_description = request.json.get('description')
         year_slug = request.json.get('year_slug')
         event_slug = request.json.get('event_slug')
         private = request.json.get('private')
-
 
         if not gallery_name:
             return  {
@@ -128,6 +135,7 @@ class CreateGallery(Resource):
 
         try:
             GalleryService.create(gallery_name, current_user, gallery_description, private == "on", year_slug, event_slug)
+
         except Exception as e:
             return  {
                 "title": "Erreur - Impossible de créer la gallerie",
@@ -147,6 +155,11 @@ class Members(Resource):
         return json.load(members, strict=False)
 
 
+@api.route('/get_image')
+class Image(Resource):
+    def get(self):
+        file = FileDAO.find_by_slug("photo_du_template")
+        return {"url": url_for('uploads', file_path=file.file_path)}, 200
 
 @api.route('/get-galleries/<event_slug>')
 class GetGalleries(Resource):

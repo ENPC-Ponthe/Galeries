@@ -2,7 +2,7 @@ from flask_jwt_extended import JWTManager, jwt_required, get_jwt_identity
 from flask_login import current_user, login_required
 from .. import api
 from flask_restplus import Resource
-from ...persistence import UserDAO, YearDAO, EventDAO
+from ...persistence import UserDAO, YearDAO, EventDAO, CategoryDAO
 from itsdangerous import SignatureExpired, BadSignature
 from ...config import constants
 from sqlalchemy.orm.exc import NoResultFound
@@ -14,7 +14,7 @@ from datetime import datetime
 
 # from . import public
 from ... import app, db, login_manager
-from ...services import UserService, EventService, YearService, GalleryService, FileService
+from ...services import UserService, EventService, YearService, GalleryService, FileService, CategoryService
 from flask import request, jsonify
 
 # @app.before_request     # login en tant qu'admin nécessaire pour tout le blueprint
@@ -28,6 +28,11 @@ from flask import request, jsonify
 #         # abort(401)
 
 @api.route('/create-event')
+@api.doc(params=    {
+                        "name": "Example : WEI 2018",
+                        "category_slug": "",
+                        "event_description": ""
+                    })
 class CreateEvent(Resource):
     @jwt_required
     def post(self):
@@ -78,6 +83,37 @@ class CreateYear(Resource):
 
         return {
             "msg": "Année créée"
+        }, 20
+@api.route('/create-category')
+@api.doc(params=    {
+                        'value': 'Example : Sport',
+                        'description': '',
+                        'category_slug': ''
+                    })
+class CreateCategory(Resource):
+    @jwt_required
+    def post(self):
+        category_value = request.json.get('value')
+        category_description = request.json.get('description')
+        category_slug = request.json.get('category_slug')
+
+        if not category_value:
+            return {
+                "title": "Erreur - Impossible de créer la categorie",
+                "body": "Veuillez renseigner une valeur pour la categorie."
+            }, 401
+
+        current_user = UserDAO.get_by_id(get_jwt_identity())
+        # try:
+        CategoryService.create(category_value, category_description, category_slug, current_user)
+        # except Exception as e:
+            # return {
+            #     "title": "Erreur - Impossible de créer la categorie",
+            #     "body": "Une erreur est survenue lors de la création de la categorie."
+            # }, 401
+
+        return {
+            "msg": "Catégorie créée"
         }, 201
 
 @api.route('/moderation')

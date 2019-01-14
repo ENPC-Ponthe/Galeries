@@ -3,3 +3,4 @@ from .FileService import FileService
 from .GalleryService import GalleryService
 from .YearService import YearService
 from .EventService import EventService
+from .CategoryService import CategoryService
