@@ -45,17 +45,17 @@ jobs:
   deploy-testing:
     machine:
       enabled: true
-      steps:
-        - run:
-            name: Deploy on testing over SSH
-            command: |
-              ssh $SSH_USER@$SSH_HOST << EOF
-                cd /srv/ponthe-testing.enpc.org
-                docker login -u $DOCKER_USER -p $DOCKER_PASSWORD quay.io
-                docker-compose exec backup /backup.sh
-                docker-compose pull
-                docker-compose up -d
-              EOF
+    steps:
+      - run:
+          name: Deploy on testing over SSH
+          command: |
+            ssh $SSH_USER@$SSH_HOST << EOF
+            cd /srv/ponthe-testing.enpc.org
+            docker login -u $DOCKER_USER -p $DOCKER_PASSWORD quay.io
+            docker-compose exec backup /backup.sh
+            docker-compose pull
+            docker-compose up -d
+            EOF
 
 workflows:
   version: 2
