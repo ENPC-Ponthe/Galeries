@@ -2,9 +2,9 @@ import os
 
 from .. import app, db
 from ..dao import FileDAO, GalleryDAO
-from ..models import File, User
+from ..models import File, User, FileTypeEnum
 from ..file_helper import create_folder, move_file, is_image, is_video, get_extension
-from ..views import thumb_filter
+from ..filters import thumb_filter
 
 UPLOAD_FOLDER = app.config['MEDIA_ROOT']
 
@@ -32,9 +32,9 @@ class FileService:
         new_file = File(gallery=gallery, extension=get_extension(filename), author=author, pending=(not author.admin))
 
         if is_image(filename):
-            new_file.type = "IMAGE"
+            new_file.type = FileTypeEnum.IMAGE
         elif is_video(filename):
-            new_file.type = "VIDEO"
+            new_file.type = FileTypeEnum.VIDEO
         else:
             raise ValueError("File extension not supported")
 
@@ -44,4 +44,5 @@ class FileService:
         move_file(upload_file_path, os.path.join(gallery_folder, new_file.filename))
         db.session.add(new_file)
         db.session.commit()
-        thumb_filter(new_file)
+        if new_file.type == FileTypeEnum.IMAGE:
+            thumb_filter(new_file)
