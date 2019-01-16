@@ -180,9 +180,8 @@ def cgu():
     return render_template('cgu.html')
 
 
-@app.route('/cas/authenticate')
+@public.route('/cas/authenticate')
 @cas_login_required
 def cas():
     CasLoginService.login()
     return get_home()
-
