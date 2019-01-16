@@ -4,25 +4,14 @@ import os
 
 from werkzeug.exceptions import NotFound
 
-from . import app, thumb
-from .models import File
+from . import app
 from .services import GalleryService
-
-
-@app.template_filter('thumb')
-def thumb_filter(file: File):
-    return thumb.get_thumbnail(file.file_path, '226x226')
-
-
-@app.template_filter('category_thumb')
-def thumb_filter(file: File):
-    return thumb.get_thumbnail(file.file_path, '630x500')
 
 
 @app.context_processor
 def inject_top_menu_gallery_variables():
     if current_user.is_authenticated:
-        return dict(top_menu_galleries_by_year=GalleryService.GalleryService.get_galleries_by_year())
+        return dict(top_menu_galleries_by_year=GalleryService.get_galleries_by_year())
     return dict()
 
 

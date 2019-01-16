@@ -366,7 +366,7 @@ class Gallery(Resource):
         if self.cover_image:
             return self.cover_image
         else:
-            if len(self.files) > 0:
+            if len(self.files) > 0 and self.files[0].type == FileTypeEnum.IMAGE:
                 return self.files[0]
             return File.query.filter_by(slug="default-image").one()
 
