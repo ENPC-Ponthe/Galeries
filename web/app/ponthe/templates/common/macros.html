@@ -22,7 +22,7 @@
             debug: true,
             autoProceed: false,
             restrictions: {
-                maxFileSize: 100000000,
+                maxFileSize: 1000000000,
                 maxNumberOfFiles: 100,
                 minNumberOfFiles: 1,
                 allowedFileTypes: ['image/*', 'video/*']
@@ -37,7 +37,7 @@
               target: '#UppyDashboard',
               replaceTargetContent: true,
               showProgressDetails: true,
-              note: "Images et vidéos seulement, 1–100 fichiers, jusqu'à 100 Mo par fichier",
+              note: "Images et vidéos seulement, 1–100 fichiers, jusqu'à 1 Go par fichier",
               height: 470,
               metaFields: [
                   { id: 'name', name: 'Nom', placeholder: 'Match de hand' },

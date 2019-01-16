@@ -1,4 +1,5 @@
 from flask import Flask
+from flask_cas import CAS
 from flask_cli import FlaskCLI
 from flask_login import LoginManager
 from flask_mail import Mail
@@ -19,6 +20,7 @@ db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 FlaskCLI(app)
 thumb = Thumbnail(app)
+cas = CAS(app, '/cas')
 
 login_manager = LoginManager()
 login_manager.init_app(app)
