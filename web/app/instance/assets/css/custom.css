@@ -14,3 +14,7 @@ h3 {
 .no-border {
     border: 0 !important;
 }
+
+video {
+    background-color: black;
+}
