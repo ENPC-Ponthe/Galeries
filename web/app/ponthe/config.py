@@ -23,7 +23,7 @@ def load(app: Flask):
             JWT_ALGORITHM = 'RS256',
             JWT_ACCESS_TOKEN_EXPIRES = False,
             CAS_SERVER = 'https://cas.enpc.fr',
-            CAS_AFTER_LOGIN = '/cas/authenticate',
+            CAS_AFTER_LOGIN = 'public.cas',
         )
     else:
         app.logger.warning("Galeries Ponthé starting in DEV mode")

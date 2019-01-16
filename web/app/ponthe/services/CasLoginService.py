@@ -9,8 +9,8 @@ from .. import app, db, cas
 class CasLoginService:
     @classmethod
     def login(cls):
-        app.logger.info("Logging user via CAS: ", cas.username)
-        app.logger.info("with attributes: ", cas.attributes)
+        print("Logging user via CAS: ", cas.username)
+        print("with attributes: ", cas.attributes)
         cls.authenticate(cas.attributes['mail'])
 
     @classmethod
