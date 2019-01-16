@@ -1,4 +1,5 @@
-{% extends "layout/layout.html" %}
+{% extends "common/layout.html" %}
+{% from "common/macros.html" import gallery_element, uppy_script %}
 
 {% block content %}
 <div id="content-top-border" class="container"></div>
@@ -11,7 +12,7 @@
                     <h1>{{ gallery.name }}</h1>
                 </div>
                 <div class="col-md-2">
-                    <div class="DashboardContainer"></div>
+                    <div id="UppyDashboard"></div>
                     <button id="UppyModalOpenerBtn" class="btn btn-primary margin-vert-20">Ajouter des fichiers</button>
                 </div>
                 {% if current_user.admin or current_user.id == gallery.author_id %}
@@ -70,20 +71,7 @@
             <div class="col-md-12 portfolio-group no-padding">
                 {% for file in approved_files %}
                     <div class="col-md-3 portfolio-item margin-bottom-40 design">
-                            <div>
-                                <figure>
-                                    {% if file | is_image %}
-                                        <a href="{{ url_for('uploads', file_path=file.file_path) }}">
-                                            <img src="{{ file | thumb }}">
-                                        </a>
-                                    {% endif %}
-                                    {% if file | is_video %}
-                                        <div class="embed-responsive">
-                                            <iframe class="embed-responsive-item" src="{{ url_for('uploads', file_path=file.file_path) }}" allowfullscreen></iframe>
-                                        </div>
-                                    {% endif %}
-                                </figure>
-                            </div>
+                        {{ gallery_element(file) }}
                         {% if current_user.admin %}
                             <div class="row">
                                 <div class="col-md-12">
@@ -120,49 +108,7 @@
     </div>
 </div>
 <div id="content-bottom-border" class="container"></div>
-<script src="https://transloadit.edgly.net/releases/uppy/v0.25.5/dist/uppy.min.js"></script>
-<script>
-    const uppyTwo = new Uppy.Core({
-        debug: true,
-        autoProceed: false,
-        {% if not current_user.admin %}
-        restrictions: {
-            maxFileSize: 1000000000,
-            maxNumberOfFiles: 10,
-            minNumberOfFiles: 1,
-            allowedFileTypes: ['image/*', 'video/*']
-        }
-        {% endif %}
-    });
-    uppyTwo
-      .use(Uppy.Dashboard, {
-          trigger: '#UppyModalOpenerBtn',
-          inline: false,
-          target: '.DashboardContainer',
-          replaceTargetContent: true,
-          showProgressDetails: true,
-          {% if not current_user.admin %}
-          note: "Images et vidéos seulement, 1–10 fichiers, jusqu'à 1 GB",
-          {% endif %}
-          height: 470,
-          metaFields: [
-              { id: 'name', name: 'Nom', placeholder: 'Match de hand' },
-              { id: 'caption', name: 'Légende', placeholder: "Description du contenu"}
-          ],
-          locale: {
-              strings: {
-                  dropPaste: 'Glisse tes fichiers ici ou %{browse}',
-                  browse: 'parcours'
-              }
-          },
-          browserBackButtonClose: true
-      })
-      .use(Uppy.Tus, {endpoint: "{{ url_for('private.file-upload', gallery_slug=gallery.slug) }}"});
-
-    uppy.on('complete', (result) => {
-      console.log(result.successful);
-    })
-</script>
+{{ uppy_script(gallery.slug, trigger="#UppyModalOpenerBtn") }}
 {% if current_user.admin %}
     <script>
         document.moderation = false;
