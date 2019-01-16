@@ -81,18 +81,7 @@ flask batch_upload
 
 ## Mettre en production
 
-Juste faire `./deploy.sh` pour faire une sauvegarde de la bdd et redéployer. Pour des objectifs spécifique voir ci-dessous.
-
-Pour rebuild l'image web après modification des fichiers copiés :
-```
-docker build -t quay.io/enpcponthe/galeries-web:testing ./web
-```
-
-Après modification du .env :
-```
-docker-compose rm db
-docker-compose up
-```
+D'abord déployer sur ponthe-testing en faisant une PR à merger sur la branche testing. La CI fait une sauvegarde de la bdd et déploie automatiquement l'application avec les nouvelles images.
 
 Configurer le proxy pass du VPS vers le container docker avec Nginx et Certbot :
 Installer Certbot : https://certbot.eff.org/lets-encrypt/ubuntuxenial-nginx.html

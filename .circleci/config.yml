@@ -42,6 +42,22 @@ jobs:
           docker build -t quay.io/enpcponthe/galeries-web:${CIRCLE_BRANCH} ./web
           docker push quay.io/enpcponthe/galeries-web:${CIRCLE_BRANCH}
 
+  deploy-testing:
+    machine:
+      enabled: true
+    steps:
+      - run:
+          name: Deploy on testing over SSH
+          command: |
+            ssh $SSH_USER@$SSH_HOST << EOF
+            cd /srv/ponthe-testing.enpc.org
+            docker login -u $DOCKER_USER -p $DOCKER_PASSWORD quay.io
+            docker-compose exec backup /backup.sh
+            docker-compose pull
+            docker-compose up -d
+            rm ~/.docker/config.json
+            EOF
+
 workflows:
   version: 2
   main:
@@ -55,4 +71,11 @@ workflows:
             branches:
               only:
                 - master
+                - testing
+      - deploy-testing:
+          requires:
+            - build
+          filters:
+            branches:
+              only:
                 - testing

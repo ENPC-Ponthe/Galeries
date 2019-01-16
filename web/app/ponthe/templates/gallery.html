@@ -70,13 +70,20 @@
             <div class="col-md-12 portfolio-group no-padding">
                 {% for file in approved_files %}
                     <div class="col-md-3 portfolio-item margin-bottom-40 design">
-                        <div>
-                            <figure>
-                                <a href="{{ url_for('uploads', file_path=file.file_path) }}">
-                                    <img src="{{ file | thumb }}">
-                                </a>
-                            </figure>
-                        </div>
+                            <div>
+                                <figure>
+                                    {% if file | is_image %}
+                                        <a href="{{ url_for('uploads', file_path=file.file_path) }}">
+                                            <img src="{{ file | thumb }}">
+                                        </a>
+                                    {% endif %}
+                                    {% if file | is_video %}
+                                        <div class="embed-responsive">
+                                            <iframe class="embed-responsive-item" src="{{ url_for('uploads', file_path=file.file_path) }}" allowfullscreen></iframe>
+                                        </div>
+                                    {% endif %}
+                                </figure>
+                            </div>
                         {% if current_user.admin %}
                             <div class="row">
                                 <div class="col-md-12">
