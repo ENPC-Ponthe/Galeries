@@ -1,0 +1,56 @@
+{% macro gallery_element(file) -%}
+    <div>
+        <figure>
+            {% if file | is_image %}
+                <a href="{{ url_for('uploads', file_path=file.file_path) }}">
+                        <img src="{{ file | thumb }}">
+                </a>
+            {% endif %}
+            {% if file | is_video %}
+                <video width="226" height="226" controls>
+                    <source src="{{ url_for('uploads', file_path=file.file_path) }}" type="video/mp4">
+                </video>
+            {% endif %}
+        </figure>
+    </div>
+{%- endmacro %}
+
+{% macro uppy_script(gallery_slug, inline, trigger=None) -%}
+    <script src="https://transloadit.edgly.net/releases/uppy/v0.25.5/dist/uppy.min.js"></script>
+    <script>
+        const uppyTwo = new Uppy.Core({
+            debug: true,
+            autoProceed: false,
+            restrictions: {
+                maxFileSize: 100000000,
+                maxNumberOfFiles: 100,
+                minNumberOfFiles: 1,
+                allowedFileTypes: ['image/*', 'video/*']
+            }
+        });
+        uppyTwo
+          .use(Uppy.Dashboard, {
+              {% if trigger %}
+              trigger: '{{ trigger }}',
+              {% endif %}
+              inline: '{{ inline }}',
+              target: '#UppyDashboard',
+              replaceTargetContent: true,
+              showProgressDetails: true,
+              note: "Images et vidéos seulement, 1–100 fichiers, jusqu'à 100 Mo par fichier",
+              height: 470,
+              metaFields: [
+                  { id: 'name', name: 'Nom', placeholder: 'Match de hand' },
+                  { id: 'caption', name: 'Légende', placeholder: "Description du contenu"}
+              ],
+              locale: {
+                  strings: {
+                      dropPaste: 'Glisse tes fichiers ici ou %{browse}',
+                      browse: 'parcours'
+                  }
+              },
+              browserBackButtonClose: true
+          })
+          .use(Uppy.Tus, {endpoint: "{{ url_for('private.file-upload', gallery_slug=gallery_slug) }}"});
+    </script>
+{%- endmacro %}
