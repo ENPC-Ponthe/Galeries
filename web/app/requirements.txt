@@ -1,6 +1,7 @@
 Flask
 Flask_Mail
 Flask-Login
+Flask-CAS
 Flask-Cli
 Werkzeug
 SQLAlchemy
