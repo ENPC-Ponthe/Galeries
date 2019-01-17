@@ -1,3 +1,4 @@
+from flask import render_template
 from flask_login import login_user
 
 from ..dao import UserDAO
@@ -10,27 +11,34 @@ class CasLoginService:
     @classmethod
     def login(cls):
         app.logger.info("Logging user via CAS: ", cas.username)
-        app.logger.info("with attributes: ", cas.attributes)
-        cls.authenticate(cas.attributes['cas:mail'])
+        app.logger.debug("with attributes: ", cas.attributes)
+        return cls.authenticate(cas.attributes['cas:mail'],
+                                cas.attributes['cas:cn'],
+                                cas.attributes['cas:givenName'],
+                                cas.attributes['cas:sn'])
 
     @classmethod
-    def authenticate(cls, email):
+    def authenticate(cls, email, fullname, firstname, lastname):
         if '@eleves.enpc.fr' not in email:
-            app.logger.warn(f"CAS login failed because email {cas.attributes['cas:cn']} is not a student's one")
-            return
+            app.logger.warn(f"CAS login failed because email {fullname} is not a student's one")
+            return render_template('mail_confirmation.html',
+                           title="Erreur - Utilisateur non-autorisé",
+                           body="Ce compte DSI n'appartient pas à un élève, les membres de l'administration et les prof"
+                                "esseurs ne sont pas autorisés."
+                           )
         user = UserDAO.find_by_email(email)
         if user is not None:
             login_user(user)
         else:
-            cls.create_user(email)
+            cls.create_user(email, fullname, firstname, lastname)
 
 
     @staticmethod
-    def create_user(email):
-        app.logger.info(f"Creation of user {email} through CAS login")
+    def create_user(email, fullname, firstname, lastname):
+        app.logger.info(f"Creation of user {fullname} through CAS login")
         new_user = User(
-            firstname=cas.attributes['cas:givenName'],
-            lastname=cas.attributes['cas:sn'],
+            firstname=firstname,
+            lastname=lastname,
             email=email,
             password=User.generate_random_password(),
             promotion=Constants.LAST_PROMOTION,

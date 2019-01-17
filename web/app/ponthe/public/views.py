@@ -183,5 +183,4 @@ def cgu():
 @public.route('/cas/authenticate')
 @cas_login_required
 def cas():
-    CasLoginService.login()
-    return get_home()
+    return CasLoginService.login() or get_home()
