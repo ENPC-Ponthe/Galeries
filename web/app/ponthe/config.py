@@ -3,7 +3,8 @@ from flask import Flask
 
 
 class Constants:
-    AVAILABLE_PROMOTIONS = ["021", "020", "019", "018"]
+    AVAILABLE_PROMOTIONS = ["022", "021", "020", "019", "018"]
+    LAST_PROMOTION = "022"
 
 
 def load(app: Flask):
@@ -21,6 +22,8 @@ def load(app: Flask):
             MAIL_USE_TLS = True,
             JWT_ALGORITHM = 'RS256',
             JWT_ACCESS_TOKEN_EXPIRES = False,
+            CAS_SERVER = 'https://cas.enpc.fr',
+            CAS_AFTER_LOGIN = 'public.cas',
         )
     else:
         app.logger.warning("Galeries Ponthé starting in DEV mode")
