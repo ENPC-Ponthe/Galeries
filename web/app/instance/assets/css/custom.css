@@ -18,3 +18,9 @@ h3 {
 video {
     background-color: black;
 }
+
+.center {
+    display: block;
+    text-align: center;
+    margin: 10px 0
+}

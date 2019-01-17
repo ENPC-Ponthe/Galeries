@@ -3,6 +3,7 @@
 import re
 
 from flask import render_template, request, flash, redirect, url_for, abort
+from flask_cas import login_required as cas_login_required
 from urllib.parse import urlparse, urljoin
 from flask_login import login_user, current_user
 from itsdangerous import SignatureExpired, BadSignature
@@ -11,7 +12,7 @@ from datetime import datetime
 from . import public
 from .. import app, db, login_manager
 from ..private.views import get_home
-from ..services import UserService
+from ..services import UserService, CasLoginService
 from ..config import Constants
 from ..dao import UserDAO
 
@@ -67,7 +68,7 @@ def login():
             return get_login_page()
     if logging_user.check_password(password):
         login_user(logging_user)
-        app.logger.debug("Logging user: ", logging_user)
+        app.logger.info("Logging user: ", logging_user)
         next = get_redirect_target()
         return redirect(next) if next and urlparse(next).path != '/logout' else get_home()
     else:
@@ -177,3 +178,9 @@ def resetting(token: str):
 @public.route('/cgu')
 def cgu():
     return render_template('cgu.html')
+
+
+@public.route('/cas/authenticate')
+@cas_login_required
+def cas():
+    return CasLoginService.login() or get_home()
