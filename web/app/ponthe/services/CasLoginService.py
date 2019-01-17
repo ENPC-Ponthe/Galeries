@@ -20,22 +20,21 @@ class CasLoginService:
     @classmethod
     def authenticate(cls, email, fullname, firstname, lastname):
         if '@eleves.enpc.fr' not in email:
-            app.logger.warn(f"CAS login failed because email {fullname} is not a student's one")
+            app.logger.error(f"CAS login failed because email {email} is not a student's one")
             return render_template('mail_confirmation.html',
                            title="Erreur - Utilisateur non-autorisé",
                            body="Ce compte DSI n'appartient pas à un élève, les membres de l'administration et les prof"
                                 "esseurs ne sont pas autorisés."
                            )
         user = UserDAO.find_by_email(email)
-        if user is not None:
-            login_user(user)
-        else:
-            cls.create_user(email, fullname, firstname, lastname)
+        if user is None:
+            user = cls.create_user(email, fullname, firstname, lastname)
+        login_user(user)
 
 
     @staticmethod
     def create_user(email, fullname, firstname, lastname):
-        app.logger.info(f"Creation of user {fullname} through CAS login")
+        app.logger.warn(f"Creation of user {fullname} through CAS login")
         new_user = User(
             firstname=firstname,
             lastname=lastname,
@@ -47,3 +46,5 @@ class CasLoginService:
         )
         db.session.add(new_user)
         db.session.commit()
+
+        return new_user
