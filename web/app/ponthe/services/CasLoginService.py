@@ -9,14 +9,14 @@ from .. import app, db, cas
 class CasLoginService:
     @classmethod
     def login(cls):
-        print("Logging user via CAS: ", cas.username)
-        print("with attributes: ", cas.attributes)
-        cls.authenticate(cas.attributes['mail'])
+        app.logger.info("Logging user via CAS: ", cas.username)
+        app.logger.info("with attributes: ", cas.attributes)
+        cls.authenticate(cas.attributes['cas:mail'])
 
     @classmethod
     def authenticate(cls, email):
         if '@eleves.enpc.fr' not in email:
-            app.logger.warn(f"CAS login failed because email {email} is not a student's one")
+            app.logger.warn(f"CAS login failed because email {cas.attributes['cas:cn']} is not a student's one")
             return
         user = UserDAO.find_by_email(email)
         if user is not None:
@@ -29,8 +29,8 @@ class CasLoginService:
     def create_user(email):
         app.logger.info(f"Creation of user {email} through CAS login")
         new_user = User(
-            firstname=cas.attributes['givenName'],
-            lastname=cas.attributes['sn'],
+            firstname=cas.attributes['cas:givenName'],
+            lastname=cas.attributes['cas:sn'],
             email=email,
             password=User.generate_random_password(),
             promotion=Constants.LAST_PROMOTION,
