@@ -45,6 +45,7 @@ class Materiel(Resource):
     @api.response(400, 'Request incorrect - JSON not valid')
     @api.response(403, 'Not authorized - account not valid')
     def post(self):
+        '''Send a mail to ponthe to borrow material'''
         object = request.json.get('object')
         message = request.json.get('message')
         if not message:
@@ -85,6 +86,7 @@ class Year(Resource):
     @api.response(200, 'Success')
     @api.response(404, 'Year not found')
     def get(self, year_slug):
+        '''Get the list of public galleries of a given year'''
         year_dao = YearDAO()
         year = year_dao.find_by_slug(year_slug)
         try:
@@ -101,6 +103,7 @@ class Year(Resource):
     @api.response(40, 'Request incorrect - JSON not valid')
     @api.response(403, 'Not authorized - not admin')
     def delete(self, year_slug):
+        '''Delete a given year'''
         year_dao = YearDAO()
         current_user = UserDao().get_by_id(get_jwt_identity)
         if current_user.admin:
@@ -125,6 +128,7 @@ class CreateGallery(Resource):
     @api.response(201, 'Success - Gallery created')
     @api.response(401, 'Request incorrect - Error while creating gallery')
     def post(self):
+        '''Create a new gallery'''
         gallery_name = request.json.get('name')
         gallery_description = request.json.get('description')
         year_slug = request.json.get('year_slug')
@@ -156,6 +160,7 @@ class CreateGallery(Resource):
 class Members(Resource):
     @jwt_required
     def get(self):
+        '''Get Ponthe members'''
         SITE_ROOT = os.path.realpath(os.path.dirname(__file__))
         members = open(os.path.join(SITE_ROOT, "/app/ponthe/templates", "members.json"))
         return json.load(members, strict=False)
@@ -173,6 +178,7 @@ class GetGalleries(Resource):
     @api.response(200, 'Success')
     @api.response(404, 'No corresponding event to event_slug')
     def get(self, event_slug):
+        '''Get the list of galleries of an event'''
         event_dao = EventDAO()
 
         try:
@@ -217,6 +223,7 @@ class GetImagies(Resource):
     @api.response(403, 'Not authorized - account not valid')
     @api.response(404, 'Not found - No matching gallery_slug')
     def get(self, gallery_slug):
+        '''Get the list of approved images path of a given gallery'''
         try:
             gallery = GalleryDAO().find_by_slug(gallery_slug)
         except NoResultFound:
@@ -243,6 +250,7 @@ class GetRandomImage(Resource):
     @api.response(403, 'Not authorized - account not valid')
     @api.response(404, 'Not found - No matching gallery_slug')
     def get(self, gallery_slug):
+        '''Get the path of a random image of the given gallery'''
         try:
             gallery = GalleryDAO().find_by_slug(gallery_slug)
         except NoResultFound:
@@ -293,6 +301,7 @@ class MakeGalleryPublic(Resource):
     @api.response(400, 'Request incorrect - JSON not valid')
     @api.response(403, 'Not authorized - account not valid')
     def post(self):
+        '''Turn the given galleries public'''
         current_user = UserDao().get_by_id(get_jwt_identity)
         if not current_user.admin:
             return {"msg": "Unauthorized: you're not an admin"}, 403
@@ -314,13 +323,14 @@ class MakeGalleryPublic(Resource):
 
 @api.route('/galleries/makeprivate')
 @api.doc(params=    {
-                        'gallery_slug': 'Slug of the gallery to be set private'
+                        'gallery_slug': 'List of slugs of the galleries to be set private'
                     })
 class MakeGalleryPublic(Resource):
     @jwt_required
     @api.response(200, 'Success')
     @api.response(400, 'Request incorrect - JSON not valid')
     def post(self):
+        '''Turn the given galeries private'''
         current_user = UserDao().get_by_id(get_jwt_identity)
         if not current_user.admin:
             return {"msg": "Unauthorized: you're not an admin"}, 403
