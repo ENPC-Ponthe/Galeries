@@ -159,6 +159,9 @@ class PasswordResetForm(Resource):
 @api.response(200, 'Success')
 class Cgu(Resource):
     def get(self):
+        """
+            Return the General Conditions of Use
+        """
         SITE_ROOT = os.path.realpath(os.path.dirname(__file__))
         cgu = open(os.path.join(SITE_ROOT, "/app/ponthe/templates", "cgu.json"))
         return json.load(cgu, strict=False), 200

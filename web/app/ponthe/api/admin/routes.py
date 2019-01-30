@@ -40,6 +40,7 @@ class CreateEvent(Resource):
     @api.response(403, 'Not authorized - account not valid')
     @api.response(401, 'Request incorrect - Missing required parameter')
     def post(self):
+        '''Create a new event'''
         name = request.json.get('name')
         category_slug = request.json.get('category_slug')
         event_description = request.json.get('event_description')
@@ -66,6 +67,7 @@ class CreateEvent(Resource):
 class CreateYear(Resource):
     @jwt_required
     def post(self):
+        ''' Create a new year'''
         year_value = request.json.get('value')
         year_description = request.json.get('description')
 
@@ -97,6 +99,7 @@ class CreateYear(Resource):
 class CreateCategory(Resource):
     @jwt_required
     def post(self):
+        '''Create a new category'''
         category_value = request.json.get('value')
         category_description = request.json.get('description')
         category_slug = request.json.get('category_slug')
@@ -134,6 +137,7 @@ class Moderation(Resource):
     @api.response(403, 'Not authorized - account not valid')
     @api.response(401, 'Request incorrect - Error while moderating')
     def post(self):
+        '''Moderate given galeries and files'''
         galeries_to_delete = request.json.get('galeries_to_delete')
         galeries_to_approve = request.json.get('galeries_to_approve')
         files_to_delete = request.json.get('files_to_delete')
@@ -198,6 +202,7 @@ class DeleteEvent(Resource):
     @api.response(201, 'Success - Event deleted')
     @api.response(401, 'Request incorrect - Error while deleting')
     def delete(self, event_slug):
+        '''Delete the given event'''
         event_dao = EventDAO()
 
         current_user = UserDAO.get_by_id(get_jwt_identity())
