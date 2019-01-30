@@ -92,9 +92,8 @@ class CreateYear(Resource):
         }, 20
 @api.route('/create-category')
 @api.doc(params=    {
-                        'value': 'Example : Sport',
-                        'description': '',
-                        'category_slug': ''
+                        'name': 'Example : Sport',
+                        'description': ''
                     })
 class CreateCategory(Resource):
     @jwt_required
@@ -102,7 +101,6 @@ class CreateCategory(Resource):
         '''Create a new category'''
         category_value = request.json.get('value')
         category_description = request.json.get('description')
-        category_slug = request.json.get('category_slug')
 
         if not category_value:
             return {
@@ -112,7 +110,7 @@ class CreateCategory(Resource):
 
         current_user = UserDAO.get_by_id(get_jwt_identity())
         # try:
-        CategoryService.create(category_value, category_description, category_slug, current_user)
+        CategoryService.create(category_value, category_description, current_user)
         # except Exception as e:
             # return {
             #     "title": "Erreur - Impossible de créer la categorie",
@@ -125,8 +123,8 @@ class CreateCategory(Resource):
 
 @api.route('/moderation')
 @api.doc(params=    {
-                        'galeries_to_delete': 'Liste des slug de galeries à supprimer',
-                        'galeries_to_approve': 'Liste des slugs de galeries à approuver',
+                        'galleries_to_delete': 'Liste des slug de galeries à supprimer',
+                        'galleries_to_approve': 'Liste des slugs de galeries à approuver',
                         'files_to_delete': 'Liste des slugs de fichiers à supprimer',
                         'files_to_approve': 'Liste des slugs de fichiers à approuver'
                     })
@@ -138,8 +136,8 @@ class Moderation(Resource):
     @api.response(401, 'Request incorrect - Error while moderating')
     def post(self):
         '''Moderate given galeries and files'''
-        galeries_to_delete = request.json.get('galeries_to_delete')
-        galeries_to_approve = request.json.get('galeries_to_approve')
+        galeries_to_delete = request.json.get('galleries_to_delete')
+        galeries_to_approve = request.json.get('galleries_to_approve')
         files_to_delete = request.json.get('files_to_delete')
         files_to_approve = request.json.get('files_to_approve')
 
@@ -153,7 +151,7 @@ class Moderation(Resource):
         if galeries_to_delete:
             for gallery_slug in galeries_to_delete:
                 try:
-                    GalleryService.delete(gallery_slug)
+                    GalleryService.delete(gallery_slug, current_user)
                 except Exception as e:
                     galeries_failed_to_delete.append(gallery_slug)
                     error = True
@@ -161,7 +159,7 @@ class Moderation(Resource):
         if galeries_to_approve:
             for gallery_slug in galeries_to_approve:
                 try:
-                    GalleryService.delete(gallery_slug)
+                    GalleryService.approve(gallery_slug, current_user)
                 except Exception as e:
                     galeries_failed_to_approve.append(gallery_slug)
                     error = True
@@ -169,15 +167,15 @@ class Moderation(Resource):
         if files_to_delete:
             for file_slug in files_to_delete:
                 try:
-                    FileService.delete(file_slug)
+                    FileService.delete(file_slug, current_user)
                 except Exception as e:
-                    files_failed_to_delete.append(files_slug)
+                    files_failed_to_delete.append(file_slug)
                     error = True
 
         if files_to_approve:
             for file_slug in files_to_approve:
                 try:
-                    FileService.delete(file_slug)
+                    FileService.approve(file_slug)
                 except Exception as e:
                     files_failed_to_approve.append(files_slug)
                     error = True
