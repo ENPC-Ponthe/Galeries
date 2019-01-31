@@ -12,6 +12,8 @@ web/app/instance/logs/ponthe.log*
 web/app/instance/keys/jwtRS256*
 web/app/instance/static
 web/app/instance/tmp
+web/app/instance/thumbs
+web/app/instance/club_folder
 
 # Coverqge
 web/app/.coverage
