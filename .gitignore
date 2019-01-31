@@ -15,8 +15,10 @@ web/app/instance/keys/jwtRS256*
 web/app/instance/static
 web/app/instance/tmp
 web/app/instance/thumbs
-
 web/app/instance/club_folder
+web/app/instance/uploads
+web/app/ponthe/data/
+web/app/ponthe/config.py
 
 # Coverqge
 web/app/.coverage
