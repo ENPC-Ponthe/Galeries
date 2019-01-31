@@ -44,20 +44,21 @@ def allowed_file(filename):
 
 
 @api.route('/file_upload/<gallery_slug>')
+@api.doc(params=    {
+                        'file': 'file to upload',
+                    })
 class Upload(Resource):
     @jwt_required
     @api.response(200, 'Success')
     @api.response(403, 'Not authorized - accound not valid')
+    @api.response(401, 'Bad Request')
     def post(self, gallery_slug):
         if 'file' not in request.files:
             return {
                         "msg": "Bad request"
                     }, 401
         file = request.files['file']
-        # if user does not select file, browser also
-        # submit a empty part without filename
         current_user = UserDAO.get_by_id(get_jwt_identity())
-
 
         if file and allowed_file(file.filename):
             filename = secure_filename(base64.b64encode(bytes(str(time.time()) + file.filename,'utf-8')).decode('utf-8')+ "." + file.filename.rsplit('.', 1)[1].lower())
@@ -390,7 +391,7 @@ class GetLatestImagies(Resource):
 
 @api.route('/galleries/makepublic')
 @api.doc(params=    {
-                        'gallery_slugs': 'Slug of the gallery to be set public'
+                        'gallery_slugs': 'List of slugs of the galleries to be set public'
                     })
 class MakeGalleryPublic(Resource):
     @jwt_required
