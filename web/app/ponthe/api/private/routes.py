@@ -53,6 +53,7 @@ class Upload(Resource):
     @api.response(403, 'Not authorized - accound not valid')
     @api.response(401, 'Bad Request')
     def post(self, gallery_slug):
+        '''upload a file in a gallery'''
         if 'file' not in request.files:
             return {
                         "msg": "Bad request"
@@ -67,6 +68,24 @@ class Upload(Resource):
             return {
                         "msg": "File has been saved"
                     }, 200
+
+
+@api.route('/files/not-moderated')
+class GetFilesToModerate(Resource):
+    @jwt_required
+    @api.response(200, 'Success')
+    @api.response(403, 'Not authorized - account not valid')
+    def get(self):
+        '''get the slug of the files waiting for moderation'''
+        files = FileDAO().find_all()
+
+        NotModeratedFileSlugs = []
+        for file in files:
+            if file.pending:
+                NotModeratedFileSlugs.append(file.slug)
+        return  {
+                    "unaproved_files": NotModeratedFileSlugs
+                }, 200
 
 
 @api.route('/get_user_by_jwt')

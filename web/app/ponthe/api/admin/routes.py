@@ -175,9 +175,9 @@ class Moderation(Resource):
         if files_to_approve:
             for file_slug in files_to_approve:
                 try:
-                    FileService.approve(file_slug)
+                    FileService.approve_by_slug(file_slug)
                 except Exception as e:
-                    files_failed_to_approve.append(files_slug)
+                    files_failed_to_approve.append(file_slug)
                     error = True
 
         if error:
