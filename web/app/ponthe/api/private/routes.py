@@ -28,13 +28,13 @@ import time
 UPLOAD_FOLDER = '/app/instance/uploads/'
 ALLOWED_EXTENSIONS = set(['txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'])
 
-@app.template_filter('thumb')
-def thumb_filter(file):
-    return thumb.get_thumbnail(file.file_path, '226x226')
-
-@app.template_filter('category_thumb')
-def thumb_filter(file):
-    return thumb.get_thumbnail(file.file_path, '630x500')
+# @app.template_filter('thumb')
+# def thumb_filter(file):
+#     return thumb.get_thumbnail(file.file_path, '226x226')
+#
+# @app.template_filter('category_thumb')
+# def thumb_filter(file):
+#     return thumb.get_thumbnail(file.file_path, '630x500')
 
 
 def allowed_file(filename):
@@ -283,10 +283,23 @@ class GetImagies(Resource):
                 "title": "Erreur - Forbidden",
                 "body": "Vous n'avez pas les droits pour accéder à : "+gallery_slug
             }, 403
+
         list_of_files = list(filter(lambda file: not file.pending, gallery.files))
+        encoded_list_of_files = []
+
+        for file in list_of_files:
+            with open("/app/ponthe/data/galleries/" + file.file_path, "rb") as image_file:
+                encoded_list_of_files.append(str(base64.b64encode(image_file.read())))
+            image_file.close()
+
+        approved_files = dict()
+        for i in range(len(list_of_files)):
+            approved_files[list_of_files[i].file_path] = encoded_list_of_files[i]
+
         return {
             "gallery": gallery.serialize(),
-            "approved_files": [file.file_path for file in list_of_files]
+            "approved_files": approved_files
+            # "approved_files": [file.file_path for file in list_of_files]
         }, 200
 
 @api.route('/get-random-image/<gallery_slug>')
@@ -322,13 +335,25 @@ class GetRandomImage(Resource):
         }, 200
 
 
-@api.route('/get-latest-imagies')
+@api.route('/get-latest-images')
 class GetLatestImagies(Resource):
     def get(self):
         files = FileDAO().find_all_sorted_by_date()
         list_of_files = list(filter(lambda file: not file.pending, files))
+        encoded_list_of_files = []
+        for file in list_of_files:
+            with open("/app/ponthe/data/galleries/" + file.file_path, "rb") as image_file:
+                encoded_list_of_files.append(str(base64.b64encode(image_file.read())))
+            image_file.close()
+
+        latest_files = dict()
+        for i in range(len(list_of_files)):
+            latest_files[list_of_files[i].file_path] = encoded_list_of_files[i]
+
         return {
-            "latest_files": [file.file_path for file in list_of_files]
+            # "latest_files": latest_files
+            "latest_files": [file.file_path for file in list_of_files],
+            "thumbnails" : encoded_list_of_files
         }, 200
 # @api.route('/galleries/<gallery_slug>')
 # class Gallery(Resource):
