@@ -24,6 +24,7 @@ import base64
 import os
 from ...services import FileService
 import time
+from ... import thumb
 
 UPLOAD_FOLDER = '/app/instance/uploads/'
 ALLOWED_EXTENSIONS = set(['txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'])
@@ -59,10 +60,9 @@ class Upload(Resource):
 
 
         if file and allowed_file(file.filename):
-            filename = secure_filename(str(base64.b64encode(str(time.time())+file.filename)))
-            print(os.path.join(UPLOAD_FOLDER + gallery_slug, filename))
-            file.save(os.path.join(UPLOAD_FOLDER + gallery_slug, filename))
-            FileService.create(gallery_slug+"/"+filename, filename, gallery_slug, current_user)
+            filename = secure_filename(base64.b64encode(bytes(str(time.time()) + file.filename,'utf-8')).decode('utf-8')+ "." + file.filename.rsplit('.', 1)[1].lower())
+            file.save(os.path.join(UPLOAD_FOLDER, filename))
+            FileService.create(os.path.join(UPLOAD_FOLDER, filename), filename, gallery_slug, current_user)
             return {
                         "msg": "File has been saved"
                     }, 200
