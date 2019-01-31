@@ -4,7 +4,8 @@ from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 import codecs, translitcodec, enum, re, string, random
 
-from .file_helper import split_filename
+from .file_helper import split_filename, get_extension
+
 
 from . import db
 
@@ -432,6 +433,13 @@ class File(Resource):
 
     def __repr__(self):
         return '<File {}>'.format(self.file_path)
+
+    def get_thumb_path(self):
+        path_to_image = self.file_path
+        path_to_thumb = path_to_image[:-len(self.extension)-1]
+        path_to_thumb += "_226x226_fit_90." + self.extension
+        return path_to_thumb
+
 
 class Tag(Resource):
     __tablename__ = 'tags'
