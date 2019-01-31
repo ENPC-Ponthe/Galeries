@@ -124,7 +124,7 @@ class Materiel(Resource):
 #     return render_template('year_gallery.html', year=year, public_galleries=public_galleries)
 
 
-@api.route('/get-galleries-by-year/<year_slug>')
+@api.route('/get-galleries-of-year/<year_slug>')
 @api.doc(params=    {
                         'year_slug': 'Example : 2018'
                     })
@@ -161,6 +161,46 @@ class Year(Resource):
                  return {'msg': 'year not found'}, 404
         return {'msg': 'not admin'}, 403
 
+@api.route('/get-galleries-by-year')
+class Year(Resource):
+    @jwt_required
+    @api.response(200, 'Success')
+    @api.response(404, 'Year not found')
+    def get(self):
+        '''Get the list of public galleries of all years'''
+        year_dao = YearDAO()
+        year_list = year_dao.find_all_ordered_by_value()
+        data = []
+        for year in year_list:
+            public_galleries = list(filter(lambda gallery: not gallery.private, year.galleries))
+            gallery_list = []
+            for gallery in public_galleries:
+                list_of_files = list(filter(lambda file: not file.pending, gallery.files))
+                encoded_string = ""
+                if(len(list_of_files) > 0):
+                    i = random.randint(0, len(list_of_files)-1)
+                    with open("/app/instance/thumbs/" + list_of_files[i].get_thumb_path(), "rb") as image_file:
+                        encoded_string = str(base64.b64encode(image_file.read()).decode('utf-8'))
+                    image_file.close()
+                gallery_list.append({
+                    "slug": gallery.slug,
+                    "image": encoded_string
+                })
+            data.append({
+                "year": year.value,
+                "galleries": gallery_list
+            })
+        return {
+            "data": data
+        }, 200
+        # try:
+        #     public_galleries = list(filter(lambda gallery: not gallery.private, year.galleries))
+        #     return {
+        #         "year": year_dao.serialize(year_slug),
+        #         "public_galleries": [gallery.slug for gallery in public_galleries]
+        #     }, 200
+        # except NoResultFound:
+        #     return {'msg': 'year not found'}, 404
 
 @api.route('/create-gallery')
 @api.doc(params=    {
@@ -371,14 +411,17 @@ class GetLatestImagies(Resource):
 #         if gallery.private and not GalleryDAO.has_right_on(gallery):
 #             raise NotFound()
 #         return render_template('gallery.html', gallery=gallery, approved_files=filter(lambda file: not file.pending, gallery.files))
-#     @jwt_required
-#     def delete(self, gallery_slug):
-#         current_user = UserDao().get_by_id(get_jwt_identity)
-#         if current_user.admin:
-#             try:
-#                 GalleryService.delete(gallery_slug)
-#             except:
-#                 return {'msg': 'Galleries does not exist'}, 404
+
+@api.route('/galleries/<gallery_slug>')
+class Gallery(Resource):
+    @jwt_required
+    def delete(self, gallery_slug):
+        current_user = UserDAO.get_by_id(get_jwt_identity())
+        if current_user.admin:
+            try:
+                GalleryService.delete(gallery_slug)
+            except:
+                return {'msg': 'Galleries does not exist'}, 404
 
 
 @api.route('/galleries/makepublic')

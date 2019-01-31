@@ -36,4 +36,4 @@ class YearDAO(ResourceDAO):
 
     @staticmethod
     def find_all_ordered_by_value():
-        return Year.query.order_by(Year.value).all()
+        return Year.query.order_by(-Year.value).all()
