@@ -14,7 +14,6 @@ def thumb_filter(file):
 def thumb_filter(file):
     return thumb.get_thumbnail(file.file_path, '630x500')
 
-
 @app.context_processor
 def inject_top_menu_gallery_variables():
     if current_user.is_authenticated:
