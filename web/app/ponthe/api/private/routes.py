@@ -29,13 +29,13 @@ from ... import thumb
 UPLOAD_FOLDER = '/app/instance/uploads/'
 ALLOWED_EXTENSIONS = set(['txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'])
 
-@app.template_filter('thumb')
-def thumb_filter(file):
-    return thumb.get_thumbnail(file.file_path, '226x226')
-
-@app.template_filter('category_thumb')
-def thumb_filter(file):
-    return thumb.get_thumbnail(file.file_path, '630x500')
+# @app.template_filter('thumb')
+# def thumb_filter(file):
+#     return thumb.get_thumbnail(file.file_path, '226x226')
+#
+# @app.template_filter('category_thumb')
+# def thumb_filter(file):
+#     return thumb.get_thumbnail(file.file_path, '630x500')
 
 
 def allowed_file(filename):
@@ -312,7 +312,7 @@ class GetRandomImage(Resource):
             }, 403
         list_of_files = list(filter(lambda file: not file.pending, gallery.files))
         i = random.randint(0, len(list_of_files)-1)
-        with open("/app/ponthe/data/galleries/" + list_of_files[i].file_path, "rb") as image_file:
+        with open("/app/instance/thumbs/" + list_of_files[i].file_path, "rb") as image_file:
             encoded_string = base64.b64encode(image_file.read())
         image_file.close()
         return {
