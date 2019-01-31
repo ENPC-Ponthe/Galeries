@@ -1,3 +1,4 @@
+
 import os
 from flask import Flask
 
@@ -28,7 +29,6 @@ def load(app: Flask):
     else:
         app.logger.warning("Galeries Ponthé starting in DEV mode")
         app.config.from_pyfile('ponthe.cfg')
-
     with open(os.path.join(app.instance_path, "keys", "jwtRS256-public.pem"), 'r') as public_key:
         app.config['JWT_PUBLIC_KEY'] = public_key.read()
     with open(os.path.join(app.instance_path, "keys", "jwtRS256-private.pem"), 'r') as private_key:

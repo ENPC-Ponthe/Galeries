@@ -7,7 +7,6 @@ from werkzeug.exceptions import NotFound
 from . import app
 from .services import GalleryService
 
-
 @app.context_processor
 def inject_top_menu_gallery_variables():
     if current_user.is_authenticated:
