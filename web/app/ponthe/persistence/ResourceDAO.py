@@ -20,5 +20,8 @@ class ResourceDAO:
         return self.SubResource.query.order_by(desc(self.SubResource.created)).limit(10).all()
 
     @staticmethod
-    def has_right_on(resource: Resource):
-        return current_user.admin or current_user.id == resource.author_id
+    def has_right_on(resource: Resource, given_current_user = None):
+        if given_current_user == None:
+            return current_user.admin or current_user.id == resource.author_id
+        else:
+            return given_current_user.admin or given_current_user.id == resource.author_id

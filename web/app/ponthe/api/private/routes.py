@@ -1,6 +1,7 @@
 from flask_jwt_extended import JWTManager, jwt_required, get_jwt_identity
 from .. import api
 from flask_restplus import Resource
+from flask_mail import Message
 from ...persistence import UserDAO, YearDAO, EventDAO, GalleryDAO, FileDAO
 from itsdangerous import SignatureExpired, BadSignature
 from ...config import constants
@@ -14,7 +15,7 @@ from itsdangerous import SignatureExpired, BadSignature
 from datetime import datetime
 from werkzeug.utils import secure_filename
 # from . import public
-from ... import app, db, login_manager
+from ... import app, db, login_manager, mail
 from ...services import UserService, GalleryService
 from flask import request
 # from ...models import serialize
@@ -82,7 +83,7 @@ class GetUser(Resource):
 
 @api.route('/materiel')
 @api.doc(params=    {
-                        'object': 'object you would like to borrow to the club',
+                        'device': 'object you would like to borrow to the club',
                         'message': 'your message'
                     })
 class Materiel(Resource):
@@ -92,7 +93,7 @@ class Materiel(Resource):
     @api.response(403, 'Not authorized - account not valid')
     def post(self):
         '''Send a mail to ponthe to borrow material'''
-        object = request.json.get('object')
+        object = request.json.get('device')
         message = request.json.get('message')
         if not message:
             return  {
@@ -123,7 +124,7 @@ class Materiel(Resource):
 #     return render_template('year_gallery.html', year=year, public_galleries=public_galleries)
 
 
-@api.route('/years/<year_slug>')
+@api.route('/get-galleries-by-year/<year_slug>')
 @api.doc(params=    {
                         'year_slug': 'Example : 2018'
                     })
@@ -351,7 +352,7 @@ class GetLatestImagies(Resource):
 
 @api.route('/galleries/makepublic')
 @api.doc(params=    {
-                        'gallery_slug': 'Slug of the gallery to be set public'
+                        'gallery_slugs': 'Slug of the gallery to be set public'
                     })
 class MakeGalleryPublic(Resource):
     @jwt_required
@@ -360,14 +361,14 @@ class MakeGalleryPublic(Resource):
     @api.response(403, 'Not authorized - account not valid')
     def post(self):
         '''Turn the given galleries public'''
-        current_user = UserDao().get_by_id(get_jwt_identity)
+        current_user = UserDAO.get_by_id(get_jwt_identity())
         if not current_user.admin:
             return {"msg": "Unauthorized: you're not an admin"}, 403
         ListOfGallerySlugs = request.json.get('gallery_slugs')
         ListOfGalleryFailedToMakePublic = []
         for gallery_slug in ListOfGallerySlugs:
             try:
-                GalleryService.make_public(gallery_slug)
+                GalleryService.make_public(gallery_slug, current_user)
             except:
                 ListOfGalleryFailedToMakePublic.append(gallery_slug)
         if len(ListOfGalleryFailedToMakePublic)!=0:
@@ -381,7 +382,7 @@ class MakeGalleryPublic(Resource):
 
 @api.route('/galleries/makeprivate')
 @api.doc(params=    {
-                        'gallery_slug': 'List of slugs of the galleries to be set private'
+                        'gallery_slugs': 'List of slugs of the galleries to be set private'
                     })
 class MakeGalleryPublic(Resource):
     @jwt_required
@@ -389,41 +390,41 @@ class MakeGalleryPublic(Resource):
     @api.response(400, 'Request incorrect - JSON not valid')
     def post(self):
         '''Turn the given galeries private'''
-        current_user = UserDao().get_by_id(get_jwt_identity)
+        current_user = UserDAO.get_by_id(get_jwt_identity())
         if not current_user.admin:
             return {"msg": "Unauthorized: you're not an admin"}, 403
         ListOfGallerySlugs = request.json.get('gallery_slugs')
         ListOfGalleryFailedToMakePublic = []
         for gallery_slug in ListOfGallerySlugs:
             try:
-                GalleryService.make_private(gallery_slug)
+                GalleryService.make_private(gallery_slug, current_user)
             except:
                 ListOfGalleryFailedToMakePublic.append(gallery_slug)
         if len(ListOfGalleryFailedToMakePublic)!=0:
             response = {
-                            "msg": "Error failed to make galleries public",
+                            "msg": "Error failed to make galleries private",
                             "failed_with": ListOfGalleryFailedToMakePublic
                         }
             return response, 400
         response = {"msg": "success"}
         return response, 200
 
-@api.route('/dashboard')
-class Dashboard(Resource):
-    @jwt_required
-    @api.response(200, 'Success')
-    @api.response(401, 'Error while fetching datas')
-    def post(self):
-        current_user = UserDAO.get_by_id(get_jwt_identity())
-        try:
-            pending_files_by_gallery, confirmed_files_by_gallery = GalleryService.get_own_pending_and_approved_files_by_gallery(current_user)
-        except Exception as e:
-            return {
-                "title": "Erreur - Impossible de récupérer les données.",
-                "body": "Une erreur est survenue : "+str(e)
-            }, 401
-
-        return {
-            "pending_files_by_gallery": pending_files_by_gallery,
-            "confirmed_files_by_gallery": confirmed_files_by_gallery
-        }, 200
+# @api.route('/dashboard')
+# class Dashboard(Resource):
+#     @jwt_required
+#     @api.response(200, 'Success')
+#     @api.response(401, 'Error while fetching datas')
+#     def post(self):
+#         current_user = UserDAO.get_by_id(get_jwt_identity())
+#         try:
+#             pending_files_by_gallery, confirmed_files_by_gallery = GalleryService.get_own_pending_and_approved_files_by_gallery(current_user)
+#         except Exception as e:
+#             return {
+#                 "title": "Erreur - Impossible de récupérer les données.",
+#                 "body": "Une erreur est survenue : "+str(e)
+#             }, 401
+#
+#         return {
+#             "pending_files_by_gallery": pending_files_by_gallery,
+#             "confirmed_files_by_gallery": confirmed_files_by_gallery
+#         }, 200
