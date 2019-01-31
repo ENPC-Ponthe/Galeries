@@ -342,11 +342,11 @@ class GetRandomImage(Resource):
 
 @api.route('/get-latest-images')
 class GetLatestImagies(Resource):
-        @jwt_required
-        @api.response(200, 'Success')
-        @api.response(400, 'Request incorrect - JSON not valid')
-        @api.response(403, 'Not authorized - account not valid')
-        @api.response(404, 'Not found - No matching gallery_slug')
+    @jwt_required
+    @api.response(200, 'Success')
+    @api.response(400, 'Request incorrect - JSON not valid')
+    @api.response(403, 'Not authorized - account not valid')
+    @api.response(404, 'Not found - No matching gallery_slug')
     def get(self):
         files = FileDAO().find_all_sorted_by_date()
         list_of_files = list(filter(lambda file: not file.pending, files))

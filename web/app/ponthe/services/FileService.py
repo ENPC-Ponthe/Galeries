@@ -1,16 +1,13 @@
 import os
 
 
-from .. import app, db, thumb
+from .. import app, db
 from ..persistence import FileDAO, GalleryDAO
-from ..models import File, User
+from ..models import File, User, create_thumb
 from ..file_helper import create_folder, move_file, is_image, is_video, get_extension
 
 UPLOAD_FOLDER = '/app/instance/uploads/'
 
-
-def create_thumb(file):
-    return thumb.get_thumbnail(file.file_path, '226x226')
 
 class FileService:
     @staticmethod
