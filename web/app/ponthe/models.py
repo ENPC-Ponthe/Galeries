@@ -7,11 +7,12 @@ import codecs, translitcodec, enum, re, string, random
 from .file_helper import split_filename, get_extension
 
 
-from . import db
+from . import db, thumb
 
 
 _punct_re = re.compile(r'[\t !"#$%&\'()*\-/<=>?@\[\\\]^_`{|},.]+')  #   Les slug DSI enlève les ' au lieu de les remplacer par un -
 ALPHANUMERIC_LIST = string.ascii_letters+string.digits
+THUMBS_FOLDER = "/app/instance/thumbs/"
 
 def generate_random_string(size, char_list=ALPHANUMERIC_LIST):
     return "".join([char_list[random.randint(0,len(char_list)-1)] for i in range(size)])
@@ -390,6 +391,9 @@ file_tag = db.Table('file_tag',
     db.Column('file_id', db.Integer, db.ForeignKey('files.id', name='fk_file_tags_file'), primary_key=True)
 )
 
+def create_thumb(file):
+    return thumb.get_thumbnail(file.file_path, '226x226')
+
 class File(Resource):
     __tablename__ = 'files'
     __mapper_args__ = {
@@ -438,6 +442,11 @@ class File(Resource):
         path_to_image = self.file_path
         path_to_thumb = path_to_image[:-len(self.extension)-1]
         path_to_thumb += "_226x226_fit_90." + self.extension
+        try:
+            thumbnail = open(THUMBS_FOLDER + self.path_to_thumb,'r')
+            thumbnail.close()
+        except:
+            create_thumb(self)
         return path_to_thumb
 
 

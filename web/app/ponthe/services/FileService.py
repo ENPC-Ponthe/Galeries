@@ -3,11 +3,11 @@ import os
 
 from .. import app, db
 from ..persistence import FileDAO, GalleryDAO
-from ..models import File, User
+from ..models import File, User, create_thumb
 from ..file_helper import create_folder, move_file, is_image, is_video, get_extension
-from ..views import thumb_filter
 
 UPLOAD_FOLDER = '/app/instance/uploads/'
+
 
 class FileService:
     @staticmethod
@@ -44,4 +44,4 @@ class FileService:
         move_file(upload_file_path, os.path.join(gallery_folder, new_file.filename))
         db.session.add(new_file)
         db.session.commit()
-        thumb_filter(new_file)
+        create_thumb(new_file)
