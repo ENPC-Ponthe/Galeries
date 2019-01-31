@@ -318,19 +318,21 @@ class GetRandomImage(Resource):
                 "title": "Erreur - Not found",
                 "body": "Aucune gallerie ne correspond à : "+gallery_slug
             }, 404
-        if gallery.private and not GalleryDAO.has_right_on(gallery):
+
+        current_user = UserDAO.get_by_id(get_jwt_identity())
+        if gallery.private and not GalleryDAO.has_right_on(gallery, current_user):
             return {
                 "title": "Erreur - Forbidden",
                 "body": "Vous n'avez pas les droits pour accéder à : "+gallery_slug
             }, 403
         list_of_files = list(filter(lambda file: not file.pending, gallery.files))
         i = random.randint(0, len(list_of_files)-1)
-        with open("/app/instance/thumbs/" + list_of_files[i].file_path, "rb") as image_file:
+        with open("/app/instance/thumbs/" + list_of_files[i].get_thumb_path(), "rb") as image_file:
             encoded_string = base64.b64encode(image_file.read())
         image_file.close()
         return {
             "gallery": gallery.serialize(),
-            "thumbnail": str(encoded_string),
+            "thumbnail": str(encoded_string.decode('utf-8')),
             "url": list_of_files[i].file_path
         }, 200
 
