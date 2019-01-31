@@ -328,11 +328,11 @@ class GetRandomImage(Resource):
         list_of_files = list(filter(lambda file: not file.pending, gallery.files))
         i = random.randint(0, len(list_of_files)-1)
         with open("/app/instance/thumbs/" + list_of_files[i].get_thumb_path(), "rb") as image_file:
-            encoded_string = base64.b64encode(image_file.read())
+            encoded_string = str(base64.b64encode(image_file.read()).decode('utf-8'))
         image_file.close()
         return {
             "gallery": gallery.serialize(),
-            "thumbnail": str(encoded_string.decode('utf-8')),
+            "thumbnail": encoded_string,
             "url": list_of_files[i].file_path
         }, 200
 
@@ -344,15 +344,15 @@ class GetLatestImagies(Resource):
         list_of_files = list(filter(lambda file: not file.pending, files))
         encoded_list_of_files = []
         for file in list_of_files:
-            with open("/app/ponthe/data/galleries/" + file.file_path, "rb") as image_file:
-                encoded_list_of_files.append(str(base64.b64encode(image_file.read())))
+            with open("/app/instance/thumbs/" + file.get_thumb_path(), "rb") as image_file:
+                encoded_list_of_files.append(str(base64.b64encode(image_file.read()).decode('utf-8')))
             image_file.close()
 
         latest_files = []
         for i in range(len(list_of_files)):
             latest_files.append({
                 "file_path": list_of_files[i].file_path,
-                "base64": encoded_list_of_files[i]
+                "thumbnails": encoded_list_of_files[i]
             })
             # latest_files[list_of_files[i].file_path] = encoded_list_of_files[i]
 
