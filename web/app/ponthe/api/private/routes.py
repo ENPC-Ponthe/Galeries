@@ -28,7 +28,7 @@ from ... import thumb
 
 UPLOAD_FOLDER = '/app/instance/uploads/'
 ALLOWED_EXTENSIONS = set(['txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'])
-
+THUMBS_FOLDER = "/app/instance/thumbs/"
 # @app.template_filter('thumb')
 # def thumb_filter(file):
 #     return thumb.get_thumbnail(file.file_path, '226x226')
@@ -213,11 +213,11 @@ class Members(Resource):
         return json.load(members, strict=False)
 
 
-@api.route('/get_image')
-class Image(Resource):
-    def get(self):
-        file = FileDAO().find_by_slug("photo_du_template")
-        return {"url": url_for('uploads', file_path=file.file_path)}, 200
+# @api.route('/get_image')
+# class Image(Resource):
+#     def get(self):
+#         file = FileDAO().find_by_slug("photo_du_template")
+#         return {"url": url_for('uploads', file_path=file.file_path)}, 200
 
 @api.route('/get-galleries/<event_slug>')
 class GetGalleries(Resource):
@@ -278,7 +278,9 @@ class GetImagies(Resource):
                 "title": "Erreur - Not found",
                 "body": "Aucune gallerie ne correspond à : "+gallery_slug
             }, 404
-        if gallery.private and not GalleryDAO.has_right_on(gallery):
+
+        current_user = UserDAO.get_by_id(get_jwt_identity())
+        if gallery.private and not GalleryDAO.has_right_on(gallery, current_user):
             return {
                 "title": "Erreur - Forbidden",
                 "body": "Vous n'avez pas les droits pour accéder à : "+gallery_slug
@@ -288,8 +290,8 @@ class GetImagies(Resource):
         encoded_list_of_files = []
 
         for file in list_of_files:
-            with open("/app/ponthe/data/galleries/" + file.file_path, "rb") as image_file:
-                encoded_list_of_files.append(str(base64.b64encode(image_file.read())))
+            with open(THUMBS_FOLDER + file.get_thumb_path(), "rb") as image_file:
+                encoded_list_of_files.append(str(base64.b64encode(image_file.read()).decode('utf-8')))
             image_file.close()
 
         approved_files = dict()
@@ -327,7 +329,7 @@ class GetRandomImage(Resource):
             }, 403
         list_of_files = list(filter(lambda file: not file.pending, gallery.files))
         i = random.randint(0, len(list_of_files)-1)
-        with open("/app/instance/thumbs/" + list_of_files[i].get_thumb_path(), "rb") as image_file:
+        with open(THUMBS_FOLDER + list_of_files[i].get_thumb_path(), "rb") as image_file:
             encoded_string = str(base64.b64encode(image_file.read()).decode('utf-8'))
         image_file.close()
         return {
@@ -339,12 +341,17 @@ class GetRandomImage(Resource):
 
 @api.route('/get-latest-images')
 class GetLatestImagies(Resource):
+        @jwt_required
+        @api.response(200, 'Success')
+        @api.response(400, 'Request incorrect - JSON not valid')
+        @api.response(403, 'Not authorized - account not valid')
+        @api.response(404, 'Not found - No matching gallery_slug')
     def get(self):
         files = FileDAO().find_all_sorted_by_date()
         list_of_files = list(filter(lambda file: not file.pending, files))
         encoded_list_of_files = []
         for file in list_of_files:
-            with open("/app/instance/thumbs/" + file.get_thumb_path(), "rb") as image_file:
+            with open(THUMBS_FOLDER + file.get_thumb_path(), "rb") as image_file:
                 encoded_list_of_files.append(str(base64.b64encode(image_file.read()).decode('utf-8')))
             image_file.close()
 
