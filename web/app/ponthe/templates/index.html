@@ -65,7 +65,7 @@
                     <li class="portfolio-item col-sm-6 col-xs-12 padding-20">
                         <a href={{ url_for('private.category_gallery', category_slug=category.slug) }}>
                             <figure class="animate {{ loop.cycle('fadeInRight', 'fadeInLeft') }}">
-                                
+                                <img src="{{ category.cover_image | category_thumb }}">
                                 <figcaption style="min-height: 150px;">
                                     <h3>{{ category.name }}</h3>
                                     <span>{{ category.description }}</span>
