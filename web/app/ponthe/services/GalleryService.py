@@ -12,29 +12,30 @@ THUMB_FOLDER = app.config['THUMBNAIL_MEDIA_THUMBNAIL_ROOT']
 
 class GalleryService:
     @staticmethod
-    def delete(gallery_slug: str):
+    def delete(gallery_slug: str, current_user):
         gallery = GalleryDAO().find_by_slug(gallery_slug)
-        for file in gallery.files:
-            FileDAO.delete(file)
-        db.session.delete(gallery)
-        db.session.commit()
-        gallery_path = os.path.join(UPLOAD_FOLDER, gallery_slug)
-        thumb_path = os.path.join(THUMB_FOLDER, gallery_slug)
-        delete_folder(gallery_path)
-        delete_folder(thumb_path)
+        if GalleryDAO.has_right_on(gallery, current_user):
+            for file in gallery.files:
+                FileDAO.delete(file)
+            db.session.delete(gallery)
+            db.session.commit()
+            gallery_path = os.path.join(UPLOAD_FOLDER, gallery_slug)
+            thumb_path = os.path.join(THUMB_FOLDER, gallery_slug)
+            delete_folder(gallery_path)
+            delete_folder(thumb_path)
 
     @staticmethod
-    def make_private(slug):
+    def make_private(slug, current_user):
         gallery = GalleryDAO().find_by_slug(slug)
-        if GalleryDAO.has_right_on(gallery):
+        if GalleryDAO.has_right_on(gallery, current_user):
             gallery.private = True
             db.session.add(gallery)
             db.session.commit()
 
     @staticmethod
-    def make_public(slug):
+    def make_public(slug, current_user):
         gallery = GalleryDAO().find_by_slug(slug)
-        if GalleryDAO.has_right_on(gallery):
+        if GalleryDAO.has_right_on(gallery, current_user):
             gallery.private = False
             db.session.add(gallery)
             db.session.commit()
@@ -100,7 +101,8 @@ class GalleryService:
         return pending_files_by_gallery
 
     @staticmethod
-    def approve(gallery_slug):
+    def approve(gallery_slug, current_user):
         gallery = GalleryDAO().find_by_slug(gallery_slug)
-        for file in gallery.files:
-            FileService.approve(file)
+        if GalleryDAO.has_right_on(gallery, current_user):
+            for file in gallery.files:
+                FileService.FileService.approve(file)

@@ -45,7 +45,7 @@ def logout():
     return redirect('/login')
 
 
-@private.route('/materiel',methods=['GET','POST'])
+@private.route('/materiel', methods=['GET','POST'])
 def materiel():
     if request.method == 'POST':
         object = request.form['object']
