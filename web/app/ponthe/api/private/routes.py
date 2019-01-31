@@ -346,14 +346,18 @@ class GetLatestImagies(Resource):
                 encoded_list_of_files.append(str(base64.b64encode(image_file.read())))
             image_file.close()
 
-        latest_files = dict()
+        latest_files = []
         for i in range(len(list_of_files)):
-            latest_files[list_of_files[i].file_path] = encoded_list_of_files[i]
+            latest_files.append({
+                "file_path": list_of_files[i].file_path,
+                "base64": encoded_list_of_files[i]
+            })
+            # latest_files[list_of_files[i].file_path] = encoded_list_of_files[i]
 
         return {
-            # "latest_files": latest_files
-            "latest_files": [file.file_path for file in list_of_files],
-            "thumbnails" : encoded_list_of_files
+            "latest_files": latest_files
+            # "latest_files": [file.file_path for file in list_of_files],
+            # "thumbnails" : encoded_list_of_files
         }, 200
 # @api.route('/galleries/<gallery_slug>')
 # class Gallery(Resource):
