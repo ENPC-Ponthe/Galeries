@@ -1,10 +1,6 @@
 **/__pycache__/
 **/*.pyc
-docker-compose.yml
-install.sh
-deploy.sh
-*/Dockerfile
-*/logging_config.py
+
 
 # Virtual environment
 web/venv/
@@ -19,9 +15,8 @@ web/app/instance/keys/jwtRS256*
 web/app/instance/static
 web/app/instance/tmp
 web/app/instance/thumbs
-web/app/instance/uploads
-web/app/ponthe/data/
-web/app/ponthe/config.py
+
+web/app/instance/club_folder
 
 # Coverqge
 web/app/.coverage
