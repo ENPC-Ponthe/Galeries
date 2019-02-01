@@ -16,4 +16,3 @@ click
 Flask-Thumbnails
 Pillow
 Flask-Tus-Ponthe==1.0.1
-Flask-CORS
