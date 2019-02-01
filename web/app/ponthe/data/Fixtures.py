@@ -1,5 +1,5 @@
 from ponthe.models import User, Event, Year, File, Gallery, Category
-from .. import db
+
 class Fixtures():
     user_philippe = User(
         gender="M",

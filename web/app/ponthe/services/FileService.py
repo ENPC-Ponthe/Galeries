@@ -1,12 +1,12 @@
 import os
 
 from .. import app, db
-from ..persistence import FileDAO, GalleryDAO
-from ..models import File, User, create_thumb
+from ..dao import FileDAO, GalleryDAO
+from ..models import File, User, FileTypeEnum
 from ..file_helper import create_folder, move_file, is_image, is_video, get_extension
+from ..filters import thumb_filter
 
-UPLOAD_FOLDER = '/app/instance/uploads/'
-
+UPLOAD_FOLDER = app.config['MEDIA_ROOT']
 
 
 class FileService:
@@ -44,4 +44,5 @@ class FileService:
         move_file(upload_file_path, os.path.join(gallery_folder, new_file.filename))
         db.session.add(new_file)
         db.session.commit()
-        create_thumb(new_file)
+        if new_file.type == FileTypeEnum.IMAGE:
+            thumb_filter(new_file)
