@@ -80,3 +80,4 @@ workflows:
               only:
                 - master
                 - testing
+                - feature/a-lot-of-things
