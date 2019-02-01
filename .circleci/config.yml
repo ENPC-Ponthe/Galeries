@@ -62,16 +62,8 @@ workflows:
   version: 2
   main:
     jobs:
-      - lint:
-          filters:
-            branches:
-              ignore:
-                - flask_restplus
-      - test:
-          filters:
-            branches:
-              ignore:
-                - flask_restplus
+      - lint
+      - test
       - build:
           requires:
             - test

@@ -6,17 +6,13 @@ services:
     ports:
       - "127.0.0.1:${WEB_PORT}:80"
     volumes:
-      - ./web/app/instance/club-folder:/app/instance/club_folder
-      - ./web/db_backup:/db_backup
-      - ./web/app/instance/thumbs:/app/instance/thumbs
-      # - ./web/app/ponthe/data/test:/app/instance/uploads
-      - ./web/app/ponthe/data/galleries:/app/instance/uploads
-      - ./web/app/ponthe:/app/ponthe
+      - ./volumes/static:/app/instance/static
+      - ./volumes/keys:/app/instance/keys
+      - ./volumes/logs:/app/instance/logs
     depends_on:
       - db
     environment:
       - SECRET_KEY=${SECRET_KEY}
-      - LOG_PATH=${LOG_PATH}
       - SQLALCHEMY_DATABASE_URI=mysql://${DATABASE_USER}:${DATABASE_PASSWORD}@db/${DATABASE_NAME}
       - MAIL_PASSWORD=${MAIL_PASSWORD}
       - WEBHOOK_URL=${WEBHOOK_URL}
