@@ -203,6 +203,7 @@ class Year(Resource):
                         encoded_string = str(base64.b64encode(image_file.read()).decode('utf-8'))
                     image_file.close()
                 gallery_list.append({
+                    "name": gallery.name,
                     "slug": gallery.slug,
                     "image": encoded_string
                 })
@@ -354,9 +355,12 @@ class GetImagies(Resource):
                 encoded_list_of_files.append(str(base64.b64encode(image_file.read()).decode('utf-8')))
             image_file.close()
 
-        approved_files = dict()
+        approved_files = []
         for i in range(len(list_of_files)):
-            approved_files[list_of_files[i].file_path] = encoded_list_of_files[i]
+            approved_files.append({
+                'file_path': list_of_files[i].file_path,
+                'base64': encoded_list_of_files[i]
+            })
 
         return {
             "gallery": gallery.serialize(),
@@ -419,7 +423,7 @@ class GetLatestImagies(Resource):
         for i in range(len(list_of_files)):
             latest_files.append({
                 "file_path": list_of_files[i].file_path,
-                "thumbnails": encoded_list_of_files[i]
+                "base64": encoded_list_of_files[i]
             })
             # latest_files[list_of_files[i].file_path] = encoded_list_of_files[i]
 
@@ -445,10 +449,13 @@ class Gallery(Resource):
     def delete(self, gallery_slug):
         current_user = UserDAO.get_by_id(get_jwt_identity())
         if current_user.admin:
+            # GalleryService.delete(gallery_slug, current_user)
             try:
-                GalleryService.delete(gallery_slug)
+                GalleryService.delete(gallery_slug, current_user)
+                return {}, 200
             except:
                 return {'msg': 'Galleries does not exist'}, 404
+        return {}, 403
 
 
 @api.route('/galleries/makepublic')
