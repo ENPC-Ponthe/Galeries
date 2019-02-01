@@ -17,6 +17,7 @@ web/app/instance/club_folder
 web/app/instance/uploads
 web/app/ponthe/data/
 web/app/ponthe/config.py
+volumes/*
 
 # Coverqge
 web/app/.coverage
