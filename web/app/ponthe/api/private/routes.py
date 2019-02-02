@@ -25,6 +25,7 @@ import os
 from ...services import FileService
 import time
 from ... import thumb
+from PIL import Image
 
 UPLOAD_FOLDER = '/app/instance/uploads/'
 ALLOWED_EXTENSIONS = set(['txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'])
@@ -200,7 +201,7 @@ class Year(Resource):
                 if(len(list_of_files) > 0):
                     i = random.randint(0, len(list_of_files)-1)
                     with open("/app/instance/thumbs/" + list_of_files[i].get_thumb_path(), "rb") as image_file:
-                        encoded_string = str(base64.b64encode(image_file.read()).decode('utf-8'))
+                        encoded_string = "data:image/"+list_of_files[i].extension+";base64," + str(base64.b64encode(image_file.read()).decode('utf-8'))
                     image_file.close()
                 gallery_list.append({
                     "name": gallery.name,
@@ -352,7 +353,8 @@ class GetImagies(Resource):
 
         for file in list_of_files:
             with open(THUMBS_FOLDER + file.get_thumb_path(), "rb") as image_file:
-                encoded_list_of_files.append(str(base64.b64encode(image_file.read()).decode('utf-8')))
+                encoded = "data:image/"+file.extension+";base64," + str(base64.b64encode(image_file.read()).decode('utf-8'))
+                encoded_list_of_files.append(encoded)
             image_file.close()
 
         approved_files = []
@@ -366,6 +368,34 @@ class GetImagies(Resource):
             "gallery": gallery.serialize(),
             "approved_files": approved_files
             # "approved_files": [file.file_path for file in list_of_files]
+        }, 200
+
+@api.route('/get-full-image')
+@api.doc(params=    {
+                        'file_path': 'Relative path of the file : galleryslug/filename'
+                    })
+class GetFullImage(Resource):
+    @jwt_required
+    @api.response(200, 'Success')
+    @api.response(400, 'Request incorrect - JSON not valid')
+    @api.response(403, 'Not authorized - account not valid')
+    @api.response(404, 'Not found - No matching gallery_slug')
+    def post(self):
+        '''Get the list of approved images path of a given gallery'''
+
+        file_path = request.json.get('file_path')
+
+        im = Image.open("/app/ponthe/data/galleries/" + file_path)
+        width, height = im.size
+
+        with open("/app/ponthe/data/galleries/" + file_path, "rb") as image_file:
+            file = "data:image/"+im.format+";base64," + str(base64.b64encode(image_file.read()).decode('utf-8'))
+        image_file.close()
+
+        return {
+            "width": width,
+            "height": height,
+            "base64": file
         }, 200
 
 @api.route('/get-random-image/<gallery_slug>')
@@ -416,7 +446,8 @@ class GetLatestImagies(Resource):
         encoded_list_of_files = []
         for file in list_of_files:
             with open(THUMBS_FOLDER + file.get_thumb_path(), "rb") as image_file:
-                encoded_list_of_files.append(str(base64.b64encode(image_file.read()).decode('utf-8')))
+                encoded = "data:image/"+file.extension+";base64," + str(base64.b64encode(image_file.read()).decode('utf-8'))
+                encoded_list_of_files.append(encoded)
             image_file.close()
 
         latest_files = []
