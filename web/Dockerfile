@@ -13,7 +13,7 @@ RUN mkdir -p /app/instance/uploads && mkdir -p /app/instance/club_folder/waiting
 RUN easy_install Werkzeug
 RUN pip install /app
 RUN pip install --upgrade pip
-RUN pip install flask-restplus
+
 
 
 RUN pip install git+https://github.com/PhilippeFerreiraDeSousa/Flask-Tus.git#egg=Flask-Tus-Ponthe
