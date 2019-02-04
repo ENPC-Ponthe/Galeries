@@ -25,6 +25,7 @@ import os
 from ...services import FileService
 import time
 from ... import thumb
+from PIL import Image
 
 UPLOAD_FOLDER = '/app/instance/uploads/'
 ALLOWED_EXTENSIONS = set(['txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'])
@@ -200,9 +201,10 @@ class Year(Resource):
                 if(len(list_of_files) > 0):
                     i = random.randint(0, len(list_of_files)-1)
                     with open("/app/instance/thumbs/" + list_of_files[i].get_thumb_path(), "rb") as image_file:
-                        encoded_string = str(base64.b64encode(image_file.read()).decode('utf-8'))
+                        encoded_string = "data:image/"+list_of_files[i].extension+";base64," + str(base64.b64encode(image_file.read()).decode('utf-8'))
                     image_file.close()
                 gallery_list.append({
+                    "name": gallery.name,
                     "slug": gallery.slug,
                     "image": encoded_string
                 })
@@ -329,8 +331,11 @@ class GetImagies(Resource):
     @api.response(400, 'Request incorrect - JSON not valid')
     @api.response(403, 'Not authorized - account not valid')
     @api.response(404, 'Not found - No matching gallery_slug')
-    def get(self, gallery_slug):
+    def post(self, gallery_slug):
         '''Get the list of approved images path of a given gallery'''
+        page = request.json.get("page")
+        page_size = request.json.get("page_size")
+
         try:
             gallery = GalleryDAO().find_by_slug(gallery_slug)
         except NoResultFound:
@@ -346,22 +351,55 @@ class GetImagies(Resource):
                 "body": "Vous n'avez pas les droits pour accéder à : "+gallery_slug
             }, 403
 
-        list_of_files = list(filter(lambda file: not file.pending, gallery.files))
+        # list_of_files = list(filter(lambda file: not file.pending, gallery.files))
+        list_of_files = FileDAO.find_files_by_gallery(gallery, page, page_size)
         encoded_list_of_files = []
 
         for file in list_of_files:
             with open(THUMBS_FOLDER + file.get_thumb_path(), "rb") as image_file:
-                encoded_list_of_files.append(str(base64.b64encode(image_file.read()).decode('utf-8')))
+                encoded = "data:image/"+file.extension+";base64," + str(base64.b64encode(image_file.read()).decode('utf-8'))
+                encoded_list_of_files.append(encoded)
             image_file.close()
 
-        approved_files = dict()
+        approved_files = []
         for i in range(len(list_of_files)):
-            approved_files[list_of_files[i].file_path] = encoded_list_of_files[i]
+            approved_files.append({
+                'file_path': list_of_files[i].file_path,
+                'base64': encoded_list_of_files[i]
+            })
 
         return {
             "gallery": gallery.serialize(),
             "approved_files": approved_files
             # "approved_files": [file.file_path for file in list_of_files]
+        }, 200
+
+@api.route('/get-full-image')
+@api.doc(params=    {
+                        'file_path': 'Relative path of the file : galleryslug/filename'
+                    })
+class GetFullImage(Resource):
+    @jwt_required
+    @api.response(200, 'Success')
+    @api.response(400, 'Request incorrect - JSON not valid')
+    @api.response(403, 'Not authorized - account not valid')
+    @api.response(404, 'Not found - No matching gallery_slug')
+    def post(self):
+        '''Get the list of approved images path of a given gallery'''
+
+        file_path = request.json.get('file_path')
+
+        im = Image.open("/app/ponthe/data/galleries/" + file_path)
+        width, height = im.size
+
+        with open("/app/ponthe/data/galleries/" + file_path, "rb") as image_file:
+            file = "data:image/"+im.format+";base64," + str(base64.b64encode(image_file.read()).decode('utf-8'))
+        image_file.close()
+
+        return {
+            "width": width,
+            "height": height,
+            "base64": file
         }, 200
 
 @api.route('/get-random-image/<gallery_slug>')
@@ -406,21 +444,26 @@ class GetLatestImagies(Resource):
     @api.response(400, 'Request incorrect - JSON not valid')
     @api.response(403, 'Not authorized - account not valid')
     @api.response(404, 'Not found - No matching gallery_slug')
-    def get(self):
-        files = FileDAO().find_all_sorted_by_date()
+    def post(self):
+        page = request.json.get("page")
+        page_size = request.json.get("page_size")
+
+        files = FileDAO().find_all_sorted_by_date(page, page_size)
         list_of_files = list(filter(lambda file: not file.pending, files))
         encoded_list_of_files = []
         for file in list_of_files:
             with open(THUMBS_FOLDER + file.get_thumb_path(), "rb") as image_file:
-                encoded_list_of_files.append(str(base64.b64encode(image_file.read()).decode('utf-8')))
+                encoded = "data:image/"+file.extension+";base64," + str(base64.b64encode(image_file.read()).decode('utf-8'))
+                encoded_list_of_files.append(encoded)
             image_file.close()
 
         latest_files = []
         for i in range(len(list_of_files)):
-            latest_files.append({
-                "file_path": list_of_files[i].file_path,
-                "thumbnails": encoded_list_of_files[i]
-            })
+            if list_of_files[i].pending == False:
+                latest_files.append({
+                    "file_path": list_of_files[i].file_path,
+                    "base64": encoded_list_of_files[i]
+                })
             # latest_files[list_of_files[i].file_path] = encoded_list_of_files[i]
 
         return {
@@ -445,10 +488,13 @@ class Gallery(Resource):
     def delete(self, gallery_slug):
         current_user = UserDAO.get_by_id(get_jwt_identity())
         if current_user.admin:
+            # GalleryService.delete(gallery_slug, current_user)
             try:
-                GalleryService.delete(gallery_slug)
+                GalleryService.delete(gallery_slug, current_user)
+                return {}, 200
             except:
                 return {'msg': 'Galleries does not exist'}, 404
+        return {}, 403
 
 
 @api.route('/galleries/makepublic')

@@ -16,8 +16,8 @@ class ResourceDAO:
     def find_all(self):
         return self.SubResource.query.all()
 
-    def find_all_sorted_by_date(self):
-        return self.SubResource.query.order_by(desc(self.SubResource.created)).limit(10).all()
+    def find_all_sorted_by_date(self, page, page_size):
+        return self.SubResource.query.order_by(desc(self.SubResource.created)).offset((page-1)*page_size).limit(page_size).all()
 
     @staticmethod
     def has_right_on(resource: Resource, given_current_user = None):
