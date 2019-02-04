@@ -331,8 +331,11 @@ class GetImagies(Resource):
     @api.response(400, 'Request incorrect - JSON not valid')
     @api.response(403, 'Not authorized - account not valid')
     @api.response(404, 'Not found - No matching gallery_slug')
-    def get(self, gallery_slug):
+    def post(self, gallery_slug):
         '''Get the list of approved images path of a given gallery'''
+        page = request.json.get("page")
+        page_size = request.json.get("page_size")
+
         try:
             gallery = GalleryDAO().find_by_slug(gallery_slug)
         except NoResultFound:
@@ -348,7 +351,8 @@ class GetImagies(Resource):
                 "body": "Vous n'avez pas les droits pour accéder à : "+gallery_slug
             }, 403
 
-        list_of_files = list(filter(lambda file: not file.pending, gallery.files))
+        # list_of_files = list(filter(lambda file: not file.pending, gallery.files))
+        list_of_files = FileDAO.find_files_by_gallery(gallery, page, page_size)
         encoded_list_of_files = []
 
         for file in list_of_files:
@@ -440,8 +444,11 @@ class GetLatestImagies(Resource):
     @api.response(400, 'Request incorrect - JSON not valid')
     @api.response(403, 'Not authorized - account not valid')
     @api.response(404, 'Not found - No matching gallery_slug')
-    def get(self):
-        files = FileDAO().find_all_sorted_by_date()
+    def post(self):
+        page = request.json.get("page")
+        page_size = request.json.get("page_size")
+
+        files = FileDAO().find_all_sorted_by_date(page, page_size)
         list_of_files = list(filter(lambda file: not file.pending, files))
         encoded_list_of_files = []
         for file in list_of_files:
