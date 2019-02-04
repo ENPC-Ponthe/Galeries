@@ -11,10 +11,8 @@ COPY ./app /app
 
 RUN mkdir -p /app/instance/uploads && mkdir -p /app/instance/club_folder/waiting_zone && mkdir -p /app/instance/club_folder/apk && mkdir -p /app/instance/thumbs && mkdir -p /app/instance/club_folder/logs && mkdir -p /app/instance/upload_tmp && mkdir -p /app/instance/keys
 RUN easy_install Werkzeug
-RUN pip install /app
 RUN pip install --upgrade pip
-
-
 RUN pip install /app
+
 
 VOLUME /app/instance/static
