@@ -2,7 +2,7 @@ from flask_thumbnails import utils
 from .ResourceDAO import ResourceDAO
 from .. import app, db
 from ..file_helper import delete_file
-from ..models import File
+from ..models import File, Gallery
 
 import os
 
@@ -24,3 +24,8 @@ class FileDAO(ResourceDAO):
 
     def delete_by_slug(self, slug):
         self.delete(self.find_by_slug(slug))
+
+    @staticmethod
+    def find_files_by_gallery(gallery: Gallery, page, page_size):
+        files = File.query.filter_by(gallery=gallery).offset((page-1)*page_size).limit(page_size).all()
+        return list(filter(lambda file: not file.pending, files))
