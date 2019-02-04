@@ -452,10 +452,11 @@ class GetLatestImagies(Resource):
 
         latest_files = []
         for i in range(len(list_of_files)):
-            latest_files.append({
-                "file_path": list_of_files[i].file_path,
-                "base64": encoded_list_of_files[i]
-            })
+            if list_of_files[i].pending == False:
+                latest_files.append({
+                    "file_path": list_of_files[i].file_path,
+                    "base64": encoded_list_of_files[i]
+                })
             # latest_files[list_of_files[i].file_path] = encoded_list_of_files[i]
 
         return {
