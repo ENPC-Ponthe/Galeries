@@ -468,6 +468,10 @@ class GetRandomImage(Resource):
 
 
 @api.route('/get-latest-images')
+@api.doc(params=    {
+                        'page_size': 'number of images',
+                        'page': 'page 1 refers to the latest, page 2 refers to the next one...'
+                    })
 class GetLatestImagies(Resource):
     @jwt_required
     @api.response(200, 'Success')
