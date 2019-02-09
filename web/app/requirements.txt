@@ -15,4 +15,3 @@ click
 Flask-Thumbnails
 Pillow
 flask_restplus
-PIL
