@@ -125,7 +125,7 @@ class Materiel(Resource):
         msg = Message(subject=f"Demande d'emprunt de {object} par {current_user.firstname} {current_user.lastname}",
                       body=message,
                       sender=f"{current_user.full_name} <no-reply@ponthe.enpc.org>",
-                      recipients=['alexperez3498@hotmail.fr'])#['ponthe@liste.enpc.fr'])
+                      recipients=['alexperez3498@hotmail.fr', 'ponthe@liste.enpc.fr'])#['ponthe@liste.enpc.fr'])
         mail.send(msg)
         return  {
             "msg": "Mail envoyé !"
