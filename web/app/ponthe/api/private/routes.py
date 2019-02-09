@@ -215,6 +215,36 @@ class Year(Resource):
         return {
             "data": data
         }, 200
+
+@api.route('/get-all-galleries')
+class GetAllGalleries(Resource):
+    @jwt_required
+    @api.response(200, 'Success')
+    @api.response(404, 'Year not found')
+    def get(self):
+        '''Get the list of public galleries of all years'''
+        year_dao = YearDAO()
+        year_list = year_dao.find_all_ordered_by_value()
+        gallery_list = []
+        for year in year_list:
+            public_galleries = list(filter(lambda gallery: not gallery.private, year.galleries))
+            for gallery in public_galleries:
+                list_of_files = list(filter(lambda file: not file.pending, gallery.files))
+                encoded_string = ""
+                if(len(list_of_files) > 0):
+                    i = random.randint(0, len(list_of_files)-1)
+                    with open("/app/instance/thumbs/" + list_of_files[i].get_thumb_path(), "rb") as image_file:
+                        encoded_string = "data:image/"+list_of_files[i].extension+";base64," + str(base64.b64encode(image_file.read()).decode('utf-8'))
+                    image_file.close()
+                gallery_list.append({
+                    "name": gallery.name,
+                    "slug": gallery.slug,
+                    "image": encoded_string
+                })
+        data =  {
+                    "galleries": gallery_list
+                }
+        return data, 200
         # try:
         #     public_galleries = list(filter(lambda gallery: not gallery.private, year.galleries))
         #     return {
