@@ -12,6 +12,9 @@ class GalleryDAO(ResourceDAO):
     @staticmethod
     def find_public_by_year(year: Year):
         return Gallery.query.filter_by(year=year, private=False).all()
+    @staticmethod
+    def find_all_public():
+        return Gallery.query.filter_by(private=false).all()
 
     @classmethod
     def find_private_by_year(cls, year: Year):
