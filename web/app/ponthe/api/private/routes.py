@@ -565,9 +565,10 @@ class GetLatestImages(Resource):
             without_base64 = False
 
 
-        files = FileDAO().find_all_sorted_by_date(page, page_size)
+        list_of_files = FileDAO().find_all_sorted_by_date(page, page_size)
         encoded_list_of_files = []
         list_of_dim = []
+
         for file in list_of_files:
             with open(THUMBS_FOLDER + file.get_thumb_path(), "rb") as image_file:
                 encoded = "data:image/"+file.extension+";base64," + str(base64.b64encode(image_file.read()).decode('utf-8'))
