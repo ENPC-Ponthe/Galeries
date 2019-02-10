@@ -8,6 +8,7 @@ web/venv/
 # Credentials : Mysql / Email
 web/ponthe.prod.cfg
 .env
+.env.dist
 
 # Instance Folder - used for configuration parameters and uploads / fixtures files
 web/app/instance/club_folder
@@ -18,6 +19,8 @@ web/app/instance/uploads
 web/app/ponthe/data/
 web/app/ponthe/config.py
 volumes/*
+
+
 
 # Coverqge
 web/app/.coverage

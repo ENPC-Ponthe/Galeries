@@ -9,7 +9,7 @@ class MailService:
     def send_registering_email(firstname, email, token):
         msg = Message('Confirme la validation de ton compte Ponthé', sender='Ponthé <no-reply@ponthe.enpc.org>',
                       recipients=[email])
-        link = "https://ponthe.enpc.org" + url_for('public.registering', token=token)
+        link = "https://ponthe-testing.enpc.org" + url_for('public.registering', token=token)
         msg.body = 'Clique sur le lien de confirmation suivant sous 24h pour activer ton compte : {}'.format(link)
         msg.html = render_template('email/register.html', register_link=link, firstname=firstname)
         mail.send(msg)
