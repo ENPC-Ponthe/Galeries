@@ -94,7 +94,7 @@ def create_accounts():
                 msg = Message('Bienvenue aux Ponts', sender='Ponthé <no-reply@ponthe.enpc.org>',
                               recipients=[user.email])
                 msg.body = 'Ton club d\'audiovisuel te souhaite la bienvenue aux Ponts ! '\
-                    + 'Ton compte Ponthé a été créé sur https://ponthe.enpc.org. '\
+                    + 'Ton compte Ponthé a été créé sur https://ponthe-testing.enpc.org. '\
                     + 'Connecte-toi dès maintenant avec les identifiants suivants :\n'\
                     + 'Email : {}\n'.format(user.email)\
                     + 'Mot de passe : {}'.format(password)

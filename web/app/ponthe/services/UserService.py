@@ -23,7 +23,7 @@ class UserService:
 
     @classmethod
     def get_reset_link(cls, user: User):
-        return f"ponthe.enpc.org/reset/{cls.get_token(user)}"
+        return f"ponthe-testing.enpc.org/reset/{cls.get_token(user)}"
 
     @classmethod
     def register(cls, username: str, firstname: str, lastname: str, password: str, promotion: str):
