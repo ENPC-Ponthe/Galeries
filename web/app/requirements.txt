@@ -14,5 +14,5 @@ Flask-JWT-extended[asymmetric_crypto]
 click
 Flask-Thumbnails
 Pillow
+flask_cors
 flask_restplus
-PIL
