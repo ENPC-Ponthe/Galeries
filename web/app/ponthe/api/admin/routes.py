@@ -1,8 +1,9 @@
-from flask_jwt_extended import JWTManager, jwt_required, get_jwt_identity
+from flask_jwt_extended import JWTManager, get_jwt_identity
 from flask_login import current_user, login_required
 from .. import api
 from flask_restplus import Resource
-from ...persistence import UserDAO, YearDAO, EventDAO, CategoryDAO
+from ...persistence import UserDAO, YearDAO, EventDAO, CategoryDAO, GalleryDAO
+from ...middlewares import admin_only, jwt_check
 from itsdangerous import SignatureExpired, BadSignature
 from ...config import constants
 from sqlalchemy.orm.exc import NoResultFound
@@ -17,15 +18,6 @@ from ... import app, db, login_manager
 from ...services import UserService, EventService, YearService, GalleryService, FileService, CategoryService
 from flask import request, jsonify
 
-# @app.before_request     # login en tant qu'admin nécessaire pour tout le blueprint
-# def before_request():
-#     current_user = UserDAO.get_by_id(get_jwt_identity())
-#     if not current_user.admin:
-#         return {
-#             "title": "Erreur - Impossible de supprimer l'événement",
-#             "body": "L'utilisateur n'est pas administrateur"
-#         }, 401
-#         # abort(401)
 
 @api.route('/create-event')
 @api.doc(params=    {
@@ -34,7 +26,8 @@ from flask import request, jsonify
                         'event_description': ''
                     })
 class CreateEvent(Resource):
-    @jwt_required
+    @jwt_check
+    @admin_only
     @api.response(201, 'Success - Event created')
     @api.response(400, 'Request incorrect - JSON not valid')
     @api.response(403, 'Not authorized - account not valid')
@@ -65,7 +58,8 @@ class CreateEvent(Resource):
                         'description': ''
                     })
 class CreateYear(Resource):
-    @jwt_required
+    @jwt_check
+    @admin_only
     def post(self):
         ''' Create a new year'''
         year_value = request.json.get('value')
@@ -96,7 +90,8 @@ class CreateYear(Resource):
                         'description': ''
                     })
 class CreateCategory(Resource):
-    @jwt_required
+    @jwt_check
+    @admin_only
     def post(self):
         '''Create a new category'''
         category_value = request.json.get('value')
@@ -129,7 +124,8 @@ class CreateCategory(Resource):
                         'files_to_approve': 'Liste des slugs de fichiers à approuver'
                     })
 class Moderation(Resource):
-    @jwt_required
+    @jwt_check
+    @admin_only
     @api.response(200, 'Success - All moderations done')
     # @api.response(400, 'Request incorrect - JSON not valid')
     @api.response(403, 'Not authorized - account not valid')
@@ -196,7 +192,8 @@ class Moderation(Resource):
 
 @api.route('/delete-event/<event_slug>')
 class DeleteEvent(Resource):
-    @jwt_required
+    @jwt_check
+    @admin_only
     @api.response(201, 'Success - Event deleted')
     @api.response(401, 'Request incorrect - Error while deleting')
     def delete(self, event_slug):
@@ -215,3 +212,31 @@ class DeleteEvent(Resource):
         return {
             "msg": "Événement supprimé"
         }, 201
+
+
+@api.route('/get-private-galleries')
+class GetPrivateGalleries(Resource):
+    @jwt_check
+    @admin_only
+    @api.response(200, 'Success')
+    def get(self):
+        '''Get the list of public galleries of all years'''
+        gallery_list = []
+        private_galleries = GalleryDAO().find_all_private()
+        for gallery in private_galleries:
+            list_of_files = list(filter(lambda file: not file.pending, gallery.files))
+            encoded_string = ""
+            if(len(list_of_files) > 0):
+                i = random.randint(0, len(list_of_files)-1)
+                with open("/app/instance/thumbs/" + list_of_files[i].get_thumb_path(), "rb") as image_file:
+                    encoded_string = "data:image/"+list_of_files[i].extension+";base64," + str(base64.b64encode(image_file.read()).decode('utf-8'))
+                image_file.close()
+            gallery_list.append({
+                "name": gallery.name,
+                "slug": gallery.slug,
+                "image": encoded_string
+            })
+        data =  {
+                    "galleries": gallery_list
+                }
+        return data, 200

@@ -1,8 +1,9 @@
-from flask_jwt_extended import JWTManager, jwt_required, get_jwt_identity
+from flask_jwt_extended import JWTManager, get_jwt_identity
 from .. import api
 from flask_restplus import Resource
 from flask_mail import Message
 from ...persistence import UserDAO, YearDAO, EventDAO, GalleryDAO, FileDAO
+from ...middlewares import jwt_check
 from itsdangerous import SignatureExpired, BadSignature
 from ...config import constants
 from sqlalchemy.orm.exc import NoResultFound
@@ -50,7 +51,7 @@ def allowed_file(filename):
                         'file': 'file to upload',
                     })
 class Upload(Resource):
-    @jwt_required
+    @jwt_check
     @api.response(200, 'Success')
     @api.response(403, 'Not authorized - accound not valid')
     @api.response(401, 'Bad Request')
@@ -75,7 +76,7 @@ class Upload(Resource):
 
 @api.route('/files/not-moderated')
 class GetFilesToModerate(Resource):
-    @jwt_required
+    @jwt_check
     @api.response(200, 'Success')
     @api.response(403, 'Not authorized - account not valid')
     def get(self):
@@ -91,9 +92,9 @@ class GetFilesToModerate(Resource):
                 }, 200
 
 
-@api.route('/get_user_by_jwt')
+@api.route('/get-user-by-jwt')
 class GetUser(Resource):
-    @jwt_required
+    @jwt_check
     @api.response(200, 'Success')
     @api.response(403, 'Not authorized - account not valid')
     def get(self):
@@ -101,7 +102,8 @@ class GetUser(Resource):
         return {
                     "firstname": current_user.firstname,
                     "lastname": current_user.lastname,
-                    "email": current_user.email
+                    "email": current_user.email,
+                    "admin": current_user.admin
                 }, 200
 
 @api.route('/materiel')
@@ -110,7 +112,7 @@ class GetUser(Resource):
                         'message': 'your message'
                     })
 class Materiel(Resource):
-    @jwt_required
+    @jwt_check
     @api.response(200, 'Success - Mail sent')
     @api.response(400, 'Request incorrect - JSON not valid')
     @api.response(403, 'Not authorized - account not valid')
@@ -133,26 +135,13 @@ class Materiel(Resource):
             "msg": "Mail envoyé !"
         }, 200
 
-# @private.route('/years/<year_slug>', methods=['GET', 'POST'])
-# def year_gallery(year_slug):
-#     year_dao = YearDAO()
-#     if request.method == 'POST' and "delete" in request.form and current_user.admin:
-#         year_dao.delete_detaching_galleries(year_slug)
-#         return redirect("/index")
-#     try:
-#         year = year_dao.find_by_slug(year_slug)
-#     except NoResultFound:
-#         raise NotFound()
-#     public_galleries = list(filter(lambda gallery: not gallery.private, year.galleries))
-#     return render_template('year_gallery.html', year=year, public_galleries=public_galleries)
-
 
 @api.route('/get-galleries-of-year/<year_slug>')
 @api.doc(params=    {
                         'year_slug': 'Example : 2018'
                     })
 class Year(Resource):
-    @jwt_required
+    @jwt_check
     @api.response(200, 'Success')
     @api.response(404, 'Year not found')
     def get(self, year_slug):
@@ -168,7 +157,7 @@ class Year(Resource):
         except NoResultFound:
             return {'msg': 'year not found'}, 404
 
-    @jwt_required
+    @jwt_check
     @api.response(200, 'Success')
     @api.response(40, 'Request incorrect - JSON not valid')
     @api.response(403, 'Not authorized - not admin')
@@ -186,7 +175,7 @@ class Year(Resource):
 
 @api.route('/get-galleries-by-year')
 class GetGalleriesByYear(Resource):
-    @jwt_required
+    @jwt_check
     @api.response(200, 'Success')
     @api.response(404, 'Year not found')
     def post(self):
@@ -235,7 +224,7 @@ class GetGalleriesByYear(Resource):
 
 @api.route('/get-all-galleries')
 class GetAllGalleries(Resource):
-    @jwt_required
+    @jwt_check
     @api.response(200, 'Success')
     def get(self):
         '''Get the list of public galleries of all years'''
@@ -258,15 +247,6 @@ class GetAllGalleries(Resource):
                     "galleries": gallery_list
                 }
         return data, 200
-        # try:
-        #     public_galleries = list(filter(lambda gallery: not gallery.private, year.galleries))
-        #     return {
-        #         "year": year_dao.serialize(year_slug),
-        #         "public_galleries": [gallery.slug for gallery in public_galleries]
-        #     }, 200
-        # except NoResultFound:
-        #     return {'msg': 'year not found'}, 404
-
 
 @api.route('/create-gallery')
 @api.doc(params=    {
@@ -277,7 +257,7 @@ class GetAllGalleries(Resource):
                         'private': 'Boolean'
                     })
 class CreateGallery(Resource):
-    @jwt_required
+    @jwt_check
     @api.response(201, 'Success - Gallery created')
     @api.response(401, 'Request incorrect - Error while creating gallery')
     def post(self):
@@ -311,7 +291,7 @@ class CreateGallery(Resource):
 
 @api.route('/members')
 class Members(Resource):
-    @jwt_required
+    @jwt_check
     def get(self):
         '''Get Ponthe members'''
         SITE_ROOT = os.path.realpath(os.path.dirname(__file__))
@@ -321,7 +301,7 @@ class Members(Resource):
 
 @api.route('/get-galleries/<event_slug>')
 class GetGalleries(Resource):
-    @jwt_required
+    @jwt_check
     @api.response(200, 'Success')
     @api.response(404, 'No corresponding event to event_slug')
     def get(self, event_slug):
@@ -364,7 +344,7 @@ class GetGalleries(Resource):
 
 @api.route('/get-images/<gallery_slug>')
 class GetImagies(Resource):
-    @jwt_required
+    @jwt_check
     @api.response(200, 'Success')
     @api.response(400, 'Request incorrect - JSON not valid')
     @api.response(403, 'Not authorized - account not valid')
@@ -389,7 +369,7 @@ class GetImagies(Resource):
         current_user = UserDAO.get_by_id(get_jwt_identity())
         if gallery.private and not GalleryDAO.has_right_on(gallery, current_user):
             return {
-                "title": "Erreur - Forbidden",
+                "title": "Error - Forbidden",
                 "body": "Vous n'avez pas les droits pour accéder à : "+gallery_slug
             }, 403
 
@@ -433,7 +413,7 @@ class GetImagies(Resource):
                         'file_path': 'Relative path of the file : galleryslug/filename'
                     })
 class GetFullImage(Resource):
-    @jwt_required
+    @jwt_check
     @api.response(200, 'Success')
     @api.response(400, 'Request incorrect - JSON not valid')
     @api.response(403, 'Not authorized - account not valid')
@@ -462,7 +442,7 @@ class GetFullImage(Resource):
                     })
 @api.representation('application/binary')
 class GetFullImageRaw(Resource):
-    @jwt_required
+    @jwt_check
     @api.response(200, 'Success')
     @api.response(400, 'Request incorrect - JSON not valid')
     @api.response(403, 'Not authorized - account not valid')
@@ -484,7 +464,7 @@ class GetFullImageRaw(Resource):
                     })
 @api.representation('application/binary')
 class GetFullImageRawGet(Resource):
-    @jwt_required
+    @jwt_check
     @api.response(200, 'Success')
     @api.response(400, 'Request incorrect - JSON not valid')
     @api.response(403, 'Not authorized - account not valid')
@@ -513,7 +493,7 @@ class GetFullImageRawGet(Resource):
 
 @api.route('/get-random-image/<gallery_slug>')
 class GetRandomImage(Resource):
-    @jwt_required
+    @jwt_check
     @api.response(200, 'Success')
     @api.response(400, 'Request incorrect - JSON not valid')
     @api.response(403, 'Not authorized - account not valid')
@@ -552,7 +532,7 @@ class GetRandomImage(Resource):
                         'page': 'page 1 refers to the latest, page 2 refers to the next one...'
                     })
 class GetLatestImages(Resource):
-    @jwt_required
+    @jwt_check
     @api.response(200, 'Success')
     @api.response(400, 'Request incorrect - JSON not valid')
     @api.response(403, 'Not authorized - account not valid')
@@ -603,7 +583,7 @@ class GetLatestImages(Resource):
 
 @api.route('/galleries/<gallery_slug>')
 class Gallery(Resource):
-    @jwt_required
+    @jwt_check
     def delete(self, gallery_slug):
         current_user = UserDAO.get_by_id(get_jwt_identity())
         if current_user.admin:
@@ -620,7 +600,7 @@ class Gallery(Resource):
                         'page': 'page 1 refers to the latest, page 2 refers to the next ones...'
                     })
 class GetLatestGalleries(Resource):
-    @jwt_required
+    @jwt_check
     @api.response(200, 'Success')
     @api.response(400, 'Request incorrect - JSON not valid')
     @api.response(403, 'Not authorized - account not valid')
@@ -656,7 +636,7 @@ class GetLatestGalleries(Resource):
                         'gallery_slugs': 'List of slugs of the galleries to be set public'
                     })
 class MakeGalleryPublic(Resource):
-    @jwt_required
+    @jwt_check
     @api.response(200, 'Success')
     @api.response(400, 'Request incorrect - JSON not valid')
     @api.response(403, 'Not authorized - account not valid')
@@ -686,7 +666,7 @@ class MakeGalleryPublic(Resource):
                         'gallery_slugs': 'List of slugs of the galleries to be set private'
                     })
 class MakeGalleryPublic(Resource):
-    @jwt_required
+    @jwt_check
     @api.response(200, 'Success')
     @api.response(400, 'Request incorrect - JSON not valid')
     def post(self):
@@ -712,7 +692,7 @@ class MakeGalleryPublic(Resource):
 
 # @api.route('/dashboard')
 # class Dashboard(Resource):
-#     @jwt_required
+#     @jwt_check
 #     @api.response(200, 'Success')
 #     @api.response(401, 'Error while fetching datas')
 #     def post(self):
