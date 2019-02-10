@@ -45,7 +45,7 @@ def allowed_file(filename):
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 
-@api.route('/file_upload/<gallery_slug>')
+@api.route('/file-upload/<gallery_slug>')
 @api.doc(params=    {
                         'file': 'file to upload',
                     })
@@ -60,6 +60,7 @@ class Upload(Resource):
             return {
                         "msg": "Bad request"
                     }, 401
+
         file = request.files['file']
         current_user = UserDAO.get_by_id(get_jwt_identity())
 
