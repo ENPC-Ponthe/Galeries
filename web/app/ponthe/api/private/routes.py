@@ -477,11 +477,8 @@ class GetFullImageRawGet(Resource):
 
         file_path = request.json.get('file_path')
 
-        print("file_path")
-        print(file_path)
         path, filename = os.path.split(file_path)
         slug, extension = os.path.splitext(filename)
-        print(slug)
         file = FileDAO().find_by_slug(slug)
 
         im = Image.open("/app/ponthe/data/galleries/" + file_path)
