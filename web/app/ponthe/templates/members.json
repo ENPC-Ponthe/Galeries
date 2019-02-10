@@ -1,158 +1,63 @@
 {
-    "015": [
+    "team_ponthe" : [
         {
-            "name": "Geoffroy Gallier",
-            "post": "Président"
+          "year": "020",
+          "year_id": "p020",
+          "members": ["Président : Thomas Chabal",
+                     "Vice-Présidente : Félicie Levinton",
+                     "Respo Images : Quentin Spinat",
+                     "Respo Matériel : Martin Graive",
+                     "Respos Communication : Candice Pichon et Nathan Godey",
+                     "Chefs monteur : Wissam Alami-Messaouidi et Jeffrey Mahou",
+                     "Directeur Photo : Philippe d'Harcourt",
+                     "Respo Web : Alexandre Perez",
+                     "Polaroïd : Clémence Barillot",
+                     "Respo International : Rolando Saavedra"
+                    ],
+          "prev_year_id" : "p019"
         },
         {
-            "name": "Mathieu Ramananarivo",
-            "post": ""
+          "year": "019",
+          "year_id": "p019",
+          "members": ["Présidente : Inès Tazi",
+                     "Responsable Web : Philippe Ferreira de Sousa",
+                     "Membres : Francesca Carreiro, Victor Noisette, Thomas Benichou, Stephane Allado, Hugo Sénetaire, Anaïs Chopin, Louis Dumont"
+                    ],
+          "prev_year_id": "p018"
         },
         {
-            "name": "Mickael Bergem",
-            "post": ""
+          "year": "018",
+          "year_id": "p018",
+          "members": ["Président : Lucien Mauffret",
+                     "Vice-Président : Augustin Joncheray",
+                     "Secrétaire Général : Anatole Parre",
+                     "Photons : Victor Marchais, Nicolas Thery et Aurélie Shi",
+                     "Pixels : Alexandre Aheto, Felix Roubaud et Romain Durand"
+                    ],
+          "prev_year_id": "p017"
         },
         {
-            "name": "Chanh-Nghi Lam",
-            "post": ""
+          "year": "017",
+          "year_id": "p017",
+          "members": ["Président : Alban Berrube"
+                    ],
+          "prev_year_id": "p016"
         },
         {
-            "name": "Paul Chabas",
-            "post": ""
+          "year": "016",
+          "year_id": "p016",
+          "members": ["Président : Omar Mounir Alaoui",
+                     "Réalisateur : Eliot Andres"
+                    ],
+          "prev_year_id": "p015"
         },
         {
-            "name": "Paul Boosz",
-            "post": ""
-        }
-    ],
-    "016": [
-        {
-            "name": "Omar Mounir Alaoui",
-            "post": "Président"
-        },
-        {
-            "name": "Eliot Andres",
-            "post": "Réalisateur"
-        }
-    ],
-    "017": [
-        {
-            "name": "Alban Berrube",
-            "post": "Président"
-        }
-    ],
-    "018": [
-        {
-            "name": "Lucien Mauffret",
-            "post": "Président"
-        },
-        {
-            "name": "Augustin Joncheray",
-            "post": "Vice-Président"
-        },
-        {
-            "name": "Anatole Parre",
-            "post": "Secrétaire général"
-        },
-        {
-            "name": "Victor Marchais",
-            "post": "Photon"
-        },
-        {
-            "name": "Nicolas Thery",
-            "post": "Photon"
-        },
-        {
-            "name": "Aurelie Shi",
-            "post": "Photon"
-        },
-        {
-            "name": "Alexandre Aheto",
-            "post": "Pixel"
-        },
-        {
-            "name": "Felix Roubaud",
-            "post": "Pixel"
-        },
-        {
-            "name": "Romain Durand",
-            "post": "Pixel"
-        }
-    ],
-    "019": [
-        {
-            "name": "Inès Tazi",
-            "post": "Présidente"
-        },
-        {
-            "name": "Philippe Ferreira De Sousa",
-            "post": ""
-        },
-        {
-            "name": "Francesca Carreiro",
-            "post": ""
-        },
-        {
-            "name": "Victor Noisette",
-            "post": ""
-        },
-        {
-            "name": "Thomas Benichou",
-            "post": ""
-        },
-        {
-            "name": "Stephane Allado",
-            "post": ""
-        },
-        {
-            "name": "Hugo Sénetaire",
-            "post": ""
-        },
-        {
-            "name": "Anaïs Chopin",
-            "post": ""
-        },
-        {
-            "name": "Louis Dumont",
-            "post": ""
-        }
-    ],
-    "020": [
-        {
-            "name": "Thomas Chabal",
-            "post": "Président"
-        },
-        {
-            "name": "Nathan Godey",
-            "post": ""
-        },
-        {
-            "name": "Alexandre Perez",
-            "post": ""
-        },
-        {
-            "name": "Philippe d'Harcourt",
-            "post": ""
-        },
-        {
-            "name": "Wissam Alami",
-            "post": ""
-        },
-        {
-            "name": "Candice Pichon",
-            "post": ""
-        },
-        {
-            "name": "Jeffrey Mahou",
-            "post": ""
-        },
-        {
-            "name": "Quentin Spinat",
-            "post": ""
-        },
-        {
-            "name": "Martin Graive",
-            "post": ""
+          "year": "015",
+          "year_id": "p015",
+          "members": ["Président : Geoffroy Gallier",
+                     "Membres : Mathieu Ramananarivo, Mickael Bergem, Chanh-Nghi Lam, Paul Chabas et Paul Boosz"
+                    ],
+          "prev_year_id": ""
         }
     ]
 }

@@ -3,10 +3,7 @@ from datetime import datetime
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 import codecs, translitcodec, enum, re, string, random
-
 from .file_helper import split_filename, get_extension
-
-
 from . import db, thumb
 
 
