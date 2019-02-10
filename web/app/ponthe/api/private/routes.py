@@ -230,14 +230,6 @@ class Year(Resource):
         return {
             "data": data
         }, 200
-        # try:
-        #     public_galleries = list(filter(lambda gallery: not gallery.private, year.galleries))
-        #     return {
-        #         "year": year_dao.serialize(year_slug),
-        #         "public_galleries": [gallery.slug for gallery in public_galleries]
-        #     }, 200
-        # except NoResultFound:
-        #     return {'msg': 'year not found'}, 404
 
 @api.route('/create-gallery')
 @api.doc(params=    {
@@ -289,12 +281,6 @@ class Members(Resource):
         members = open(os.path.join(SITE_ROOT, "/app/ponthe/templates", "members.json"))
         return json.load(members, strict=False)
 
-
-# @api.route('/get_image')
-# class Image(Resource):
-#     def get(self):
-#         file = FileDAO().find_by_slug("photo_du_template")
-#         return {"url": url_for('uploads', file_path=file.file_path)}, 200
 
 @api.route('/get-galleries/<event_slug>')
 class GetGalleries(Resource):
@@ -370,7 +356,6 @@ class GetImagies(Resource):
                 "body": "Vous n'avez pas les droits pour accéder à : "+gallery_slug
             }, 403
 
-        # list_of_files = list(filter(lambda file: not file.pending, gallery.files))
         list_of_files = FileDAO.find_files_by_gallery(gallery, page, page_size)
         list_of_dim = []
         encoded_list_of_files = []
@@ -404,7 +389,6 @@ class GetImagies(Resource):
         return {
             "gallery": gallery.serialize(),
             "approved_files": approved_files
-            # "approved_files": [file.file_path for file in list_of_files]
         }, 200
 
 @api.route('/get-full-image')
@@ -450,51 +434,12 @@ class GetFullImageRaw(Resource):
         '''Get a given image in full size raw'''
 
         file_path = request.json.get('file_path')
-        # print("requested file_path")
-        # print(file_path)
         im = Image.open("/app/ponthe/data/galleries/" + file_path)
 
         return send_file(
             open("/app/ponthe/data/galleries/" + file_path, 'rb'),
             mimetype='image/'+im.format
             )
-
-# @api.route('/get-thumb-image-raw')
-# @api.doc(params=    {
-#                         'file_path': 'Relative path of the file : galleryslug/filename'
-#                     })
-# @api.representation('application/binary')
-# class GetFullImageRaw(Resource):
-#     @jwt_required
-#     @api.response(200, 'Success')
-#     @api.response(400, 'Request incorrect - JSON not valid')
-#     @api.response(403, 'Not authorized - account not valid')
-#     @api.response(404, 'Not found - No matching gallery_slug')
-#     def post(self):
-#         '''Get a given image in small size raw'''
-#
-#         file_path = request.json.get('file_path')
-#
-#         print("file_path")
-#         print(file_path)
-#         path, filename = os.path.split(file_path)
-#         slug, extension = os.path.splitext(filename)
-#         print(slug)
-#         file = FileDAO().find_by_slug(slug)
-#
-#         # print("requested file_path")
-#         # print(file_path)
-#         im = Image.open("/app/ponthe/data/galleries/" + file_path)
-#
-#         # with open(THUMBS_FOLDER + file.get_thumb_path(), "rb") as image_file:
-#         #     encoded = "data:image/"+file.extension+";base64," + str(base64.b64encode(image_file.read()).decode('utf-8'))
-#         #     encoded_list_of_files.append(encoded)
-#         # image_file.close()
-#
-#         return send_file(
-#             open(THUMBS_FOLDER + file.get_thumb_path(), "rb"),
-#             mimetype='image/'+im.format
-#             )
 
 @api.route('/get-thumb-image-raw/<file_slug>')
 @api.doc(params=    {
@@ -522,88 +467,12 @@ class GetFullImageRawGet(Resource):
         print(slug)
         file = FileDAO().find_by_slug(slug)
 
-        # print("requested file_path")
-        # print(file_path)
         im = Image.open("/app/ponthe/data/galleries/" + file_path)
-
-        # with open(THUMBS_FOLDER + file.get_thumb_path(), "rb") as image_file:
-        #     encoded = "data:image/"+file.extension+";base64," + str(base64.b64encode(image_file.read()).decode('utf-8'))
-        #     encoded_list_of_files.append(encoded)
-        # image_file.close()
 
         return send_file(
             open(THUMBS_FOLDER + file.get_thumb_path(), "rb"),
             mimetype='image/'+im.format
             )
-
-# @api.route('/get-thumb-image-raw/<file_slug>')
-# @api.doc(params=    {
-#                         'file_path': 'Relative path of the file : galleryslug/filename'
-#                     })
-# @api.representation('application/binary')
-# class GetFullImageRawGet(Resource):
-#     def post(self, file_slug):
-#         '''Get a given image in small size raw'''
-#
-#         # file_path = request.json.get('file_path')
-#
-#         # print("file_path")
-#         # print(file_path)
-#         # path, filename = os.path.split(file_path)
-#         # slug, extension = os.path.splitext(filename)
-#         # print(slug)
-#         file = FileDAO().find_by_slug(file_slug)
-#
-#         # print("requested file_path")
-#         # print(file_path)
-#         # im = Image.open("/app/ponthe/data/galleries/" + file_path)
-#
-#         # with open(THUMBS_FOLDER + file.get_thumb_path(), "rb") as image_file:
-#         #     encoded = "data:image/"+file.extension+";base64," + str(base64.b64encode(image_file.read()).decode('utf-8'))
-#         #     encoded_list_of_files.append(encoded)
-#         # image_file.close()
-#
-#         return send_file(
-#             open(THUMBS_FOLDER + file.get_thumb_path(), "rb"),
-#             mimetype='image/'+file.extension
-#             )
-
-# @api.route('/get-full-image-raw')
-# @jwt_required
-# def getFullImageRaw():
-#
-#     file_path = request.json.get('file_path')
-#     im = Image.open("/app/ponthe/data/galleries/" + file_path)
-#     path, filename = os.path.split(im.filename)
-#     return send_file(
-#         "/app/ponthe/data/galleries/" + file_path,
-#         mimetype='image/'+im.format,
-#         attachment_filename=filename
-#     )
-
-# @api.route('/get-full-image-raw')
-# def get_image():
-#     file_path = request.json.get('file_path')
-#     im = Image.open("/app/ponthe/data/galleries/" + file_path)
-#     width, height = im.size
-#
-#     with open("/app/ponthe/data/galleries/" + file_path, "rb") as image_file:
-#         content = image_file.read()
-#         file = "data:image/"+im.format+";base64," + str(base64.b64encode(image_file.read()).decode('utf-8'))
-#     image_file.close()
-#
-#     # image_binary = read_image(pid)
-#     # response = make_response(content)
-#     # response.headers.set('Content-Type', 'image/'+im.format)
-#     # response.headers.set(
-#     #     'Content-Disposition', 'attachment', filename='%s.'+im.format % im.name)
-#     # return response
-#
-#     return send_file(
-#                      content,
-#                      attachment_filename=im.name,
-#                      mimetype='image/'+im.format
-#                )
 
 @api.route('/get-random-image/<gallery_slug>')
 class GetRandomImage(Resource):
@@ -685,23 +554,10 @@ class GetLatestImagies(Resource):
                         "base64": encoded_list_of_files[i],
                         "full_dimension": list_of_dim[i]
                     })
-            # latest_files[list_of_files[i].file_path] = encoded_list_of_files[i]
 
         return {
             "latest_files": latest_files
-            # "latest_files": [file.file_path for file in list_of_files],
-            # "thumbnails" : encoded_list_of_files
         }, 200
-# @api.route('/galleries/<gallery_slug>')
-# class Gallery(Resource):
-#     def post(self, gallery_slug):
-#         try:
-#             gallery = GalleryDAO().find_by_slug(gallery_slug)
-#         except NoResultFound:
-#             return {"msg": "Error: "}
-#         if gallery.private and not GalleryDAO.has_right_on(gallery):
-#             raise NotFound()
-#         return render_template('gallery.html', gallery=gallery, approved_files=filter(lambda file: not file.pending, gallery.files))
 
 @api.route('/galleries/<gallery_slug>')
 class Gallery(Resource):
@@ -709,7 +565,6 @@ class Gallery(Resource):
     def delete(self, gallery_slug):
         current_user = UserDAO.get_by_id(get_jwt_identity())
         if current_user.admin:
-            # GalleryService.delete(gallery_slug, current_user)
             try:
                 GalleryService.delete(gallery_slug, current_user)
                 return {}, 200
