@@ -45,7 +45,7 @@ def allowed_file(filename):
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 
-@api.route('/file_upload/<gallery_slug>')
+@api.route('/file-upload/<gallery_slug>')
 @api.doc(params=    {
                         'file': 'file to upload',
                     })
