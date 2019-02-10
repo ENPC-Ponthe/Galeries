@@ -58,6 +58,7 @@ class Upload(Resource):
             return {
                         "msg": "Bad request"
                     }, 401
+
         file = request.files['file']
         current_user = UserDAO.get_by_id(get_jwt_identity())
 
