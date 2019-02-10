@@ -26,6 +26,11 @@ class FileDAO(ResourceDAO):
         self.delete(self.find_by_slug(slug))
 
     @staticmethod
-    def find_files_by_gallery(gallery: Gallery, page, page_size):
-        files = File.query.filter_by(gallery=gallery).offset((page-1)*page_size).limit(page_size).all()
+    def find_files_by_gallery(gallery: Gallery, page=None, page_size=None):
+        if page_size == None:
+            files = File.query.filter_by(gallery=gallery).all()
+        else:
+            if page == None:
+                page = 1
+            files = File.query.filter_by(gallery=gallery).offset((page-1)*page_size).limit(page_size).all()
         return list(filter(lambda file: not file.pending, files))
