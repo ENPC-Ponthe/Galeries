@@ -126,7 +126,7 @@ class Materiel(Resource):
         msg = Message(subject=f"Demande d'emprunt de {object} par {current_user.firstname} {current_user.lastname}",
                       body=message,
                       sender=f"{current_user.full_name} <no-reply@ponthe.enpc.org>",
-                      recipients=['alexperez3498@hotmail.fr'])#['ponthe@liste.enpc.fr'])
+                      recipients=['alexperez3498@hotmail.fr', 'ponthe@liste.enpc.fr'])#['ponthe@liste.enpc.fr'])
         mail.send(msg)
         return  {
             "msg": "Mail envoyé !"
@@ -184,7 +184,7 @@ class Year(Resource):
         return {'msg': 'not admin'}, 403
 
 @api.route('/get-galleries-by-year')
-class Year(Resource):
+class GetGalleriesByYear(Resource):
     @jwt_required
     @api.response(200, 'Success')
     @api.response(404, 'Year not found')
@@ -230,6 +230,42 @@ class Year(Resource):
         return {
             "data": data
         }, 200
+
+
+@api.route('/get-all-galleries')
+class GetAllGalleries(Resource):
+    @jwt_required
+    @api.response(200, 'Success')
+    def get(self):
+        '''Get the list of public galleries of all years'''
+        gallery_list = []
+        public_galleries = GalleryDAO().find_all_public()
+        for gallery in public_galleries:
+            list_of_files = list(filter(lambda file: not file.pending, gallery.files))
+            encoded_string = ""
+            if(len(list_of_files) > 0):
+                i = random.randint(0, len(list_of_files)-1)
+                with open("/app/instance/thumbs/" + list_of_files[i].get_thumb_path(), "rb") as image_file:
+                    encoded_string = "data:image/"+list_of_files[i].extension+";base64," + str(base64.b64encode(image_file.read()).decode('utf-8'))
+                image_file.close()
+            gallery_list.append({
+                "name": gallery.name,
+                "slug": gallery.slug,
+                "image": encoded_string
+            })
+        data =  {
+                    "galleries": gallery_list
+                }
+        return data, 200
+        # try:
+        #     public_galleries = list(filter(lambda gallery: not gallery.private, year.galleries))
+        #     return {
+        #         "year": year_dao.serialize(year_slug),
+        #         "public_galleries": [gallery.slug for gallery in public_galleries]
+        #     }, 200
+        # except NoResultFound:
+        #     return {'msg': 'year not found'}, 404
+
 
 @api.route('/create-gallery')
 @api.doc(params=    {
@@ -510,7 +546,11 @@ class GetRandomImage(Resource):
 
 
 @api.route('/get-latest-images')
-class GetLatestImagies(Resource):
+@api.doc(params=    {
+                        'page_size': 'number of images',
+                        'page': 'page 1 refers to the latest, page 2 refers to the next one...'
+                    })
+class GetLatestImages(Resource):
     @jwt_required
     @api.response(200, 'Success')
     @api.response(400, 'Request incorrect - JSON not valid')
@@ -526,7 +566,6 @@ class GetLatestImagies(Resource):
 
 
         files = FileDAO().find_all_sorted_by_date(page, page_size)
-        list_of_files = list(filter(lambda file: not file.pending, files))
         encoded_list_of_files = []
         list_of_dim = []
         for file in list_of_files:
@@ -571,6 +610,42 @@ class Gallery(Resource):
             except:
                 return {'msg': 'Galleries does not exist'}, 404
         return {}, 403
+
+@api.route('/get-latest-galleries')
+@api.doc(params=    {
+                        'page_size': 'number of images',
+                        'page': 'page 1 refers to the latest, page 2 refers to the next ones...'
+                    })
+class GetLatestGalleries(Resource):
+    @jwt_required
+    @api.response(200, 'Success')
+    @api.response(400, 'Request incorrect - JSON not valid')
+    @api.response(403, 'Not authorized - account not valid')
+    @api.response(404, 'Not found - No matching gallery_slug')
+    def post(self):
+        page = request.json.get("page")
+        page_size = request.json.get("page_size")
+
+        public_galleries = GalleryDAO().find_all_sorted_by_date(page, page_size)
+        gallery_list =[]
+
+        for gallery in public_galleries:
+            list_of_files = list(filter(lambda file: not file.pending, gallery.files))
+            encoded_string = ""
+            if(len(list_of_files) > 0):
+                i = random.randint(0, len(list_of_files)-1)
+                with open("/app/instance/thumbs/" + list_of_files[i].get_thumb_path(), "rb") as image_file:
+                    encoded_string = "data:image/"+list_of_files[i].extension+";base64," + str(base64.b64encode(image_file.read()).decode('utf-8'))
+                image_file.close()
+            gallery_list.append({
+                "name": gallery.name,
+                "slug": gallery.slug,
+                "image": encoded_string
+            })
+        data =  {
+                    "galleries": gallery_list
+                }
+        return data, 200
 
 
 @api.route('/galleries/makepublic')
