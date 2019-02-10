@@ -5,7 +5,7 @@ from flask_mail import Mail
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
 from flask_thumbnails import Thumbnail
-
+from flask_cors import CORS
 from . import config
 from .logging_config import logging_init
 
@@ -19,11 +19,12 @@ db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 FlaskCLI(app)
 thumb = Thumbnail(app)
-
+CORS(app)
 login_manager = LoginManager()
 login_manager.init_app(app)
 
 mail=Mail(app)
+
 
 from .public import public
 from .private import private
