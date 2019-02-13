@@ -200,19 +200,19 @@ class GetGalleriesByYear(Resource):
                     with open("/app/instance/thumbs/" + list_of_files[i].get_thumb_path(), "rb") as image_file:
                         encoded_string = "data:image/"+list_of_files[i].extension+";base64," + str(base64.b64encode(image_file.read()).decode('utf-8'))
                     image_file.close()
-                if without_base64:
-                    gallery_list.append({
-                        "name": gallery.name,
-                        "slug": gallery.slug,
-                        "file_path": list_of_files[i].file_path
-                    })
-                else:
-                    gallery_list.append({
-                        "name": gallery.name,
-                        "slug": gallery.slug,
-                        "file_path": list_of_files[i].file_path,
-                        "image": encoded_string
-                    })
+                    if without_base64:
+                        gallery_list.append({
+                            "name": gallery.name,
+                            "slug": gallery.slug,
+                            "file_path": list_of_files[i].file_path
+                        })
+                    else:
+                        gallery_list.append({
+                            "name": gallery.name,
+                            "slug": gallery.slug,
+                            "file_path": list_of_files[i].file_path,
+                            "image": encoded_string
+                        })
             data.append({
                 "year": year.value,
                 "galleries": gallery_list
@@ -343,7 +343,7 @@ class GetGalleries(Resource):
         }, 200
 
 @api.route('/get-images/<gallery_slug>')
-class GetImagies(Resource):
+class GetImages(Resource):
     @jwt_check
     @api.response(200, 'Success')
     @api.response(400, 'Request incorrect - JSON not valid')
@@ -373,7 +373,11 @@ class GetImagies(Resource):
                 "body": "Vous n'avez pas les droits pour accéder à : "+gallery_slug
             }, 403
 
-        list_of_files = FileDAO.find_files_by_gallery(gallery, page, page_size)
+        if GalleryDAO.has_right_on(gallery, current_user):
+            list_of_files = FileDAO.find_all_files_by_gallery(gallery, page, page_size)
+        else:
+            list_of_files = FileDAO.find_not_pending_files_by_gallery(gallery, page, page_size)
+
         list_of_dim = []
         encoded_list_of_files = []
 
