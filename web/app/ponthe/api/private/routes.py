@@ -10,16 +10,12 @@ from sqlalchemy.orm.exc import NoResultFound
 import re
 import json
 from flask import jsonify, send_file
-# from urllib.parse import urlparse, urljoin
-# from flask_login import login_user, current_user
 from itsdangerous import SignatureExpired, BadSignature
 from datetime import datetime
 from werkzeug.utils import secure_filename
-# from . import public
-from ... import app, db, login_manager, mail
+from ... import db, mail
 from ...services import UserService, GalleryService
 from flask import request
-# from ...models import serialize
 import random
 import base64
 import os
@@ -32,13 +28,6 @@ import io
 UPLOAD_FOLDER = '/app/instance/uploads/'
 ALLOWED_EXTENSIONS = set(['txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'])
 THUMBS_FOLDER = "/app/instance/thumbs/"
-# @app.template_filter('thumb')
-# def thumb_filter(file):
-#     return thumb.get_thumbnail(file.file_path, '226x226')
-#
-# @app.template_filter('category_thumb')
-# def thumb_filter(file):
-#     return thumb.get_thumbnail(file.file_path, '630x500')
 
 
 def allowed_file(filename):
@@ -595,6 +584,7 @@ class Gallery(Resource):
                 return {'msg': 'Galleries does not exist'}, 404
         return {}, 403
 
+
 @api.route('/get-latest-galleries')
 @api.doc(params=    {
                         'page_size': 'number of images',
@@ -715,24 +705,3 @@ class ResetPasword(Resource):
             return {"msg": "Mot de passe réinitialisé avec succès"}, 200
         else:
             return {"msg": "Mot de passe incorrect"}, 400
-
-
-# @api.route('/dashboard')
-# class Dashboard(Resource):
-#     @jwt_check
-#     @api.response(200, 'Success')
-#     @api.response(401, 'Error while fetching datas')
-#     def post(self):
-#         current_user = UserDAO.get_by_id(get_jwt_identity())
-#         try:
-#             pending_files_by_gallery, confirmed_files_by_gallery = GalleryService.get_own_pending_and_approved_files_by_gallery(current_user)
-#         except Exception as e:
-#             return {
-#                 "title": "Erreur - Impossible de récupérer les données.",
-#                 "body": "Une erreur est survenue : "+str(e)
-#             }, 401
-#
-#         return {
-#             "pending_files_by_gallery": pending_files_by_gallery,
-#             "confirmed_files_by_gallery": confirmed_files_by_gallery
-#         }, 200
