@@ -454,18 +454,3 @@ class Tag(Resource):
     }
 
     id = db.Column(db.Integer, db.ForeignKey('resources.id', onupdate="CASCADE", ondelete="CASCADE"), primary_key=True)
-
-
-# def serialize(obj):
-#     """JSON serializer for objects not serializable by default json code"""
-#
-#     if isinstance(obj, Event):
-#         return obj.serialize()
-#
-#     if isinstance(obj, Gallery):
-#         return obj.serialize()
-#
-#     if isinstance(obj, Year):
-#         return {"year_slug": bite}
-#
-#     return obj.__dict__

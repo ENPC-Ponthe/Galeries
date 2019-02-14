@@ -6,7 +6,7 @@ from ..persistence import FileDAO, GalleryDAO
 from ..models import File, User, create_thumb
 from ..file_helper import create_folder, move_file, is_image, is_video, get_extension
 
-UPLOAD_FOLDER = '/app/instance/uploads/'
+UPLOAD_FOLDER = app.config['MEDIA_ROOT']
 
 
 class FileService:

@@ -7,4 +7,3 @@ api = Api(api_blueprint)
 from .public import routes
 from .private import routes
 from .admin import routes
-from . import test
