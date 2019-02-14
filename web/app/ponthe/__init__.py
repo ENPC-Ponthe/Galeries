@@ -32,7 +32,6 @@ from . import data
 
 from . import cli
 from . import models
-from . import views
 
 app.register_blueprint(public)
 app.register_blueprint(api_blueprint, url_prefix='/api')
