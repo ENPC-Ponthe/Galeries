@@ -186,7 +186,7 @@ class GetGalleriesByYear(Resource):
                 encoded_string = ""
                 if(len(list_of_files) > 0):
                     i = random.randint(0, len(list_of_files)-1)
-                    encoded_string = list_of_files[i].base64encoding()
+                    encoded_string = list_of_files[i].base64encodingThumb()
                     if without_base64:
                         gallery_list.append({
                             "name": gallery.name,
@@ -222,7 +222,7 @@ class GetAllGalleries(Resource):
             encoded_string = ""
             if(len(list_of_files) > 0):
                 i = random.randint(0, len(list_of_files)-1)
-                encoded_string = list_of_files[i].base64encoding()
+                encoded_string = list_of_files[i].base64encodingThumb()
             gallery_list.append({
                 "name": gallery.name,
                 "slug": gallery.slug,
@@ -368,10 +368,9 @@ class GetImages(Resource):
         encoded_list_of_files = []
 
         for file in list_of_files:
-            with open(THUMBS_FOLDER + file.get_thumb_path(), "rb") as image_file:
-                encoded = "data:image/"+file.extension+";base64," + str(base64.b64encode(image_file.read()).decode('utf-8'))
-                encoded_list_of_files.append(encoded)
-            image_file.close()
+
+            encoded = file.base64encodingThumb()
+            encoded_list_of_files.append(encoded)
 
             im = Image.open("/app/ponthe/data/galleries/" + file.file_path)
             width, height = im.size
@@ -503,9 +502,7 @@ class GetRandomImage(Resource):
             }, 403
         list_of_files = list(filter(lambda file: not file.pending, gallery.files))
         i = random.randint(0, len(list_of_files)-1)
-        with open(THUMBS_FOLDER + list_of_files[i].get_thumb_path(), "rb") as image_file:
-            encoded_string = str(base64.b64encode(image_file.read()).decode('utf-8'))
-        image_file.close()
+        encoded_string = list_of_files[i].base64encodingThumb()
         return {
             "gallery": gallery.serialize(),
             "thumbnail": encoded_string,
@@ -539,10 +536,8 @@ class GetLatestImages(Resource):
         list_of_dim = []
 
         for file in list_of_files:
-            with open(THUMBS_FOLDER + file.get_thumb_path(), "rb") as image_file:
-                encoded = "data:image/"+file.extension+";base64," + str(base64.b64encode(image_file.read()).decode('utf-8'))
-                encoded_list_of_files.append(encoded)
-            image_file.close()
+            encoded = file.base64encodingThumb()
+            encoded_list_of_files.append(encoded)
 
             im = Image.open("/app/ponthe/data/galleries/" + file.file_path)
             width, height = im.size
@@ -578,7 +573,7 @@ class Gallery(Resource):
                 GalleryService.delete(gallery_slug, current_user)
                 return {}, 200
             except:
-                return {'msg': 'Galleries does not exist'}, 404
+                return {'msg': 'Gallery does not exist'}, 404
         return {}, 403
 
 
@@ -605,9 +600,7 @@ class GetLatestGalleries(Resource):
             encoded_string = ""
             if(len(list_of_files) > 0):
                 i = random.randint(0, len(list_of_files)-1)
-                with open("/app/instance/thumbs/" + list_of_files[i].get_thumb_path(), "rb") as image_file:
-                    encoded_string = "data:image/"+list_of_files[i].extension+";base64," + str(base64.b64encode(image_file.read()).decode('utf-8'))
-                image_file.close()
+                encoded_string = list_of_files[i].base64encodingThumb()
             gallery_list.append({
                 "name": gallery.name,
                 "slug": gallery.slug,
