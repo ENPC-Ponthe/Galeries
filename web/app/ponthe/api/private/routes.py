@@ -186,9 +186,7 @@ class GetGalleriesByYear(Resource):
                 encoded_string = ""
                 if(len(list_of_files) > 0):
                     i = random.randint(0, len(list_of_files)-1)
-                    with open("/app/instance/thumbs/" + list_of_files[i].get_thumb_path(), "rb") as image_file:
-                        encoded_string = "data:image/"+list_of_files[i].extension+";base64," + str(base64.b64encode(image_file.read()).decode('utf-8'))
-                    image_file.close()
+                    encoded_string = list_of_files[i].base64encoding()
                     if without_base64:
                         gallery_list.append({
                             "name": gallery.name,
@@ -224,9 +222,7 @@ class GetAllGalleries(Resource):
             encoded_string = ""
             if(len(list_of_files) > 0):
                 i = random.randint(0, len(list_of_files)-1)
-                with open("/app/instance/thumbs/" + list_of_files[i].get_thumb_path(), "rb") as image_file:
-                    encoded_string = "data:image/"+list_of_files[i].extension+";base64," + str(base64.b64encode(image_file.read()).decode('utf-8'))
-                image_file.close()
+                encoded_string = list_of_files[i].base64encoding()
             gallery_list.append({
                 "name": gallery.name,
                 "slug": gallery.slug,
@@ -236,6 +232,7 @@ class GetAllGalleries(Resource):
                     "galleries": gallery_list
                 }
         return data, 200
+
 
 @api.route('/create-gallery')
 @api.doc(params=    {

@@ -1,6 +1,5 @@
 from flask import Flask
 from flask_cli import FlaskCLI
-from flask_login import LoginManager
 from flask_mail import Mail
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
@@ -20,8 +19,7 @@ migrate = Migrate(app, db)
 FlaskCLI(app)
 thumb = Thumbnail(app)
 CORS(app)
-login_manager = LoginManager()
-login_manager.init_app(app)
+
 
 mail=Mail(app)
 

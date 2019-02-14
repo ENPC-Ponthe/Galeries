@@ -5,7 +5,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 import codecs, translitcodec, enum, re, string, random
 from .file_helper import split_filename, get_extension
 from . import db, thumb
-
+import base64
 
 _punct_re = re.compile(r'[\t !"#$%&\'()*\-/<=>?@\[\\\]^_`{|},.]+')  #   Les slug DSI enlève les ' au lieu de les remplacer par un -
 ALPHANUMERIC_LIST = string.ascii_letters+string.digits
@@ -446,6 +446,11 @@ class File(Resource):
             create_thumb(self)
         return path_to_thumb
 
+    def base64encoding(self):
+        with open("/app/instance/thumbs/" + self.get_thumb_path(), "rb") as image_file:
+            encoded_string = "data:image/"+ self.extension+";base64," + str(base64.b64encode(image_file.read()).decode('utf-8'))
+        image_file.close()
+        return encoded_string
 
 class Tag(Resource):
     __tablename__ = 'tags'
