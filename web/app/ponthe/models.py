@@ -4,12 +4,15 @@ from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 import codecs, translitcodec, enum, re, string, random
 from .file_helper import split_filename, get_extension
-from . import db, thumb
+from . import db, thumb, app
 import base64
 
 _punct_re = re.compile(r'[\t !"#$%&\'()*\-/<=>?@\[\\\]^_`{|},.]+')  #   Les slug DSI enlève les ' au lieu de les remplacer par un -
 ALPHANUMERIC_LIST = string.ascii_letters+string.digits
-THUMBS_FOLDER = "/app/instance/thumbs/"
+
+UPLOAD_FOLDER = app.config['MEDIA_ROOT']
+THUMBS_FOLDER = app.config['THUMBNAIL_MEDIA_THUMBNAIL_ROOT']
+
 
 def generate_random_string(size, char_list=ALPHANUMERIC_LIST):
     return "".join([char_list[random.randint(0,len(char_list)-1)] for i in range(size)])
@@ -446,8 +449,14 @@ class File(Resource):
             create_thumb(self)
         return path_to_thumb
 
-    def base64encoding(self):
-        with open("/app/instance/thumbs/" + self.get_thumb_path(), "rb") as image_file:
+    def base64encodingFull(self):
+        with open(UPLOAD_FOLDER + '/' + self.get_file_path(), "rb") as image_file:
+            encoded_string = "data:image/"+ self.extension+";base64," + str(base64.b64encode(image_file.read()).decode('utf-8'))
+        image_file.close()
+        return encoded_string
+
+    def base64encodingThumb(self):
+        with open(THUMBS_FOLDER + '/' + self.get_thumb_path(), "rb") as image_file:
             encoded_string = "data:image/"+ self.extension+";base64," + str(base64.b64encode(image_file.read()).decode('utf-8'))
         image_file.close()
         return encoded_string
