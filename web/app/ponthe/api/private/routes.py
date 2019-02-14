@@ -398,7 +398,7 @@ class GetImages(Resource):
 
         return {
             "gallery": gallery.serialize(),
-            "approved_files": approved_files
+            "files": approved_files
         }, 200
 
 @api.route('/get-full-image')
@@ -568,7 +568,7 @@ class GetLatestImages(Resource):
                     })
 
         return {
-            "latest_files": latest_files
+            "files": latest_files
         }, 200
 
 @api.route('/galleries/<gallery_slug>')
