@@ -286,9 +286,6 @@ class Event(Resource):
 
     def serialize(self):
         return {
-            # "id": self.id,
-            # "category_id": self.category_id,
-            # "cover_image_id": self.cover_image_id,
             "description": self.description,
             "slug": self.slug,
             "name": self.name
@@ -375,13 +372,8 @@ class Gallery(Resource):
 
     def serialize(self):
         return {
-            # "id": self.id,
-            # "year_id": self.year_id,
-            # "event_id": self.event_id,
-            # "event": self.event,
             "cover_image_id": self.cover_image_id,
             "description": self.description,
-            # "private": self.private,
             "slug": self.slug,
             "name": self.name
         }
