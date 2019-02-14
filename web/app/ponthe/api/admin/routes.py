@@ -1,22 +1,14 @@
 from flask_jwt_extended import JWTManager, get_jwt_identity
-from flask_login import current_user, login_required
 from .. import api
 from flask_restplus import Resource
 from ...persistence import UserDAO, YearDAO, EventDAO, CategoryDAO, GalleryDAO
 from ...middlewares import admin_only, jwt_check
-from itsdangerous import SignatureExpired, BadSignature
 from ...config import constants
 from sqlalchemy.orm.exc import NoResultFound
 import re
-# from urllib.parse import urlparse, urljoin
-# from flask_login import login_user, current_user
-from itsdangerous import SignatureExpired, BadSignature
-from datetime import datetime
-
-# from . import public
-from ... import app, db, login_manager
+from ... import db
 from ...services import UserService, EventService, YearService, GalleryService, FileService, CategoryService
-from flask import request, jsonify
+from flask import request
 
 
 @api.route('/create-event')
@@ -82,7 +74,8 @@ class CreateYear(Resource):
 
         return {
             "msg": "Année créée"
-        }, 20
+        }, 201
+
 @api.route('/create-category')
 @api.doc(params=    {
                         'name': 'Example : Sport',
@@ -103,13 +96,7 @@ class CreateCategory(Resource):
             }, 401
 
         current_user = UserDAO.get_by_id(get_jwt_identity())
-        # try:
         CategoryService.create(category_value, category_description, current_user)
-        # except Exception as e:
-            # return {
-            #     "title": "Erreur - Impossible de créer la categorie",
-            #     "body": "Une erreur est survenue lors de la création de la categorie."
-            # }, 401
 
         return {
             "msg": "Catégorie créée"
