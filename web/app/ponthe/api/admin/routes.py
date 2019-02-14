@@ -29,7 +29,6 @@ class CreateEvent(Resource):
     @jwt_check
     @admin_only
     @api.response(201, 'Success - Event created')
-    @api.response(400, 'Request incorrect - JSON not valid')
     @api.response(403, 'Not authorized - account not valid')
     @api.response(401, 'Request incorrect - Missing required parameter')
     def post(self):
