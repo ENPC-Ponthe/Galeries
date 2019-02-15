@@ -8,6 +8,30 @@ from .. import db
 from ..services import UserService
 from ..persistence import UserDAO
 
+@public.route('/register/<token>')
+def registering(token):
+    try :
+        user_id = UserService.get_id_from_token(token)
+    except BadSignature:
+        abort(404)
+    except SignatureExpired :
+        return render_template('mail_confirmation.html',
+            title="Erreur",
+            body='Le token est expiré. Tu as dépassé le délai de 24h.'
+        )
+
+    user = UserDAO.get_by_id(user_id)
+    if user is None:
+        return render_template('mail_confirmation.html',
+            title="Erreur - Aucun utilisateur correspondant",
+            body='Réitère la procédure de création de compte.'
+        )
+    user.email_confirmed = True
+    db.session.commit()
+    return render_template('mail_confirmation.html',
+        title="Compte validé",
+        body='Rend toi vite sur la <a href="{}">page de connexion</a> !'.format(url_for('public.login'))
+    )
 
 @public.route('/reset', methods=['GET','POST'])
 def reset():
