@@ -1,6 +1,6 @@
 # Galeries Ponthé
 
-This software is a API used for the Ponthe audiovisual club. It is powered by Flask and SQLAlchemy. You can access the documentation by browsing http://localhost:${WEB_PORT}/api/ .
+This software is a API used for the Ponthe audiovisual club. It is powered by Flask and SQLAlchemy. You can access the documentation by browsing http://localhost:${WEB_PORT}/api/.
 
 
 # Installation
