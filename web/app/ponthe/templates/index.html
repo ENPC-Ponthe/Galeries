@@ -1,0 +1,83 @@
+{% extends "layout/layout.html" %}
+
+{% block content %}
+<div id="content-top-border" class="container"></div>
+<div id="content">
+    <div class="container no-padding">
+        <div class="row">
+            <div id="frontpage-carousel" class="carousel slide" data-ride="carousel">
+                <ol class="carousel-indicators">
+                    <li data-target="#frontpage-carousel" data-slide-to="0" class="active"></li>
+                    <li data-target="#frontpage-carousel" data-slide-to="1"></li>
+                    <li data-target="#frontpage-carousel" data-slide-to="2"></li>
+                    <li data-target="#frontpage-carousel" data-slide-to="3"></li>
+                    <li data-target="#frontpage-carousel" data-slide-to="4"></li>
+                </ol>
+                <div class="clearfix"></div>
+                <div class="carousel-inner">
+                    <div class="item active">
+                        <img src="/assets/img/slideshow/ndlr.jpg">
+                    </div>
+                    <div class="item">
+                        <img src="/assets/img/slideshow/pompom.jpg">
+                    </div>
+                    <div class="item">
+                        <img src="/assets/img/slideshow/wei.jpg">
+                    </div>
+                    <div class="item">
+                        <img src="/assets/img/slideshow/prc.jpg">
+                    </div>
+                    <div class="item">
+                        <img src="/assets/img/slideshow/thbf.jpg">
+                    </div>
+                </div>
+                <a class="left carousel-control" href="#frontpage-carousel" data-slide="prev">
+                    <span class="glyphicon glyphicon-chevron-left"></span>
+                </a>
+                <a class="right carousel-control" href="#frontpage-carousel" data-slide="next">
+                    <span class="glyphicon glyphicon-chevron-right"></span>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="container background-white">
+    <div class="row margin-vert-30">
+        <!-- Main Text -->
+        <div class="col-md-12">
+            <h2 class="text-center">Bienvenue sur le site du Ponthé</h2>
+            <p class="text-center">
+                Le club Tournage et Réalisations des Ponts
+            </p>
+            <p class="text-center">
+                Ici vous pourrez voir, télécharger et déposer des photos, des vidéos, et les films réalisés.
+            </p>
+        </div>
+        <!-- End Main Text -->
+    </div>
+</div>
+<div class="container background-gray-lighter">
+    <div class="row padding-vert-20">
+        <div class="col-md-1"></div>
+        <div class="col-md-10">
+            <ul class="portfolio-group">
+                {% for category in categories %}
+                    <li class="portfolio-item col-sm-6 col-xs-12 padding-20">
+                        <a href={{ url_for('private.category_gallery', category_slug=category.slug) }}>
+                            <figure class="animate {{ loop.cycle('fadeInRight', 'fadeInLeft') }}">
+                                <img src="{{ category.cover_image | category_thumb }}">
+                                <figcaption style="min-height: 150px;">
+                                    <h3>{{ category.name }}</h3>
+                                    <span>{{ category.description }}</span>
+                                </figcaption>
+                            </figure>
+                        </a>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+        <div class="col-md-1"></div>
+    </div>
+</div>
+<div id="content-bottom-border" class="container"></div>
+{% endblock %}

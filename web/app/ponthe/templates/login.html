@@ -1,0 +1,61 @@
+{% extends "layout/layout.html" %}
+
+{% block content %}
+<div class="container">
+    <div class="row margin-vert-30">
+        <!-- Login Box -->
+        <div class="col-md-6 col-md-offset-3 col-sm-offset-3">
+            <form class="login-page" action="{{ url_for('public.login') }}" method='POST'>
+                <div class="login-header margin-bottom-30">
+                    <h2>Connecte-toi !</h2>
+                </div>
+                <div class="input-group margin-bottom-20">
+                    <span class="input-group-addon">
+                        <i class="fa fa-user"></i>
+                    </span>
+                    <input class="form-control" type='text' name='email' id='email' placeholder='email'/>
+                </div>
+                <div class="input-group margin-bottom-20">
+                    <span class="input-group-addon">
+                        <i class="fa fa-lock"></i>
+                    </span>
+                    <input class="form-control" type='password' name='password' id='password' placeholder='mot de passe'/>
+                </div>
+                {# on affiche les messages d'erreur puis les messages de success #}
+                {% for categorie in ['error', 'success'] %}
+                    {% with msgs = get_flashed_messages(category_filter=[categorie]) %}
+                        {% if msgs %}
+                            <div class="alert alert-{{ 'danger' if categorie == 'error' else 'success' }}">
+                                <ul>
+                                    {% for m in msgs %}
+                                        <li>{{ m | safe }}</li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                        {% endif %}
+                    {% endwith %}
+                {% endfor %}
+                <div class="row">
+                    <div class="col-md-6">
+                        <label class="checkbox">
+                            <input type="checkbox"> Rester connecté
+                        </label>
+                    </div>
+                    <div class="col-md-6">
+                        <button class="btn btn-primary pull-right" type="submit">Se connecter</button>
+                    </div>
+                </div>
+                <hr>
+                <h4>Mot de passe oublié ?</h4>
+                <p>
+                    <a href="{{ url_for('public.reset') }}">Clique ici</a> pour réinitialiser ton mot de passe.
+                </p>
+                <h4>Tu n'as pas de compte ?</h4>
+                <p>
+                <a href="{{ url_for('public.register') }}">Clique ici </a>pour t'enregistrer.</p>
+            </form>
+        </div>
+        <!-- End Login Box -->
+    </div>
+</div>
+{% endblock %}
