@@ -109,7 +109,7 @@ def registering(token):
     db.session.commit()
     return render_template('mail_confirmation.html',
         title="Compte validé",
-        body='Tu peux maintenant accéder aux photos du ponthe'
+        body='Tu peux maintenant accéder aux photos du ponthe')
 
 @public.route('/reset', methods=['GET','POST'])
 def reset():
