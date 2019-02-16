@@ -1,12 +1,91 @@
-# -- coding: utf-8 --"
+import re
 
-from flask import render_template, request, flash, redirect, abort
+from flask import render_template, request, flash, redirect, url_for, abort
+from urllib.parse import urlparse, urljoin
+from flask_login import login_user, current_user
 from itsdangerous import SignatureExpired, BadSignature
+from datetime import datetime
 
 from . import public
-from .. import db
+from .. import app, db
 from ..services import UserService
+from ..config import constants
 from ..persistence import UserDAO
+
+
+def getHome():
+    return redirect('index')
+
+def is_safe_url(target):    # empêche les redirections malicieuses
+    ref_url = urlparse(request.host_url)
+    test_url = urlparse(urljoin(request.host_url, target))
+    return test_url.scheme in ('http', 'https') and \
+           ref_url.netloc == test_url.netloc
+
+def get_redirect_target():
+    for target in request.values.get('next'), request.referrer:
+        if not target:
+            continue
+        if is_safe_url(target):
+            return target
+
+
+def getLoginPage():
+    return render_template('login.html')
+
+@public.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'GET':
+        if current_user.is_authenticated:
+            return getHome()
+        else:
+            return getLoginPage()
+
+    email = request.form['email']
+    password = request.form['password']
+    logging_user = UserDAO.find_by_email(email)
+
+    if logging_user is None:
+        flash("Identifiants incorrectes", "error")
+        return getLoginPage()
+    if not logging_user.email_confirmed:
+        if (datetime.utcnow()-logging_user.created).total_seconds() > 3600:
+            db.session.delete(logging_user)
+            db.session.commit()
+        else:
+            flash("Compte en attente de confirmation par email", "error")
+            return getLoginPage()
+    if logging_user.check_password(password):
+        login_user(logging_user)
+        app.logger.debug("Logging user: ", logging_user)
+        next = get_redirect_target()
+        return redirect(next) if next and urlparse(next).path!='/logout' else getHome()
+    else:
+        flash("Identifiants incorrectes", "error")
+        return getLoginPage()
+
+
+@public.route('/register', methods=['GET', 'POST'])
+def register():
+    if request.method == 'POST':
+        lastname = request.form['lastname']
+        firstname = request.form['firstname']
+        username = request.form['local_email']
+        password = request.form['password']
+        promotion = request.form['promotion']
+        if password != request.form['confirmation_password']:
+            flash("Les deux mots de passe ne correspondent pas.", "error")
+        elif not re.fullmatch(r"[a-z0-9\-]+\.[a-z0-9\-]+", username):
+            flash("Votre adresse email doit être de la forme prenom.nom@eleves.enpc.fr ou prenom et nom ne peuvent contenir que des lettres minuscules, des chiffres et des tirets.", "error")
+        else:
+            try:
+                new_user = UserService.register(username, firstname, lastname, password, promotion)
+            except ValueError:
+                flash("Il existe déjà un compte pour cet adresse email", "error")
+                return render_template('register.html')
+            flash("Email de confirmation envoyé à {}".format(new_user.email), "success")
+
+    return render_template('register.html', AVAILABLE_PROMOTIONS=constants.AVAILABLE_PROMOTIONS)
 
 @public.route('/register/<token>')
 def registering(token):
@@ -30,8 +109,7 @@ def registering(token):
     db.session.commit()
     return render_template('mail_confirmation.html',
         title="Compte validé",
-        body='Rend toi vite sur la <a href="{}">page de connexion</a> !'.format(url_for('public.login'))
-    )
+        body='Tu peux maintenant accéder aux photos du ponthe'
 
 @public.route('/reset', methods=['GET','POST'])
 def reset():
@@ -74,3 +152,8 @@ def resetting(token):
             return redirect('login')
 
     return render_template('resetting.html', firstname=user.firstname)
+
+
+@public.route('/cgu')
+def cgu():
+    return render_template('cgu.html')
