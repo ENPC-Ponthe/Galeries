@@ -9,7 +9,8 @@ import re
 from ... import db
 from ...services import UserService, EventService, YearService, GalleryService, FileService, CategoryService
 from flask import request
-
+import random
+import base64
 
 @api.route('/create-event')
 @api.doc(params=    {
