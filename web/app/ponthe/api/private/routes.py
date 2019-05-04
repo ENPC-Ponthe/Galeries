@@ -63,24 +63,6 @@ class Upload(Resource):
                     }, 200
 
 
-@api.route('/files/not-moderated')
-class GetFilesToModerate(Resource):
-    @jwt_check
-    @api.response(200, 'Success')
-    @api.response(403, 'Not authorized - account not valid')
-    def get(self):
-        '''get the slug of the files waiting for moderation'''
-        files = FileDAO().find_all()
-
-        NotModeratedFileSlugs = []
-        for file in files:
-            if file.pending:
-                NotModeratedFileSlugs.append(file.slug)
-        return  {
-                    "unaproved_files": NotModeratedFileSlugs
-                }, 200
-
-
 @api.route('/get-user-by-jwt')
 class GetUser(Resource):
     @jwt_check
@@ -593,7 +575,7 @@ class GetLatestGalleries(Resource):
         page = request.json.get("page")
         page_size = request.json.get("page_size")
 
-        public_galleries = GalleryDAO().find_all_sorted_by_date(page, page_size)
+        public_galleries = GalleryDAO().find_all_public_sorted_by_date(page, page_size)
         gallery_list =[]
 
         for gallery in public_galleries:

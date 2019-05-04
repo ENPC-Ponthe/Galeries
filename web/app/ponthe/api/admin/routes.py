@@ -1,7 +1,7 @@
 from flask_jwt_extended import JWTManager, get_jwt_identity
 from .. import api
 from flask_restplus import Resource
-from ...persistence import UserDAO, YearDAO, EventDAO, CategoryDAO, GalleryDAO
+from ...persistence import UserDAO, YearDAO, EventDAO, CategoryDAO, GalleryDAO, FileDAO
 from ...middlewares import admin_only, jwt_check
 from ...config import constants
 from sqlalchemy.orm.exc import NoResultFound
@@ -11,6 +11,7 @@ from ...services import UserService, EventService, YearService, GalleryService, 
 from flask import request
 import random
 import base64
+from PIL import Image
 
 @api.route('/create-event')
 @api.doc(params=    {
@@ -227,3 +228,55 @@ class GetPrivateGalleries(Resource):
                     "galleries": gallery_list
                 }
         return data, 200
+
+@api.route('/files/not-moderated')
+class GetFilesToModerate(Resource):
+    @jwt_check
+    @admin_only
+    @api.response(200, 'Success')
+    @api.response(403, 'Not authorized - account not valid')
+    def get(self):
+        '''get the slug of the files waiting for moderation'''
+        files = FileDAO().find_all()
+
+        list_of_files = list(filter(lambda file: file.pending, files))
+        encoded_list_of_files = []
+        list_of_dim = []
+        list_of_slugs = []
+        for file in list_of_files:
+            encoded = file.base64encodingThumb()
+            encoded_list_of_files.append(encoded)
+            im = Image.open("/app/ponthe/data/galleries/" + file.file_path)
+            width, height = im.size
+            list_of_dim.append({"width": width, "height": height})
+            list_of_slugs.append(file.slug)
+
+        unaproved_files = []
+        for i in range(len(list_of_files)):
+            unaproved_files.append({
+                "slug": list_of_slugs[i],
+                "file_path": list_of_files[i].file_path,
+                "base64": encoded_list_of_files[i],
+                "full_dimension": list_of_dim[i]
+            })
+
+        return  {
+                    "unaproved_files": unaproved_files
+                }, 200
+
+@api.route('/galleries/not-moderated')
+class GetGaleriesToModerate(Resource):
+    @jwt_check
+    @admin_only
+    @api.response(200, 'Success')
+    @api.response(403, 'Not authorized - account not valid')
+    def get(self):
+        '''get the slug of the files waiting for moderation'''
+        galleries = GalleryDAO().find_all_private()
+        list_of_slugs = []
+        for gallery in galleries:
+            list_of_slugs.append(gallery.slug)
+
+        return  {
+                    "unaproved_galeries": list_of_slugs
+                }, 200
