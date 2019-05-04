@@ -3,7 +3,7 @@ from .ResourceDAO import ResourceDAO
 from .. import app, db
 from ..file_helper import delete_file
 from ..models import File, Gallery
-
+from sqlalchemy import desc
 import os
 
 UPLOAD_FOLDER = app.config['MEDIA_ROOT']
@@ -25,6 +25,8 @@ class FileDAO(ResourceDAO):
     def delete_by_slug(self, slug):
         self.delete(self.find_by_slug(slug))
 
+    def find_all_moderated_sorted_by_date(self, page, page_size):
+        return File.query.filter_by(pending=False).order_by(desc(File.created)).offset((page-1)*page_size).limit(page_size).all()
 
     @staticmethod
     def find_all_files_by_gallery(gallery: Gallery, page=None, page_size=None):

@@ -513,7 +513,7 @@ class GetLatestImages(Resource):
             without_base64 = False
 
 
-        files = FileDAO().find_all_sorted_by_date(page, page_size)
+        files = FileDAO().find_all_moderated_sorted_by_date(page, page_size)
         list_of_files = list(filter(lambda file: not file.pending, files))
         encoded_list_of_files = []
         list_of_dim = []
