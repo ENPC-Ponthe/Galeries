@@ -1,6 +1,4 @@
 import os
-
-
 from .. import app, db
 from ..persistence import FileDAO, GalleryDAO
 from ..models import File, User, create_thumb
