@@ -13,8 +13,7 @@ class FileService:
     @staticmethod
     def delete(file_slug: str):
         file = FileDAO().find_by_slug(file_slug)
-        if FileDAO.has_right_on(file):
-            FileDAO.delete(file)
+        FileDAO.delete(file)
 
     @staticmethod
     def approve(file: File):
