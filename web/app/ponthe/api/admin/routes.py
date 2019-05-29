@@ -132,6 +132,8 @@ class Moderation(Resource):
 
         error = False
 
+        current_user = UserDAO.get_by_id(get_jwt_identity())
+
         if galeries_to_delete:
             for gallery_slug in galeries_to_delete:
                 try:
@@ -150,11 +152,11 @@ class Moderation(Resource):
 
         if files_to_delete:
             for file_slug in files_to_delete:
-                try:
-                    FileService.delete(file_slug, current_user)
-                except Exception as e:
-                    files_failed_to_delete.append(file_slug)
-                    error = True
+                # try:
+                FileService.delete(file_slug)
+                # except Exception as e:
+                #     files_failed_to_delete.append(file_slug)
+                #     error = True
 
         if files_to_approve:
             for file_slug in files_to_approve:

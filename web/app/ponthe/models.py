@@ -442,7 +442,7 @@ class File(Resource):
         return path_to_thumb
 
     def base64encodingFull(self):
-        with open(UPLOAD_FOLDER + '/' + self.get_file_path(), "rb") as image_file:
+        with open(UPLOAD_FOLDER + '/' + self.file_path, "rb") as image_file:
             encoded_string = "data:image/"+ self.extension+";base64," + str(base64.b64encode(image_file.read()).decode('utf-8'))
         image_file.close()
         return encoded_string

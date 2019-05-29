@@ -1,5 +1,24 @@
 {
     "team_ponthe" : [
+        {   
+          "year": "021",
+          "year_id": "p021",
+        
+          "members": [
+            "Présidente : Auriane Riou",
+            "Vice-Présidente : Pauline Hubert",
+            "Trésorière : AmÈlie Guyot",
+            "Respos Communication : Paule-Claire He-Xie et RaphaÎl Lasry",
+            "Respo Matériel : Benjamin Sauze",
+            "Respo Web : Augustin Doumic",
+            "Chefs monteur : Marie Puistienne et Peio Betbeder",
+            "Directeur photo : Jean-SÈbastien Verhaeghe",
+            "Respos images : ClÈment Norodom, Charlotte Nivelle, Pia Chancerel",
+            "Respos CrÈations originales : Benjamin Roulin, ClÈment Allain, Pol Le-Gurun",
+            "Soutien : MaÎlle Sardet"
+          ],
+          "prev_year_id": "p020"
+        },
         {
           "year": "020",
           "year_id": "p020",

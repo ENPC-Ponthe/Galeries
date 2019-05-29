@@ -26,7 +26,7 @@ from PIL import Image
 import io
 
 UPLOAD_FOLDER = '/app/instance/uploads/'
-ALLOWED_EXTENSIONS = set(['txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'])
+ALLOWED_EXTENSIONS = set(['txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif', 'mp4'])
 THUMBS_FOLDER = "/app/instance/thumbs/"
 
 
@@ -583,11 +583,12 @@ class GetLatestGalleries(Resource):
             encoded_string = ""
             if(len(list_of_files) > 0):
                 i = random.randint(0, len(list_of_files)-1)
-                encoded_string = list_of_files[i].base64encodingThumb()
+                encoded_string = list_of_files[i].base64encodingFull()
             gallery_list.append({
                 "name": gallery.name,
                 "slug": gallery.slug,
-                "image": encoded_string
+                "image": encoded_string,
+                "description": gallery.description
             })
         data =  {
                     "galleries": gallery_list
