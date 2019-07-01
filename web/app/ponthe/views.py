@@ -11,7 +11,7 @@ from .services import GalleryService
 @app.context_processor
 def inject_top_menu_gallery_variables():
     if current_user.is_authenticated:
-        return dict(top_menu_galleries_by_year=GalleryService.get_galleries_by_year())
+        return dict(top_menu_galleries_by_year=GalleryService.get_galleries_by_year(current_user))
     return dict()
 
 

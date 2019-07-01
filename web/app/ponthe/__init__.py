@@ -32,7 +32,9 @@ mail=Mail(app)
 from .v1.public import public
 from .v1.private import private
 from .v1.admin import admin
-from .api import api
+from .api.admin import admin_api
+from .api.public import public_api
+from .api.private import private_api
 
 from . import cli
 from . import models
@@ -41,4 +43,6 @@ from . import views
 app.register_blueprint(public, url_prefix='/v1')
 app.register_blueprint(private, url_prefix='/v1')
 app.register_blueprint(admin, url_prefix='/v1')
-app.register_blueprint(api, url_prefix='/api')
+app.register_blueprint(admin_api, url_prefix='/api')
+app.register_blueprint(public_api, url_prefix='/api')
+app.register_blueprint(private_api, url_prefix='/api')

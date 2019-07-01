@@ -78,10 +78,10 @@ def dashboard():
             FileService.delete(file_slug)
         if 'make_gallery_public' in request.form:
             gallery_slug = request.form['make_gallery_public']
-            GalleryService.make_public(gallery_slug)
+            GalleryService.make_public(gallery_slug, current_user)
         if 'make_gallery_private' in request.form:
             gallery_slug = request.form['make_gallery_private']
-            GalleryService.make_private(gallery_slug)
+            GalleryService.make_private(gallery_slug, current_user)
 
     pending_files_by_gallery, confirmed_files_by_gallery = GalleryService.get_own_pending_and_approved_files_by_gallery(current_user)
 
@@ -149,15 +149,15 @@ def year_gallery(year_slug):
 def gallery(gallery_slug):
     if request.method == 'POST':
         if "delete" in request.form and current_user.admin:
-            GalleryService.delete(gallery_slug)
+            GalleryService.delete(gallery_slug, current_user)
             return redirect(url_for("private.index"))
         if 'delete_file' in request.form:
             file_slug = request.form['delete_file']
             FileService.delete(file_slug)
         if 'make_gallery_public' in request.form:
-            GalleryService.make_public(gallery_slug)
+            GalleryService.make_public(gallery_slug, current_user)
         if 'make_gallery_private' in request.form:
-            GalleryService.make_private(gallery_slug)
+            GalleryService.make_private(gallery_slug, current_user)
         if 'approve_file' in request.form and current_user.admin:
             file_slug = request.form['approve_file']
             FileService.approve_by_slug(file_slug)
@@ -165,7 +165,7 @@ def gallery(gallery_slug):
         gallery = GalleryDAO().find_by_slug(gallery_slug)
     except NoResultFound:
         raise NotFound()
-    if gallery.private and not GalleryDAO.has_right_on(gallery):
+    if gallery.private and not GalleryDAO.has_right_on(gallery, current_user):
         raise NotFound()
     return render_template('gallery.html', gallery=gallery, approved_files=filter(lambda file: not file.pending, gallery.files))
 
