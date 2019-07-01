@@ -31,7 +31,7 @@ workon ponthe
 
 Installer l'app
 ```bash
-pip install web/app  --process-dependency-links
+sudo pip install -e web/app
 ```
 
 Charger les données initiales de l'app comme les catégories :

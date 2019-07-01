@@ -29,16 +29,16 @@ login_manager.init_app(app)
 
 mail=Mail(app)
 
-from .public import public
-from .private import private
-from .admin import admin
+from .v1.public import public
+from .v1.private import private
+from .v1.admin import admin
 from .api import api
 
 from . import cli
 from . import models
 from . import views
 
-app.register_blueprint(public)
-app.register_blueprint(private)
-app.register_blueprint(admin)
+app.register_blueprint(public, url_prefix='/v1')
+app.register_blueprint(private, url_prefix='/v1')
+app.register_blueprint(admin, url_prefix='/v1')
 app.register_blueprint(api, url_prefix='/api')
