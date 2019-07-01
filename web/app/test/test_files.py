@@ -16,7 +16,7 @@ class ProjectTests(unittest.TestCase):
         pass
 
     def test_login_page(self):
-        response = self.app.get('/login', follow_redirects=True)
+        response = self.app.get('/v1/login', follow_redirects=True)
         self.assertIn(b'Connecte-toi !', response.data)
 
 
