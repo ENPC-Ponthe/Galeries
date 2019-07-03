@@ -199,7 +199,7 @@ class GetAllGalleries(Resource):
     def get(self):
         '''Get the list of public galleries of all years'''
         gallery_list = []
-        public_galleries = GalleryDAO().find_all_public()
+        public_galleries = GalleryDAO().find_all_public_sorted_by_date()
         for gallery in public_galleries:
             list_of_files = list(filter(lambda file: not file.pending, gallery.files))
             encoded_string = ""
