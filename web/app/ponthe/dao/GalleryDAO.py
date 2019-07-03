@@ -34,3 +34,6 @@ class GalleryDAO(ResourceDAO):
         return Gallery.query.filter_by(private=False).order_by(desc(Gallery.created)).offset(
             (page - 1) * page_size).limit(page_size).all()
 
+    @staticmethod
+    def find_all_public_sorted_by_date():
+        return Gallery.query.filter_by(private=False).order_by(desc(Gallery.created)).all()
