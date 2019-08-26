@@ -50,7 +50,7 @@ jobs:
           name: Deploy over SSH
           command: |
             ssh $SSH_USER@$SSH_HOST << EOF
-            cd /srv/ponthe$([ "${CIRCLE_BRANCH}" == "master" ] || echo "-${CIRCLE_BRANCH}").enpc.org
+            cd /srv/ponthe$([ "${CIRCLE_BRANCH}" == "master" ] || echo "-${CIRCLE_BRANCH}").enpc.org/back
             docker login -u $DOCKER_USER -p $DOCKER_PASSWORD quay.io
             docker-compose exec backup /backup.sh
             docker-compose pull
