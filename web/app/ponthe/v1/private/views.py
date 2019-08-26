@@ -1,5 +1,7 @@
 # -- coding: utf-8 --"
-from flask import render_template, request, flash, redirect, url_for
+import os
+
+from flask import render_template, request, flash, redirect, url_for, send_file
 from flask_login import logout_user, current_user, login_required
 from flask_mail import Message
 from flask_tus_ponthe import tus_manager
@@ -32,6 +34,21 @@ def before_request():
 @private.route('/')
 def get_home():
     return redirect(url_for('private.index'))
+
+@private.route('/uploads/<path:file_path>')
+def uploads(file_path: str):
+    try:
+        return send_file(os.path.join(app.config['MEDIA_ROOT'], file_path))
+    except FileNotFoundError:
+        raise NotFound()
+
+
+@private.route('/thumbs/<path:file_path>')  # utilisé en dev, en prod c'était servi par le serveur web
+def thumbnails(file_path: str):
+    try:
+        return send_file(os.path.join(app.config['THUMBNAIL_MEDIA_THUMBNAIL_ROOT'], file_path))
+    except FileNotFoundError:
+        raise NotFound()
 
 
 @private.route('/index')

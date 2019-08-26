@@ -1,13 +1,15 @@
 # -- coding: utf-8 --"
+import os
 
 import re
 
-from flask import render_template, request, flash, redirect, url_for, abort
+from flask import render_template, request, flash, redirect, url_for, abort, send_file
 from flask_cas import login_required as cas_login_required
 from urllib.parse import urlparse, urljoin
 from flask_login import login_user, current_user
 from itsdangerous import SignatureExpired, BadSignature
 from datetime import datetime
+from werkzeug.exceptions import NotFound
 
 from . import public
 from ... import app, db, login_manager
@@ -42,6 +44,14 @@ def user_loader(id: int):
 
 def get_login_page():
     return render_template('login.html')
+
+
+@public.route('/assets/<path:file_path>')  # utilisé en dev, en prod c'était servi par le serveur web
+def assets(file_path: str):
+    try:
+        return send_file(os.path.join(app.config['ASSET_ROOT'], file_path))
+    except FileNotFoundError:
+        raise NotFound()
 
 
 @public.route('/login', methods=['GET', 'POST'])
