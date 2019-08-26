@@ -2,13 +2,13 @@
     <div>
         <figure>
             {% if file | is_image %}
-                <a href="{{ url_for('uploads', file_path=file.file_path) }}">
+                <a href="{{ url_for('private.uploads', file_path=file.file_path) }}">
                         <img src="{{ file | thumb }}">
                 </a>
             {% endif %}
             {% if file | is_video %}
                 <video width="226" height="226" controls>
-                    <source src="{{ url_for('uploads', file_path=file.file_path) }}" type="video/mp4">
+                    <source src="{{ url_for('private.uploads', file_path=file.file_path) }}" type="video/mp4">
                 </video>
             {% endif %}
         </figure>
