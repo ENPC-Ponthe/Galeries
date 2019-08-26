@@ -1,5 +1,5 @@
 # -- coding: utf-8 --"
-from flask import render_template, request, flash, redirect
+from flask import render_template, request, flash, redirect, url_for
 from flask_login import logout_user, current_user, login_required
 from flask_mail import Message
 from flask_tus_ponthe import tus_manager
@@ -8,9 +8,9 @@ from sqlalchemy.orm.exc import NoResultFound
 from werkzeug.exceptions import NotFound
 
 from . import private
-from .. import app, mail
-from ..dao import EventDAO, YearDAO, CategoryDAO, GalleryDAO
-from ..services import FileService, GalleryService
+from ... import app, mail
+from ...dao import EventDAO, YearDAO, CategoryDAO, GalleryDAO
+from ...services import FileService, GalleryService
 
 UPLOAD_FOLDER = app.config['MEDIA_ROOT']
 UPLOAD_TMP_FOLDER = app.config['UPLOAD_TMP_ROOT']
@@ -31,7 +31,7 @@ def before_request():
 
 @private.route('/')
 def get_home():
-    return redirect('/index')
+    return redirect(url_for('private.index'))
 
 
 @private.route('/index')
@@ -42,7 +42,7 @@ def index():
 @private.route('/logout')
 def logout():
     logout_user()
-    return redirect('/login')
+    return redirect(url_for('public.login'))
 
 
 @private.route('/materiel',methods=['GET','POST'])
@@ -66,22 +66,22 @@ def materiel():
 def dashboard():
     if request.method == 'POST':
         if request.form.get('option') == 'create_event':
-            return redirect('/create-event')
+            return redirect(url_for('admin.create_event'))
         if request.form.get('option') == 'create_year':
-            return redirect('/create-year')
+            return redirect(url_for('admin.create_year'))
         if request.form.get('option') == 'create_gallery':
-            return redirect('/create-gallery')
+            return redirect(url_for('private.create_gallery'))
         if request.form.get('option') == 'moderate':
-            return redirect('/moderation')
+            return redirect(url_for('admin.moderation'))
         if 'delete_file' in request.form:
             file_slug = request.form['delete_file']
             FileService.delete(file_slug)
         if 'make_gallery_public' in request.form:
             gallery_slug = request.form['make_gallery_public']
-            GalleryService.make_public(gallery_slug)
+            GalleryService.make_public(gallery_slug, current_user)
         if 'make_gallery_private' in request.form:
             gallery_slug = request.form['make_gallery_private']
-            GalleryService.make_private(gallery_slug)
+            GalleryService.make_private(gallery_slug, current_user)
 
     pending_files_by_gallery, confirmed_files_by_gallery = GalleryService.get_own_pending_and_approved_files_by_gallery(current_user)
 
@@ -107,7 +107,7 @@ def event_gallery(event_slug):
     event_dao = EventDAO()
     if request.method == 'POST' and "delete" in request.form and current_user.admin:
         event_dao.delete_detaching_galleries(event_slug)
-        return redirect("/index")
+        return redirect(url_for("private.index"))
     try:
         event = event_dao.find_by_slug(event_slug)
     except NoResultFound:
@@ -137,7 +137,7 @@ def year_gallery(year_slug):
     year_dao = YearDAO()
     if request.method == 'POST' and "delete" in request.form and current_user.admin:
         year_dao.delete_detaching_galleries(year_slug)
-        return redirect("/index")
+        return redirect(url_for("private.index"))
     try:
         year = year_dao.find_by_slug(year_slug)
     except NoResultFound:
@@ -149,15 +149,15 @@ def year_gallery(year_slug):
 def gallery(gallery_slug):
     if request.method == 'POST':
         if "delete" in request.form and current_user.admin:
-            GalleryService.delete(gallery_slug)
-            return redirect("/index")
+            GalleryService.delete(gallery_slug, current_user)
+            return redirect(url_for("private.index"))
         if 'delete_file' in request.form:
             file_slug = request.form['delete_file']
             FileService.delete(file_slug)
         if 'make_gallery_public' in request.form:
-            GalleryService.make_public(gallery_slug)
+            GalleryService.make_public(gallery_slug, current_user)
         if 'make_gallery_private' in request.form:
-            GalleryService.make_private(gallery_slug)
+            GalleryService.make_private(gallery_slug, current_user)
         if 'approve_file' in request.form and current_user.admin:
             file_slug = request.form['approve_file']
             FileService.approve_by_slug(file_slug)
@@ -165,7 +165,7 @@ def gallery(gallery_slug):
         gallery = GalleryDAO().find_by_slug(gallery_slug)
     except NoResultFound:
         raise NotFound()
-    if gallery.private and not GalleryDAO.has_right_on(gallery):
+    if gallery.private and not GalleryDAO.has_right_on(gallery, current_user):
         raise NotFound()
     return render_template('gallery.html', gallery=gallery, approved_files=filter(lambda file: not file.pending, gallery.files))
 
@@ -180,7 +180,7 @@ def create_gallery():
         private = request.form.get('private')
         if gallery_name:
             gallery = GalleryService.create(gallery_name, current_user, gallery_description, private == "on", year_slug, event_slug)
-            return redirect(f"/galleries/{gallery.slug}")
+            return redirect(url_for("private.gallery", gallery_slug=gallery.slug))
         else:
             flash("Veuillez indiquer le nom de la nouvelle galerie", "error")
 

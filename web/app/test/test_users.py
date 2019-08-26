@@ -16,7 +16,7 @@ class ProjectTests(unittest.TestCase):
         pass
 
     def test_main_page(self):
-        response = self.app.get('/')
+        response = self.app.get('/v1/')
         self.assertEqual(302, response.status_code)
 
 

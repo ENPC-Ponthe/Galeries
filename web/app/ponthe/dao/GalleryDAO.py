@@ -1,5 +1,7 @@
+from sqlalchemy import desc
+
 from .ResourceDAO import ResourceDAO
-from ..models import Gallery, Year, Event
+from ..models import Gallery, Year, Event, User
 
 
 class GalleryDAO(ResourceDAO):
@@ -15,6 +17,23 @@ class GalleryDAO(ResourceDAO):
         return Gallery.query.filter_by(year=year, private=False).all()
 
     @classmethod
-    def find_private_by_year(cls, year: Year):
+    def find_private_by_year(cls, year: Year, current_user: User):
         galleries = Gallery.query.filter_by(year=year, private=True).all()
-        return list(filter(cls.has_right_on, galleries))
+        return list(filter(lambda gallery: cls.has_right_on(gallery, current_user), galleries))
+
+    @staticmethod
+    def find_public():
+        return Gallery.query.filter_by(private=False).all()
+
+    @staticmethod
+    def find_private():
+        return Gallery.query.filter_by(private=True).all()
+
+    @staticmethod
+    def find_public_sorted_by_date(page, page_size):
+        return Gallery.query.filter_by(private=False).order_by(desc(Gallery.created)).offset(
+            (page - 1) * page_size).limit(page_size).all()
+
+    @staticmethod
+    def find_all_public_sorted_by_date():
+        return Gallery.query.filter_by(private=False).order_by(desc(Gallery.created)).all()
