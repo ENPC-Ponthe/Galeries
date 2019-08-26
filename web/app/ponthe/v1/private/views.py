@@ -17,7 +17,7 @@ from ...services import FileService, GalleryService
 UPLOAD_FOLDER = app.config['MEDIA_ROOT']
 UPLOAD_TMP_FOLDER = app.config['UPLOAD_TMP_ROOT']
 print(UPLOAD_TMP_FOLDER)
-tm = tus_manager(private, upload_url='/v1/file-upload', upload_folder=UPLOAD_TMP_FOLDER)
+tm = tus_manager(private, upload_url='/file-upload', upload_folder=UPLOAD_TMP_FOLDER)
 
 
 @tm.upload_file_handler
