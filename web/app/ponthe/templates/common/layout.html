@@ -51,7 +51,7 @@
                                             {% for year, galleries in top_menu_galleries_by_year.items() %}
                                             <li>
                                                 <a href="{{ url_for('private.year_gallery', year_slug=year.slug) }}" class="parent">{{ year.value }}</a>
-                                                <ul>
+                                                <ul style="height: 500px; width: 300px; overflow: scroll;">
                                                     {% if galleries['public'] and galleries['private'] %}
                                                         <strong class="fa-th">Galeries publiques</strong>
                                                     {% endif %}
