@@ -40,4 +40,4 @@ def load(app: Flask):
     app.config['MEDIA_ROOT'] = os.path.join(app.instance_path, 'static', 'uploads')
     app.config['THUMBNAIL_MEDIA_ROOT'] = app.config['MEDIA_ROOT']
     app.config['THUMBNAIL_MEDIA_THUMBNAIL_ROOT'] = os.path.join(app.instance_path, 'static', 'thumbs')
-    app.config['THUMBNAIL_MEDIA_THUMBNAIL_URL'] = '/thumbs'
+    app.config['THUMBNAIL_MEDIA_THUMBNAIL_URL'] = '/v1/thumbs'
