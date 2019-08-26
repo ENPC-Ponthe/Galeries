@@ -21,7 +21,7 @@ db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 FlaskCLI(app)
 thumb = Thumbnail(app)
-cas = CAS(app, '/cas')
+cas = CAS(app, '/v1/cas')
 CORS(app)
 
 login_manager = LoginManager()
