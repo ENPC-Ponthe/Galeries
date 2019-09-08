@@ -3,7 +3,7 @@ import os
 from .. import app, db
 from ..dao import FileDAO, GalleryDAO
 from ..models import File, User, FileTypeEnum
-from ..file_helper import create_folder, move_file, is_image, is_video, get_extension
+from ..file_helper import create_folder, move_file, is_image, is_video, get_extension, get_base64_encoding
 from ..filters import thumb_filter
 
 UPLOAD_FOLDER = app.config['MEDIA_ROOT']
@@ -11,9 +11,9 @@ UPLOAD_FOLDER = app.config['MEDIA_ROOT']
 
 class FileService:
     @staticmethod
-    def delete(file_slug: str):
+    def delete(file_slug: str, current_user: User):
         file = FileDAO().find_by_slug(file_slug)
-        if FileDAO.has_right_on(file):
+        if FileDAO.has_right_on(file, current_user):
             FileDAO.delete(file)
 
     @staticmethod
@@ -46,3 +46,11 @@ class FileService:
         db.session.commit()
         if new_file.type == FileTypeEnum.IMAGE:
             thumb_filter(new_file)
+
+    @staticmethod
+    def get_base64_encoding_full(file: File):
+        return get_base64_encoding(os.path.join(UPLOAD_FOLDER, file.file_path))
+
+    @staticmethod
+    def get_base64_encoding_thumb(file: File):
+        return get_base64_encoding(FileDAO.get_thumb_path_or_create_it(file))

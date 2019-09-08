@@ -1,18 +1,23 @@
-from . import api
-from flask_restplus import Resource
 import re
-import os, datetime
-from ...models import User
-from ...services import UserService
-from ...dao import UserDAO
-from flask import request
+import os
+import datetime
 import json
-from ... import db, app
+
+from flask_restplus import Resource
+from flask import request
 from flask_jwt_extended import JWTManager, create_access_token
 from itsdangerous import SignatureExpired, BadSignature
 
+from . import api
+from ... import db, app
+from ...models import User
+from ...services import UserService
+from ...dao import UserDAO
+
 
 jwt = JWTManager(app)
+
+ASSET_FOLDER = app.config['ASSET_ROOT']
 
 
 @jwt.user_claims_loader
@@ -162,6 +167,5 @@ class Cgu(Resource):
         """
             Return the General Conditions of Use
         """
-        SITE_ROOT = os.path.realpath(os.path.dirname(__file__))
-        cgu = open(os.path.join(SITE_ROOT, "/app/ponthe/templates", "cgu.json"))
-        return json.load(cgu, strict=False), 200
+        with open(os.path.join(ASSET_FOLDER, "data/cgu.json")) as cgu:
+            return json.load(cgu, strict=False), 200

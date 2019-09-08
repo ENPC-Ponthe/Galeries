@@ -1,21 +1,21 @@
+import random
+
 from flask_jwt_extended import current_user
+from flask_restplus import Resource
+from flask import request
+from PIL import Image
 
 from . import api
-from flask_restplus import Resource
 from ...dao import EventDAO, GalleryDAO, FileDAO
 from ...services import EventService, YearService, GalleryService, FileService, CategoryService
-from flask import request
-import random
-import base64
-from PIL import Image
 
 
 @api.route('/create-event')
-@api.doc(params=    {
-                        'name': 'Example : WEI',
-                        'category_slug': '',
-                        'event_description': ''
-                    })
+@api.doc(params={
+    'name': 'Example : WEI',
+    'category_slug': '',
+    'event_description': ''
+})
 class CreateEvent(Resource):
     @api.response(201, 'Success - Event created')
     @api.response(401, 'Request incorrect - Missing required parameter')
@@ -38,11 +38,12 @@ class CreateEvent(Resource):
             "msg": "Événement créé"
         }, 201
 
+
 @api.route('/create-year')
-@api.doc(params=    {
-                        'value': 'Example : 2018',
-                        'description': ''
-                    })
+@api.doc(params={
+    'value': 'Example : 2018',
+    'description': ''
+})
 class CreateYear(Resource):
     @api.response(403, 'Not authorized - account not valid')
     def post(self):
@@ -68,11 +69,12 @@ class CreateYear(Resource):
             "msg": "Année créée"
         }, 201
 
+
 @api.route('/create-category')
-@api.doc(params=    {
-                        'name': 'Example : Sport',
-                        'description': ''
-                    })
+@api.doc(params={
+    'name': 'Example : Sport',
+    'description': ''
+})
 class CreateCategory(Resource):
     @api.response(403, 'Not authorized - account not valid')
     def post(self):
@@ -92,13 +94,14 @@ class CreateCategory(Resource):
             "msg": "Catégorie créée"
         }, 201
 
+
 @api.route('/moderation')
-@api.doc(params=    {
-                        'galleries_to_delete': 'Liste des slug de galeries à supprimer',
-                        'galleries_to_approve': 'Liste des slugs de galeries à approuver',
-                        'files_to_delete': 'Liste des slugs de fichiers à supprimer',
-                        'files_to_approve': 'Liste des slugs de fichiers à approuver'
-                    })
+@api.doc(params={
+    'galleries_to_delete': 'Liste des slug de galeries à supprimer',
+    'galleries_to_approve': 'Liste des slugs de galeries à approuver',
+    'files_to_delete': 'Liste des slugs de fichiers à supprimer',
+    'files_to_approve': 'Liste des slugs de fichiers à approuver'
+})
 class Moderation(Resource):
     @api.response(200, 'Success - All moderations done')
     @api.response(403, 'Not authorized - account not valid')
@@ -136,7 +139,7 @@ class Moderation(Resource):
         if files_to_delete:
             for file_slug in files_to_delete:
                 try:
-                    FileService.delete(file_slug)
+                    FileService.delete(file_slug, current_user)
                 except Exception:
                     files_failed_to_delete.append(file_slug)
                     error = True
@@ -162,6 +165,7 @@ class Moderation(Resource):
         return {
             "msg": "Toutes les modérations ont été effectuées."
         }, 200
+
 
 @api.route('/delete-event/<event_slug>')
 class DeleteEvent(Resource):
@@ -194,21 +198,21 @@ class GetPrivateGalleries(Resource):
         private_galleries = GalleryDAO().find_private()
         for gallery in private_galleries:
             list_of_files = list(filter(lambda file: not file.pending, gallery.files))
-            encoded_string = ""
-            if(len(list_of_files) > 0):
+            if list_of_files:
                 i = random.randint(0, len(list_of_files)-1)
-                with open("/app/instance/thumbs/" + list_of_files[i].get_thumb_path(), "rb") as image_file:
-                    encoded_string = "data:image/"+list_of_files[i].extension+";base64," + str(base64.b64encode(image_file.read()).decode('utf-8'))
-                image_file.close()
+                encoded_string = FileService.get_base64_encoding_thumb(list_of_files[i])
+            else:
+                encoded_string = ""
             gallery_list.append({
                 "name": gallery.name,
                 "slug": gallery.slug,
                 "image": encoded_string
             })
-        data =  {
-                    "galleries": gallery_list
-                }
+        data = {
+            "galleries": gallery_list
+        }
         return data, 200
+
 
 @api.route('/files/not-moderated')
 class GetFilesToModerate(Resource):
@@ -223,8 +227,8 @@ class GetFilesToModerate(Resource):
         list_of_dim = []
         list_of_slugs = []
         for file in list_of_files:
-            encoded = file.base64encodingThumb()
-            encoded_list_of_files.append(encoded)
+            encoded_file = FileService.get_base64_encoding_thumb(file)
+            encoded_list_of_files.append(encoded_file)
             im = Image.open("/app/ponthe/data/galleries/" + file.file_path)
             width, height = im.size
             list_of_dim.append({"width": width, "height": height})
@@ -242,6 +246,7 @@ class GetFilesToModerate(Resource):
         return  {
                     "unaproved_files": unaproved_files
                 }, 200
+
 
 @api.route('/galleries/not-moderated')
 class GetGaleriesToModerate(Resource):
@@ -271,9 +276,9 @@ class Gallery(Resource):
 
 
 @api.route('/galleries/makeprivate')
-@api.doc(params=    {
-                        'gallery_slugs': 'List of slugs of the galleries to be set private'
-                    })
+@api.doc(params={
+    'gallery_slugs': 'List of slugs of the galleries to be set private'
+})
 class MakeGalleryPublic(Resource):
     @api.response(200, 'Success')
     @api.response(400, 'Request incorrect - JSON not valid')
@@ -298,9 +303,9 @@ class MakeGalleryPublic(Resource):
 
 
 @api.route('/galleries/makepublic')
-@api.doc(params=    {
-                        'gallery_slugs': 'List of slugs of the galleries to be set public'
-                    })
+@api.doc(params={
+    'gallery_slugs': 'List of slugs of the galleries to be set public'
+})
 class MakeGalleryPublic(Resource):
     @api.response(200, 'Success')
     @api.response(400, 'Request incorrect - JSON not valid')
