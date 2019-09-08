@@ -4,10 +4,11 @@ from flask_jwt_extended import current_user
 from flask_restplus import Resource
 from flask import request
 from PIL import Image
+from werkzeug.exceptions import BadRequest
 
 from . import api
 from ...dao import EventDAO, GalleryDAO, FileDAO
-from ...services import EventService, YearService, GalleryService, FileService, CategoryService
+from ...services import EventService, YearService, GalleryService, FileService, CategoryService, UserService
 
 
 @api.route('/create-event')
@@ -327,3 +328,19 @@ class MakeGalleryPublic(Resource):
             return response, 400
         response = {"msg": "success"}
         return response, 200
+
+@api.route('/import-users')
+@api.doc(params={
+    'csv': 'csv file in form-data body'
+})
+class ImportUsers(Resource):
+    @api.response(200, 'Success')
+    @api.response(400, 'Request incorrect - Form-data not valid')
+    @api.response(403, 'Not authorized - account not valid')
+    def post(self):
+        if "csv" in request.files:
+            file = request.files['csv']
+        else:
+            raise BadRequest("No CSV uploaded")
+
+        UserService.create_users(file)

@@ -1,9 +1,8 @@
 from flask import request, redirect, flash, abort, render_template, url_for
 from flask_login import current_user, login_required
-from werkzeug.exceptions import BadRequest
 
 from ...dao import CategoryDAO
-from ...services import YearService, EventService, GalleryService, FileService, UserService
+from ...services import YearService, EventService, GalleryService, FileService
 from . import admin
 
 
@@ -61,13 +60,3 @@ def moderation():
 
     pending_files_by_gallery = GalleryService.get_pending_files_by_gallery()
     return render_template('moderation.html', pending_files_by_gallery=pending_files_by_gallery)
-
-
-@admin.route('/import-users', methods=['POST'])
-def import_users():
-    if "csv" in request.files:
-        file = request.files['csv']
-    else:
-        raise BadRequest("No CSV uploaded")
-
-    UserService.create_users(file)
