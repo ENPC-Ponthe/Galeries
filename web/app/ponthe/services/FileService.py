@@ -48,8 +48,12 @@ class FileService:
             thumb_filter(new_file)
 
     @staticmethod
-    def get_base64_encoding_full(file: File):
-        return get_base64_encoding(os.path.join(UPLOAD_FOLDER, file.file_path))
+    def get_absolute_file_path(file: File):
+        return os.path.join(UPLOAD_FOLDER, file.file_path)
+
+    @classmethod
+    def get_base64_encoding_full(cls, file: File):
+        return get_base64_encoding(cls.get_absolute_file_path(file))
 
     @staticmethod
     def get_base64_encoding_thumb(file: File):
