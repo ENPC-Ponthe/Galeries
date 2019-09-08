@@ -95,5 +95,5 @@ def get_extension(filename: str):
     return split_filename(filename)[1]
 
 def get_base64_encoding(file_path: str):
-    with open(file_path) as image_file:
+    with open(file_path, "rb") as image_file:
         return "data:image/" + get_extension(file_path) + ";base64," + str(base64.b64encode(image_file.read()).decode('utf-8'))
