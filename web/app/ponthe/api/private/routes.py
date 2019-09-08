@@ -1,36 +1,34 @@
-from flask_jwt_extended import current_user
-from . import api
-from flask_restplus import Resource
-from flask_mail import Message
-from ...dao import YearDAO, EventDAO, GalleryDAO, FileDAO
-from sqlalchemy.orm.exc import NoResultFound
-import json
-from flask import send_file
-from werkzeug.utils import secure_filename
-from ... import db, mail
-from ...services import GalleryService
-from flask import request
 import random
 import base64
 import os
-from ...services import FileService
 import time
+import json
+
+from flask_jwt_extended import current_user
+from flask_restplus import Resource
+from flask_mail import Message
+from sqlalchemy.orm.exc import NoResultFound
+from flask import send_file
+from werkzeug.utils import secure_filename
+from flask import request
 from PIL import Image
 
-UPLOAD_FOLDER = '/app/instance/uploads/'
-ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif', 'mp4'}
-THUMBS_FOLDER = "/app/instance/thumbs/"
+from . import api
+from ... import db, mail, app
+from ...dao import YearDAO, EventDAO, GalleryDAO, FileDAO
+from ...services import GalleryService
+from ...file_helper import is_allowed_file
+from ...services import FileService
 
 
-def allowed_file(filename):
-    return '.' in filename and \
-           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+UPLOAD_FOLDER = app.config['MEDIA_ROOT']
+ASSET_FOLDER = app.config['ASSET_ROOT']
 
 
 @api.route('/file-upload/<gallery_slug>')
-@api.doc(params=    {
-                        'file': 'file to upload',
-                    })
+@api.doc(params={
+    'file': 'file to upload',
+})
 class Upload(Resource):
     @api.response(200, 'Success')
     @api.response(403, 'Not authorized - accound not valid')
@@ -39,18 +37,18 @@ class Upload(Resource):
         '''upload a file in a gallery'''
         if 'file' not in request.files:
             return {
-                        "msg": "Bad request"
-                    }, 401
+                "msg": "Bad request"
+            }, 401
 
         file = request.files['file']
 
-        if file and allowed_file(file.filename):
+        if file and is_allowed_file(file.filename):
             filename = secure_filename(base64.b64encode(bytes(str(time.time()) + file.filename,'utf-8')).decode('utf-8')+ "." + file.filename.rsplit('.', 1)[1].lower())
             file.save(os.path.join(UPLOAD_FOLDER, filename))
             FileService.create(os.path.join(UPLOAD_FOLDER, filename), filename, gallery_slug, current_user)
             return {
-                        "msg": "File has been saved"
-                    }, 200
+                "msg": "File has been saved"
+            }, 200
 
 
 @api.route('/get-user-by-jwt')
@@ -59,18 +57,19 @@ class GetUser(Resource):
     @api.response(403, 'Not authorized - account not valid')
     def get(self):
         return {
-                    "firstname": current_user.firstname,
-                    "lastname": current_user.lastname,
-                    "email": current_user.email,
-                    "admin": current_user.admin,
-                    "promotion": current_user.promotion
-                }, 200
+            "firstname": current_user.firstname,
+            "lastname": current_user.lastname,
+            "email": current_user.email,
+            "admin": current_user.admin,
+            "promotion": current_user.promotion
+        }, 200
+
 
 @api.route('/materiel')
-@api.doc(params=    {
-                        'device': 'object you would like to borrow to the club',
-                        'message': 'your message'
-                    })
+@api.doc(params={
+    'device': 'object you would like to borrow to the club',
+    'message': 'your message'
+})
 class Materiel(Resource):
     @api.response(200, 'Success - Mail sent')
     @api.response(400, 'Request incorrect - JSON not valid')
@@ -80,7 +79,7 @@ class Materiel(Resource):
         object = request.json.get('device')
         message = request.json.get('message')
         if not message:
-            return  {
+            return {
                 "title": "Erreur - Aucun message",
                 "body": "Veuillez saisir un message"
             }, 400
@@ -89,23 +88,23 @@ class Materiel(Resource):
                       sender=f"{current_user.full_name} <no-reply@ponthe.enpc.org>",
                       recipients=['alexperez3498@hotmail.fr', 'ponthe@liste.enpc.fr'])#['ponthe@liste.enpc.fr'])
         mail.send(msg)
-        return  {
+        return {
             "msg": "Mail envoyé !"
         }, 200
 
 
 @api.route('/get-galleries-of-year/<year_slug>')
-@api.doc(params=    {
-                        'year_slug': 'Example : 2018'
-                    })
+@api.doc(params={
+    'year_slug': 'Example : 2018'
+})
 class Year(Resource):
     @api.response(200, 'Success')
     @api.response(404, 'Year not found')
     def get(self, year_slug):
         '''Get the list of public galleries of a given year'''
         year_dao = YearDAO()
-        year = year_dao.find_by_slug(year_slug)
         try:
+            year = year_dao.find_by_slug(year_slug)
             public_galleries = list(filter(lambda gallery: not gallery.private, year.galleries))
             return {
                 "year": year_dao.serialize(year_slug),
@@ -128,6 +127,7 @@ class Year(Resource):
                  return {'msg': 'year not found'}, 404
         return {'msg': 'not admin'}, 403
 
+
 @api.route('/get-galleries-by-year')
 class GetGalleriesByYear(Resource):
     @api.response(200, 'Success')
@@ -137,7 +137,7 @@ class GetGalleriesByYear(Resource):
 
         without_base64 = request.json.get('without_base64')
 
-        if without_base64 == None:
+        if without_base64 is None:
             without_base64 = False
 
         year_dao = YearDAO()
@@ -148,9 +148,8 @@ class GetGalleriesByYear(Resource):
             gallery_list = []
             for gallery in public_galleries:
                 list_of_files = list(filter(lambda file: not file.pending, gallery.files))
-                if(len(list_of_files) > 0):
+                if list_of_files:
                     i = random.randint(0, len(list_of_files)-1)
-                    encoded_string = list_of_files[i].base64encodingThumb()
                     if without_base64:
                         gallery_list.append({
                             "name": gallery.name,
@@ -162,7 +161,7 @@ class GetGalleriesByYear(Resource):
                             "name": gallery.name,
                             "slug": gallery.slug,
                             "file_path": list_of_files[i].file_path,
-                            "image": encoded_string
+                            "image": FileService.get_base64_encoding_thumb(list_of_files[i])
                         })
             data.append({
                 "year": year.value,
@@ -182,10 +181,11 @@ class GetAllGalleries(Resource):
         public_galleries = GalleryDAO().find_all_public_sorted_by_date()
         for gallery in public_galleries:
             list_of_files = list(filter(lambda file: not file.pending, gallery.files))
-            encoded_string = ""
-            if(len(list_of_files) > 0):
+            if list_of_files:
                 i = random.randint(0, len(list_of_files)-1)
-                encoded_string = list_of_files[i].base64encodingThumb()
+                encoded_string = FileService.get_base64_encoding_full(list_of_files[i])
+            else:
+                encoded_string = ""
             gallery_list.append({
                 "name": gallery.name,
                 "slug": gallery.slug,
@@ -198,13 +198,13 @@ class GetAllGalleries(Resource):
 
 
 @api.route('/create-gallery')
-@api.doc(params=    {
-                        'name': 'Gallery name',
-                        'description': '',
-                        'year_slug': 'Slug of the year of the galery. Ex: 2019',
-                        'event_slug': 'Slug of the parent event of the galery.',
-                        'private': 'Boolean'
-                    })
+@api.doc(params={
+    'name': 'Gallery name',
+    'description': '',
+    'year_slug': 'Slug of the year of the galery. Ex: 2019',
+    'event_slug': 'Slug of the parent event of the galery.',
+    'private': 'Boolean'
+})
 class CreateGallery(Resource):
     @api.response(201, 'Success - Gallery created')
     @api.response(401, 'Request incorrect - Error while creating gallery')
@@ -217,7 +217,7 @@ class CreateGallery(Resource):
         private = request.json.get('private')
 
         if not gallery_name:
-            return  {
+            return {
                 "title": "Erreur - Paramètre manquant",
                 "body": "Veuillez renseigner le nom de la nouvelle galerie"
             }, 401
@@ -239,9 +239,8 @@ class CreateGallery(Resource):
 class Members(Resource):
     def get(self):
         '''Get Ponthe members'''
-        SITE_ROOT = os.path.realpath(os.path.dirname(__file__))
-        members = open(os.path.join(SITE_ROOT, "/app/ponthe/templates", "members.json"))
-        return json.load(members, strict=False)
+        with open(os.path.join(ASSET_FOLDER, "data/members.json")) as members:
+            return json.load(members, strict=False)
 
 
 @api.route('/get-galleries/<event_slug>')
@@ -324,17 +323,15 @@ class GetImages(Resource):
         encoded_list_of_files = []
 
         for file in list_of_files:
+            encoded_file = FileService.get_base64_encoding_thumb(file)
+            encoded_list_of_files.append(encoded_file)
 
-            encoded = file.base64encodingThumb()
-            encoded_list_of_files.append(encoded)
-
-            im = Image.open("/app/ponthe/data/galleries/" + file.file_path)
+            im = Image.open(UPLOAD_FOLDER + file.file_path)
             width, height = im.size
             list_of_dim.append({"width": width, "height": height})
 
-
         approved_files = []
-        if(without_base64):
+        if without_base64:
             for i in range(len(list_of_files)):
                 approved_files.append({
                     'file_path': list_of_files[i].file_path,
@@ -353,10 +350,11 @@ class GetImages(Resource):
             "files": approved_files
         }, 200
 
+
 @api.route('/get-full-image')
-@api.doc(params=    {
-                        'file_path': 'Relative path of the file : gallery-slug/filename'
-                    })
+@api.doc(params={
+    'file_path': 'Relative path of the file : gallery-slug/filename'
+})
 class GetFullImage(Resource):
     @api.response(200, 'Success')
     @api.response(400, 'Request incorrect - JSON not valid')
@@ -380,10 +378,11 @@ class GetFullImage(Resource):
             "base64": file
         }, 200
 
+
 @api.route('/get-full-image-raw')
-@api.doc(params=    {
-                        'file_path': 'Relative path of the file : galleryslug/filename'
-                    })
+@api.doc(params={
+    'file_path': 'Relative path of the file : galleryslug/filename'
+})
 @api.representation('application/binary')
 class GetFullImageRaw(Resource):
     @api.response(200, 'Success')
@@ -401,10 +400,11 @@ class GetFullImageRaw(Resource):
             mimetype='image/'+im.format
             )
 
+
 @api.route('/get-thumb-image-raw/<file_slug>')
-@api.doc(params=    {
-                        'file_path': 'Relative path of the file : galleryslug/filename'
-                    })
+@api.doc(params={
+    'file_path': 'Relative path of the file : galleryslug/filename'
+})
 @api.representation('application/binary')
 class GetFullImageRawGet(Resource):
     @api.response(200, 'Success')
@@ -426,9 +426,10 @@ class GetFullImageRawGet(Resource):
         im = Image.open(UPLOAD_FOLDER + file_path)
 
         return send_file(
-            open(THUMBS_FOLDER + file.get_thumb_path(), "rb"),
+            open(FileDAO.get_thumb_path_or_create_it(file), "rb"),
             mimetype='image/'+im.format
             )
+
 
 @api.route('/get-random-image/<gallery_slug>')
 class GetRandomImage(Resource):
@@ -451,21 +452,22 @@ class GetRandomImage(Resource):
                 "title": "Erreur - Forbidden",
                 "body": "Vous n'avez pas les droits pour accéder à : "+gallery_slug
             }, 403
+
         list_of_files = list(filter(lambda file: not file.pending, gallery.files))
         i = random.randint(0, len(list_of_files)-1)
-        encoded_string = list_of_files[i].base64encodingThumb()
+
         return {
             "gallery": gallery.serialize(),
-            "thumbnail": encoded_string,
+            "thumbnail": FileService.get_base64_encoding_thumb(list_of_files[i]),
             "url": list_of_files[i].file_path
         }, 200
 
 
 @api.route('/get-latest-images')
-@api.doc(params=    {
-                        'page_size': 'number of images',
-                        'page': 'page 1 refers to the latest, page 2 refers to the next one...'
-                    })
+@api.doc(params={
+    'page_size': 'number of images',
+    'page': 'page 1 refers to the latest, page 2 refers to the next one...'
+})
 class GetLatestImages(Resource):
     @api.response(200, 'Success')
     @api.response(400, 'Request incorrect - JSON not valid')
@@ -476,7 +478,7 @@ class GetLatestImages(Resource):
         page_size = request.json.get("page_size")
         without_base64 = request.json.get("without_base64")
 
-        if(without_base64 == None):
+        if without_base64 is None:
             without_base64 = False
 
         files = FileDAO().find_all_moderated_sorted_by_date(page, page_size)
@@ -485,8 +487,8 @@ class GetLatestImages(Resource):
         list_of_dim = []
 
         for file in list_of_files:
-            encoded = file.base64encodingThumb()
-            encoded_list_of_files.append(encoded)
+            encoded_file = FileService.get_base64_encoding_thumb(file)
+            encoded_list_of_files.append(encoded_file)
 
             im = Image.open(UPLOAD_FOLDER + file.file_path)
             width, height = im.size
@@ -495,7 +497,7 @@ class GetLatestImages(Resource):
 
         latest_files = []
         for i in range(len(list_of_files)):
-            if list_of_files[i].pending == False:
+            if not list_of_files[i].pending:
                 if without_base64:
                     latest_files.append({
                         "file_path": list_of_files[i].file_path,
@@ -514,10 +516,10 @@ class GetLatestImages(Resource):
 
 
 @api.route('/get-latest-galleries')
-@api.doc(params=    {
-                        'page_size': 'number of images',
-                        'page': 'page 1 refers to the latest, page 2 refers to the next ones...'
-                    })
+@api.doc(params={
+    'page_size': 'number of images',
+    'page': 'page 1 refers to the latest, page 2 refers to the next ones...'
+})
 class GetLatestGalleries(Resource):
     @api.response(200, 'Success')
     @api.response(400, 'Request incorrect - JSON not valid')
@@ -532,10 +534,11 @@ class GetLatestGalleries(Resource):
 
         for gallery in public_galleries:
             list_of_files = list(filter(lambda file: not file.pending, gallery.files))
-            encoded_string = ""
-            if(len(list_of_files) > 0):
+            if list_of_files:
                 i = random.randint(0, len(list_of_files)-1)
-                encoded_string = list_of_files[i].base64encodingFull()
+                encoded_string = FileService.get_base64_encoding_full(list_of_files[i])
+            else:
+                encoded_string = ""
             gallery_list.append({
                 "name": gallery.name,
                 "slug": gallery.slug,
@@ -549,10 +552,10 @@ class GetLatestGalleries(Resource):
 
 
 @api.route('/reset-password')
-@api.doc(params=    {
-                        'current_password': 'your current password',
-                        'new_password': 'your new password'
-                    })
+@api.doc(params={
+    'current_password': 'your current password',
+    'new_password': 'your new password'
+})
 class ResetPasword(Resource):
     @api.response(200, 'Success')
     @api.response(400, 'Request incorrect - JSON not valid')

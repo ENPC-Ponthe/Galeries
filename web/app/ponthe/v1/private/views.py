@@ -92,7 +92,7 @@ def dashboard():
             return redirect(url_for('admin.moderation'))
         if 'delete_file' in request.form:
             file_slug = request.form['delete_file']
-            FileService.delete(file_slug)
+            FileService.delete(file_slug, current_user)
         if 'make_gallery_public' in request.form:
             gallery_slug = request.form['make_gallery_public']
             GalleryService.make_public(gallery_slug, current_user)
@@ -170,7 +170,7 @@ def gallery(gallery_slug):
             return redirect(url_for("private.index"))
         if 'delete_file' in request.form:
             file_slug = request.form['delete_file']
-            FileService.delete(file_slug)
+            FileService.delete(file_slug, current_user)
         if 'make_gallery_public' in request.form:
             GalleryService.make_public(gallery_slug, current_user)
         if 'make_gallery_private' in request.form:

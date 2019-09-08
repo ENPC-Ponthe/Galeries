@@ -25,7 +25,7 @@ def load(app: Flask):
             CAS_SERVER = 'https://cas.enpc.fr',
             CAS_AFTER_LOGIN = 'public.cas',
         )
-        # Hotfix, it valued "/app/ponthe/./instance" in docker
+        # FIXME: Hotfix, it valued "/app/ponthe/./instance" in docker
         app.instance_path = "/app/instance"
     else:
         app.logger.warning("Galeries Ponthé starting in DEV mode")

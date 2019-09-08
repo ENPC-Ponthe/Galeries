@@ -47,13 +47,13 @@ def moderation():
     if request.method == 'POST':
         if "delete" in request.form:
             gallery_slug = request.form["delete"]
-            GalleryService.delete(gallery_slug)
+            GalleryService.delete(gallery_slug, current_user)
         if "approve" in request.form:
             gallery_slug = request.form["approve"]
-            GalleryService.approve(gallery_slug)
+            GalleryService.approve(gallery_slug, current_user)
         if 'delete_file' in request.form:
             file_slug = request.form['delete_file']
-            FileService.delete(file_slug)
+            FileService.delete(file_slug, current_user)
         if 'approve_file' in request.form:
             file_slug = request.form['approve_file']
             FileService.approve_by_slug(file_slug)
