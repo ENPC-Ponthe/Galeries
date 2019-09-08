@@ -17,7 +17,7 @@ from . import api
 from ... import db, mail, app
 from ...dao import YearDAO, EventDAO, GalleryDAO, FileDAO
 from ...services import GalleryService
-from ...file_helper import is_allowed_file
+from ...file_helper import is_allowed_file, get_base64_encoding
 from ...services import FileService
 
 
@@ -326,7 +326,7 @@ class GetImages(Resource):
             encoded_file = FileService.get_base64_encoding_thumb(file)
             encoded_list_of_files.append(encoded_file)
 
-            im = Image.open(UPLOAD_FOLDER + file.file_path)
+            im = Image.open(FileService.get_absolute_file_path(file))
             width, height = im.size
             list_of_dim.append({"width": width, "height": height})
 
@@ -365,17 +365,14 @@ class GetFullImage(Resource):
 
         file_path = request.json.get('file_path')
 
-        im = Image.open(UPLOAD_FOLDER + file_path)
+        im = Image.open(os.path.join(UPLOAD_FOLDER, file_path))
         width, height = im.size
-
-        with open(UPLOAD_FOLDER + file_path, "rb") as image_file:
-            file = "data:image/"+im.format+";base64," + str(base64.b64encode(image_file.read()).decode('utf-8'))
-        image_file.close()
+        im.close()
 
         return {
             "width": width,
             "height": height,
-            "base64": file
+            "base64": get_base64_encoding(os.path.join(UPLOAD_FOLDER, file_path))
         }, 200
 
 
@@ -393,10 +390,11 @@ class GetFullImageRaw(Resource):
         '''Get a given image in full size raw'''
 
         file_path = request.json.get('file_path')
-        im = Image.open(UPLOAD_FOLDER + file_path)
+        absolute_file_path = os.path.join(UPLOAD_FOLDER, file_path)
+        im = Image.open(absolute_file_path)
 
         return send_file(
-            open(UPLOAD_FOLDER + file_path, 'rb'),
+            open(absolute_file_path, 'rb'),
             mimetype='image/'+im.format
             )
 
@@ -423,7 +421,7 @@ class GetFullImageRawGet(Resource):
         slug, extension = os.path.splitext(filename)
         file = FileDAO().find_by_slug(slug)
 
-        im = Image.open(UPLOAD_FOLDER + file_path)
+        im = Image.open(os.path.join(UPLOAD_FOLDER, file_path))
 
         return send_file(
             open(FileDAO.get_thumb_path_or_create_it(file), "rb"),
@@ -490,7 +488,7 @@ class GetLatestImages(Resource):
             encoded_file = FileService.get_base64_encoding_thumb(file)
             encoded_list_of_files.append(encoded_file)
 
-            im = Image.open(UPLOAD_FOLDER + file.file_path)
+            im = Image.open(os.path.join(UPLOAD_FOLDER, file.file_path))
             width, height = im.size
             list_of_dim.append({"width": width, "height": height})
 
