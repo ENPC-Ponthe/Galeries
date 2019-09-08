@@ -183,7 +183,7 @@ class GetAllGalleries(Resource):
             list_of_files = list(filter(lambda file: not file.pending, gallery.files))
             if list_of_files:
                 i = random.randint(0, len(list_of_files)-1)
-                encoded_string = FileService.get_base64_encoding_full(list_of_files[i])
+                encoded_string = FileService.get_base64_encoding_large_thumb(list_of_files[i])
             else:
                 encoded_string = ""
             gallery_list.append({
