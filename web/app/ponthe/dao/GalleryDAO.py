@@ -37,3 +37,8 @@ class GalleryDAO(ResourceDAO):
     @staticmethod
     def find_all_public_sorted_by_date():
         return Gallery.query.filter_by(private=False).order_by(desc(Gallery.created)).all()
+
+    # Test
+    @staticmethod
+    def find_all_public_sorted_by_date_filtered_by_years(beginning_year, ending_year):
+        return Gallery.query.filter_by(private=False, year>=beginning_year, year<=ending_year).order_by(desc(Gallery.created)).all()
