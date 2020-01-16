@@ -17,7 +17,7 @@ setup(
     name='Galeries Ponthe',
     version='2.0.0.dev0',
     description='Site du Ponthé',
-    keywords='ponthé club cinéma audivisuel',
+    keywords='ponthé club cinéma audiovisuel',
     url='https://github.com/ENPC-Ponthe/Galeries',
     author=['Philippe Ferreira De Sousa'],
     author_email='philippe@fdesousa.fr',
