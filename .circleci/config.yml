@@ -14,21 +14,21 @@ jobs:
       - run: cd web/app && sudo pip install -r dev.requirements.txt
       - run: pylint --exit-zero --rcfile=web/app/.pylintrc ponthe
 
-  test:
-    docker:
-      - image: circleci/python:3.7
-    steps:
-      - checkout
-      - restore_cache:
-          key: deps1-{{ .Branch }}-{{ checksum "web/app/dev.requirements.txt" }}
-      - run: cd web/app/instance/keys/ && openssl genrsa -out jwtRS256-private.pem 2048 && openssl rsa -in jwtRS256-private.pem -pubout -out jwtRS256-public.pem
-      - run: cd web/app && sudo pip install -r dev.requirements.txt
-      - run: py.test --cov-report term --cov=ponthe web/app/test/
-      - store_artifacts:
-          path: test-reports/
-          destination: tr1
-      - store_test_results:
-          path: test-reports/
+  # test:
+  #   docker:
+  #     - image: circleci/python:3.7
+  #   steps:
+  #     - checkout
+  #     - restore_cache:
+  #         key: deps1-{{ .Branch }}-{{ checksum "web/app/dev.requirements.txt" }}
+  #     - run: cd web/app/instance/keys/ && openssl genrsa -out jwtRS256-private.pem 2048 && openssl rsa -in jwtRS256-private.pem -pubout -out jwtRS256-public.pem
+  #     - run: cd web/app && sudo pip install -r dev.requirements.txt
+  #     - run: py.test --cov-report term --cov=ponthe web/app/test/
+  #     - store_artifacts:
+  #         path: test-reports/
+  #         destination: tr1
+  #     - store_test_results:
+  #         path: test-reports/
 
   build:
     docker:
