@@ -201,11 +201,11 @@ class GetAllGalleries(Resource):
 class GetAllGalleriesRestricted(Resource):
     @api.response(200, 'Success')
     def get(self):
-        user_promotion = current_user.promotion
-        full_promotion_year = int('2' + user_promotion)
-        starting_year = full_promotion_year - 3
-        ending_year = starting_year + 2
-        data = { "starting_year": starting_year, "ending_year": ending_year }
+        # user_promotion = current_user.promotion
+        # full_promotion_year = int('2' + user_promotion)
+        # starting_year = full_promotion_year - 3
+        # ending_year = starting_year + 2
+        data = { "starting_year": "2017", "ending_year": "2019" }
         # '''Get the list of public galleries of all years'''
         # gallery_list = []
         # public_galleries_restricted = GalleryDAO().find_all_public_sorted_by_date_filtered_by_years(starting_year, ending_year)
