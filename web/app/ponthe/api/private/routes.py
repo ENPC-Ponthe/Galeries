@@ -352,7 +352,7 @@ class GetImages(Resource):
         encoded_list_of_files = []
 
         for file in list_of_files:
-            encoded_file = FileService.get_base64_encoding_thumb(file)
+            encoded_file = FileService.get_base64_encoding_large_thumb(file)
             encoded_list_of_files.append(encoded_file)
 
             im = Image.open(FileService.get_absolute_file_path(file))
@@ -597,3 +597,22 @@ class ResetPasword(Resource):
             return {"msg": "Mot de passe réinitialisé avec succès"}, 200
         else:
             return {"msg": "Mot de passe incorrect"}, 400
+
+
+@api.route('/update-reaction')
+@api.doc(params={
+    'reaction': 'your reaction on a picture',
+    'image_slug': 'the image you reacted to'
+})
+class UpdateReaction(Resource):
+    @api.response(200, 'Success')
+    @api.response(400, 'Request incorrect - JSON not valid')
+    @api.response(403, 'Not authorized - account not valid')
+    def post(self):
+        '''Add a reaction on a picture'''
+        reaction = request.json.get('reaction')
+        image_slug = request.json.get('image_slug')
+        
+        return {
+            "msg": "Réaction enregistrée !"
+        }, 200
