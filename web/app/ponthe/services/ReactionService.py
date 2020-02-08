@@ -13,10 +13,12 @@ class ReactionService:
         db.session.add(new_reaction)
         db.session.commit()
 
+    @staticmethod
     def update(reaction: ReactionEnum, image_slug: str, user: User):
         reaction = Reaction.query.filter(Reaction.resource == image_slug, Reaction.user == user)
         reaction.type = reaction
         db.session.commit()
     
+    @staticmethod
     def get_enum_reaction(reaction: str):
         return ReactionEnum[reaction].value
