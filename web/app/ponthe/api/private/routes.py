@@ -613,6 +613,10 @@ class UpdateReaction(Resource):
         '''Add a reaction on a picture'''
         reaction = request.json.get('reaction')
         image_slug = request.json.get('image_slug')
+        if image_has_reaction_from_user(image_slug, current_user):
+            ReactionService.update(reaction, image_slug, current_user)
+        else:
+            ReactionService.create(reaction, image_slug, current_user)
         
         return {
             "msg": "Réaction enregistrée !"
@@ -631,8 +635,11 @@ class CreateReaction(Resource):
         '''Add a reaction on a picture'''
         reaction = request.json.get('reaction')
         image_slug = request.json.get('image_slug')
-        ReactionService.create(reaction, image_slug, current_user)
+
+        reaction_from_enum = ReactionService.get_enum_reaction(reaction)
+        # ReactionService.create(reaction_from_enum, image_slug, current_user)
         
         return {
-            "msg": "Réaction enregistrée !"
+            "msg": "Réaction enregistrée !",
+            "reaction": reaction_from_enum
         }, 200

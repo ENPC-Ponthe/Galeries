@@ -17,3 +17,6 @@ class ReactionService:
         reaction = Reaction.query.filter(Reaction.resource == image_slug, Reaction.user == user)
         reaction.type = reaction
         db.session.commit()
+    
+    def get_enum_reaction(reaction: str):
+        return ReactionEnum[reaction].value
