@@ -198,8 +198,7 @@ class GetAllGalleries(Resource):
                 "image": encoded_string
             })
         data =  {
-                    "galleries": gallery_list,
-                    "current_user": current_user
+                    "galleries": gallery_list
                 }
         return data, 200
 
