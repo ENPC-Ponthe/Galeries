@@ -613,14 +613,18 @@ class UpdateReaction(Resource):
         '''Add a reaction on a picture'''
         reaction = request.json.get('reaction')
         image_slug = request.json.get('image_slug')
+
+        reaction_from_enum = ReactionService.get_enum_reaction(reaction)
+
         if image_has_reaction_from_user(image_slug, current_user):
-            ReactionService.update(reaction, image_slug, current_user)
+            ReactionService.update(reaction_from_enum, image_slug, current_user)
         else:
-            ReactionService.create(reaction, image_slug, current_user)
+            ReactionService.create(reaction_from_enum, image_slug, current_user)
         
         return {
             "msg": "Réaction enregistrée !"
         }, 200
+
 
 @api.route('/create-reaction')
 @api.doc(params={
