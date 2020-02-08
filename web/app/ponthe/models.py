@@ -28,12 +28,12 @@ def slugify(text: str, delim: str=u'-'):
 
 
 class ReactionEnum(enum.Enum):
-    NONE = 0
-    LIKE = 1
-    DISLIKE = 2
-    LOVE = 3
-    HAPPY = 4
-    SAD = 5
+    NONE = 1
+    LIKE = 2
+    DISLIKE = 3
+    LOVE = 4
+    HAPPY = 5
+    SAD = 6
 
 
 class FileTypeEnum(enum.Enum):
