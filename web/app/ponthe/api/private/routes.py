@@ -16,7 +16,7 @@ from PIL import Image
 from . import api
 from ... import db, mail, app
 from ...dao import YearDAO, EventDAO, GalleryDAO, FileDAO
-from ...services import GalleryService, ReactionService
+from ...services import GalleryService, ReactionService, UserService
 from ...file_helper import is_allowed_file, get_base64_encoding
 from ...services import FileService
 
@@ -177,10 +177,7 @@ class GetGalleriesByYear(Resource):
 class GetAllGalleries(Resource):
     @api.response(200, 'Success')
     def get(self):
-        user_promotion = current_user.promotion
-        full_promotion_year = int('2' + user_promotion)
-        starting_year = full_promotion_year - 3
-        ending_year = starting_year + 2
+        starting_year, ending_year = UserService.get_user_allowed_years(current_user.promotion)
 
         '''Get the list of public galleries of all years'''
         gallery_list = []
@@ -188,35 +185,6 @@ class GetAllGalleries(Resource):
             public_galleries = GalleryDAO().find_all_public_sorted_by_date()
         else:
             public_galleries = GalleryDAO().find_all_public_sorted_by_date_filtered_by_years(starting_year, ending_year)
-        for gallery in public_galleries:
-            list_of_files = list(filter(lambda file: not file.pending, gallery.files))
-            if list_of_files:
-                i = random.randint(0, len(list_of_files)-1)
-                encoded_string = FileService.get_base64_encoding_thumb(list_of_files[i], SIZE_LARGE_THUMB)
-            else:
-                encoded_string = ""
-            gallery_list.append({
-                "name": gallery.name,
-                "slug": gallery.slug,
-                "image": encoded_string
-            })
-        data =  {
-                    "galleries": gallery_list
-                }
-        return data, 200
-
-# TEST
-@api.route('/get-all-galleries-restricted')
-class GetAllGalleriesRestricted(Resource):
-    @api.response(200, 'Success')
-    def get(self):
-        user_promotion = current_user.promotion
-        full_promotion_year = int('2' + user_promotion)
-        starting_year = full_promotion_year - 3
-        ending_year = starting_year + 2
-        '''Get the list of public galleries of all years'''
-        gallery_list = []
-        public_galleries = GalleryDAO().find_all_public_sorted_by_date_filtered_by_years(starting_year, ending_year)
         for gallery in public_galleries:
             list_of_files = list(filter(lambda file: not file.pending, gallery.files))
             if list_of_files:
