@@ -207,8 +207,8 @@ class GetAllGalleriesRestricted(Resource):
         ending_year = starting_year + 2
         '''Get the list of public galleries of all years'''
         gallery_list = []
-        public_galleries = GalleryDAO().find_all_public_sorted_by_date_filtered_by_years(starting_year, ending_year)
-        for gallery in public_galleries:
+        public_galleries_restricted = GalleryDAO().find_all_public_sorted_by_date_filtered_by_years(starting_year, ending_year)
+        for gallery in public_galleries_restricted:
             list_of_files = list(filter(lambda file: not file.pending, gallery.files))
             if list_of_files:
                 i = random.randint(0, len(list_of_files)-1)
