@@ -23,6 +23,7 @@ from ...services import FileService
 
 UPLOAD_FOLDER = app.config['MEDIA_ROOT']
 ASSET_FOLDER = app.config['ASSET_ROOT']
+SIZE_LARGE_THUMB = "630x500"
 
 
 @api.route('/file-upload/<gallery_slug>')
@@ -183,7 +184,7 @@ class GetAllGalleries(Resource):
             list_of_files = list(filter(lambda file: not file.pending, gallery.files))
             if list_of_files:
                 i = random.randint(0, len(list_of_files)-1)
-                encoded_string = FileService.get_base64_encoding_large_thumb(list_of_files[i])
+                encoded_string = FileService.get_base64_encoding_thumb(list_of_files[i], SIZE_LARGE_THUMB)
             else:
                 encoded_string = ""
             gallery_list.append({
@@ -212,7 +213,7 @@ class GetAllGalleriesRestricted(Resource):
             list_of_files = list(filter(lambda file: not file.pending, gallery.files))
             if list_of_files:
                 i = random.randint(0, len(list_of_files)-1)
-                encoded_string = FileService.get_base64_encoding_large_thumb(list_of_files[i])
+                encoded_string = FileService.get_base64_encoding_thumb(list_of_files[i], SIZE_LARGE_THUMB)
             else:
                 encoded_string = ""
             gallery_list.append({
@@ -352,7 +353,7 @@ class GetImages(Resource):
         encoded_list_of_files = []
 
         for file in list_of_files:
-            encoded_file = FileService.get_base64_encoding_large_thumb(file)
+            encoded_file = FileService.get_base64_encoding_thumb(file, SIZE_LARGE_THUMB)
             encoded_list_of_files.append(encoded_file)
 
             im = Image.open(FileService.get_absolute_file_path(file))

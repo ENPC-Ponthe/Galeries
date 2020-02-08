@@ -4,7 +4,7 @@ from sqlalchemy import desc
 from .ResourceDAO import ResourceDAO
 from .. import app, db, thumb
 from ..file_helper import delete_file
-from ..filters import thumb_filter, large_thumb_filter, category_thumb_filter
+from ..filters import thumb_filter, category_thumb_filter
 from ..models import File, Gallery
 
 import os
@@ -18,42 +18,23 @@ class FileDAO(ResourceDAO):
         super().__init__(File)
 
     @staticmethod
-    def create_thumb(file: File):
-        return thumb_filter(file)
+    def create_thumb(file: File, size="226x226"):
+        return thumb_filter(file, size)
 
     @staticmethod
-    def create_large_thumb(file: File):
-        return large_thumb_filter(file)
-
-    @staticmethod
-    def get_thumb_path(file: File):
+    def get_thumb_path(file: File, size="226x226"):
         return os.path.join(THUMB_FOLDER, file.gallery.slug,
-                                  utils.generate_filename(file.filename, "226x226", "fit", "90"))
-
-    @staticmethod
-    def get_large_thumb_path(file: File):
-        return os.path.join(THUMB_FOLDER, file.gallery.slug,
-                                  utils.generate_filename(file.filename, "630x500", "fit", "90"))
+                                  utils.generate_filename(file.filename, size, "fit", "90"))
 
     @classmethod
-    def get_thumb_path_or_create_it(cls, file: File):
-        thumb_file_path = cls.get_thumb_path(file)
+    def get_thumb_path_or_create_it(cls, file: File, size="226x226"):
+        thumb_file_path = cls.get_thumb_path(file, size)
         try:
             thumbnail = open(thumb_file_path)
             thumbnail.close()
         except:
-            cls.create_thumb(file)
+            cls.create_thumb(file, size)
         return thumb_file_path
-
-    @classmethod
-    def get_large_thumb_path_or_create_it(cls, file: File):
-        large_thumb_file_path = cls.get_large_thumb_path(file)
-        try:
-            thumbnail = open(large_thumb_file_path)
-            thumbnail.close()
-        except:
-            cls.create_large_thumb(file)
-        return large_thumb_file_path
 
     @classmethod
     def delete(cls, file: File):

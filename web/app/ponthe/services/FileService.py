@@ -56,10 +56,5 @@ class FileService:
         return get_base64_encoding(cls.get_absolute_file_path(file))
 
     @staticmethod
-    def get_base64_encoding_thumb(file: File):
-        return get_base64_encoding(FileDAO.get_thumb_path_or_create_it(file))
-
-    @staticmethod
-    def get_base64_encoding_large_thumb(file: File):
-        return get_base64_encoding(FileDAO.get_large_thumb_path_or_create_it(file))
-        # return get_base64_encoding(FileDAO.get_thumb_path_or_create_it(file))
+    def get_base64_encoding_thumb(file: File, size="226x226"):
+        return get_base64_encoding(FileDAO.get_thumb_path_or_create_it(file, size))
