@@ -71,6 +71,7 @@ workflows:
               only:
                 - master
                 - testing
+                - testing-add-restriction-get-all-galleries
       - deploy:
           requires:
             - build
@@ -79,3 +80,4 @@ workflows:
               only:
                 - master
                 - testing
+                - testing-add-restriction-get-all-galleries
