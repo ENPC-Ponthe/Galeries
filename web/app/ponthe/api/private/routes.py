@@ -187,7 +187,7 @@ class GetAllGalleries(Resource):
         if current_user.admin:
             public_galleries = GalleryDAO().find_all_public_sorted_by_date()
         else:
-            public_galleries = GalleryDAO().find_all_public_sorted_by_date()
+            public_galleries = GalleryDAO().find_all_public_sorted_by_date_filtered_by_years(starting_year, ending_year)
         for gallery in public_galleries:
             list_of_files = list(filter(lambda file: not file.pending, gallery.files))
             if list_of_files:
