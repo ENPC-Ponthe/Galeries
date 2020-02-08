@@ -177,6 +177,11 @@ class GetGalleriesByYear(Resource):
 class GetAllGalleries(Resource):
     @api.response(200, 'Success')
     def get(self):
+        user_promotion = current_user.promotion
+        full_promotion_year = int('2' + user_promotion)
+        starting_year = full_promotion_year - 3
+        ending_year = starting_year + 2
+
         '''Get the list of public galleries of all years'''
         gallery_list = []
         public_galleries = GalleryDAO().find_all_public_sorted_by_date()
@@ -193,7 +198,8 @@ class GetAllGalleries(Resource):
                 "image": encoded_string
             })
         data =  {
-                    "galleries": gallery_list
+                    "galleries": gallery_list,
+                    "current_user": current_user
                 }
         return data, 200
 
