@@ -1,4 +1,4 @@
-from sqlalchemy import desc
+from sqlalchemy import desc, where
 
 from .ResourceDAO import ResourceDAO
 from ..models import Gallery, Year, Event, User
@@ -41,4 +41,4 @@ class GalleryDAO(ResourceDAO):
     # Test
     @staticmethod
     def find_all_public_sorted_by_date_filtered_by_years(beginning_year, ending_year):
-        return Gallery.query.filter_by(private=False).filter(and_(Gallery.year>=beginning_year, Gallery.year<=ending_year)).order_by(desc(Gallery.created)).all()
+        return Gallery.query.filter_by(private=False).where(between(Gallery.year, beginning_year, ending_year)).order_by(desc(Gallery.created)).all()

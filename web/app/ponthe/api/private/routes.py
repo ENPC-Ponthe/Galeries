@@ -205,25 +205,24 @@ class GetAllGalleriesRestricted(Resource):
         full_promotion_year = int('2' + user_promotion)
         starting_year = full_promotion_year - 3
         ending_year = starting_year + 2
-        data= { "starting_year": starting_year, "ending_year": ending_year}
-        # '''Get the list of public galleries of all years'''
-        # gallery_list = []
-        # public_galleries = GalleryDAO().find_all_public_sorted_by_date_filtered_by_years(starting_year, ending_year)
-        # for gallery in public_galleries:
-        #     list_of_files = list(filter(lambda file: not file.pending, gallery.files))
-        #     if list_of_files:
-        #         i = random.randint(0, len(list_of_files)-1)
-        #         encoded_string = FileService.get_base64_encoding_large_thumb(list_of_files[i])
-        #     else:
-        #         encoded_string = ""
-        #     gallery_list.append({
-        #         "name": gallery.name,
-        #         "slug": gallery.slug,
-        #         "image": encoded_string
-        #     })
-        # data =  {
-        #             "galleries": gallery_list
-        #         }
+        '''Get the list of public galleries of all years'''
+        gallery_list = []
+        public_galleries = GalleryDAO().find_all_public_sorted_by_date_filtered_by_years(starting_year, ending_year)
+        for gallery in public_galleries:
+            list_of_files = list(filter(lambda file: not file.pending, gallery.files))
+            if list_of_files:
+                i = random.randint(0, len(list_of_files)-1)
+                encoded_string = FileService.get_base64_encoding_large_thumb(list_of_files[i])
+            else:
+                encoded_string = ""
+            gallery_list.append({
+                "name": gallery.name,
+                "slug": gallery.slug,
+                "image": encoded_string
+            })
+        data =  {
+                    "galleries": gallery_list
+                }
         return data, 200
 
 
