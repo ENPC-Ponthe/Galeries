@@ -11,6 +11,7 @@ import os
 
 UPLOAD_FOLDER = app.config['MEDIA_ROOT']
 THUMB_FOLDER = app.config['THUMBNAIL_MEDIA_THUMBNAIL_ROOT']
+DEFAULT_SIZE_THUMB = "226x226"
 
 
 class FileDAO(ResourceDAO):
@@ -18,16 +19,16 @@ class FileDAO(ResourceDAO):
         super().__init__(File)
 
     @staticmethod
-    def create_thumb(file: File, size="226x226"):
+    def create_thumb(file: File, size=DEFAULT_SIZE_THUMB):
         return thumb_filter(file, size)
 
     @staticmethod
-    def get_thumb_path(file: File, size="226x226"):
+    def get_thumb_path(file: File, size=DEFAULT_SIZE_THUMB):
         return os.path.join(THUMB_FOLDER, file.gallery.slug,
                                   utils.generate_filename(file.filename, size, "fit", "90"))
 
     @classmethod
-    def get_thumb_path_or_create_it(cls, file: File, size="226x226"):
+    def get_thumb_path_or_create_it(cls, file: File, size=DEFAULT_SIZE_THUMB):
         thumb_file_path = cls.get_thumb_path(file, size)
         try:
             thumbnail = open(thumb_file_path)
