@@ -16,7 +16,7 @@ from PIL import Image
 from . import api
 from ... import db, mail, app
 from ...dao import YearDAO, EventDAO, GalleryDAO, FileDAO
-from ...services import GalleryService
+from ...services import GalleryService, ReactionService
 from ...file_helper import is_allowed_file, get_base64_encoding
 from ...services import FileService
 
@@ -613,6 +613,25 @@ class UpdateReaction(Resource):
         '''Add a reaction on a picture'''
         reaction = request.json.get('reaction')
         image_slug = request.json.get('image_slug')
+        
+        return {
+            "msg": "Réaction enregistrée !"
+        }, 200
+
+@api.route('/create-reaction')
+@api.doc(params={
+    'reaction': 'your reaction on a picture',
+    'image_slug': 'the image you reacted to'
+})
+class CreateReaction(Resource):
+    @api.response(200, 'Success')
+    @api.response(400, 'Request incorrect - JSON not valid')
+    @api.response(403, 'Not authorized - account not valid')
+    def post(self):
+        '''Add a reaction on a picture'''
+        reaction = request.json.get('reaction')
+        image_slug = request.json.get('image_slug')
+        ReactionService.create(reaction, image_slug, current_user)
         
         return {
             "msg": "Réaction enregistrée !"

@@ -7,7 +7,7 @@ from ..file_helper import create_folder, move_file, is_image, is_video, get_exte
 from ..filters import thumb_filter
 
 UPLOAD_FOLDER = app.config['MEDIA_ROOT']
-
+DEFAULT_SIZE_THUMB = "226x226"
 
 class FileService:
     @staticmethod
@@ -56,5 +56,5 @@ class FileService:
         return get_base64_encoding(cls.get_absolute_file_path(file))
 
     @staticmethod
-    def get_base64_encoding_thumb(file: File, size="226x226"):
+    def get_base64_encoding_thumb(file: File, size=DEFAULT_SIZE_THUMB):
         return get_base64_encoding(FileDAO.get_thumb_path_or_create_it(file, size))

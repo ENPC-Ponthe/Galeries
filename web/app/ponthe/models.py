@@ -28,6 +28,7 @@ def slugify(text: str, delim: str=u'-'):
 
 
 class ReactionEnum(enum.Enum):
+    NONE = 0
     LIKE = 1
     DISLIKE = 2
     LOVE = 3
