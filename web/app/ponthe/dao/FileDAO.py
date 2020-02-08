@@ -4,7 +4,7 @@ from sqlalchemy import desc
 from .ResourceDAO import ResourceDAO
 from .. import app, db, thumb
 from ..file_helper import delete_file
-from ..filters import thumb_filter, category_thumb_filter
+from ..filters import thumb_filter, large_thumb_filter, category_thumb_filter
 from ..models import File, Gallery
 
 import os
@@ -23,7 +23,7 @@ class FileDAO(ResourceDAO):
 
     @staticmethod
     def create_large_thumb(file: File):
-        return category_thumb_filter(file)
+        return large_thumb_filter(file)
 
     @staticmethod
     def get_thumb_path(file: File):
