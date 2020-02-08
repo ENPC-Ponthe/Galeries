@@ -2,7 +2,7 @@ import os
 
 from .. import app, db
 from ..dao import ResourceDAO
-from ..models import User, ReactionEnum
+from ..models import User, ReactionEnum, Reaction
 
 class ReactionService:
     @staticmethod
