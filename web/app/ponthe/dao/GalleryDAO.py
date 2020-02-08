@@ -1,4 +1,4 @@
-from sqlalchemy import desc, where
+from sqlalchemy import desc, between
 
 from .ResourceDAO import ResourceDAO
 from ..models import Gallery, Year, Event, User
