@@ -322,8 +322,10 @@ class GetImages(Resource):
 
         if GalleryDAO.has_right_on(gallery, current_user):
             list_of_files = FileDAO.find_all_files_by_gallery(gallery, page, page_size)
+            total_number_of_files = FileDAO.get_number_of_files_by_gallery(gallery)
         else:
             list_of_files = FileDAO.find_not_pending_files_by_gallery(gallery, page, page_size)
+            total_number_of_files = FileDAO.get_number_of_not_pending_files_by_gallery(gallery)
 
         list_of_dim = []
         encoded_list_of_files = []
@@ -353,6 +355,7 @@ class GetImages(Resource):
 
         return {
             "gallery": gallery.serialize(),
+            "number_of_files": total_number_of_files,
             "files": approved_files
         }, 200
 
