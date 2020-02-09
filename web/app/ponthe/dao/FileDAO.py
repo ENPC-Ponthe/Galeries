@@ -74,7 +74,7 @@ class FileDAO(ResourceDAO):
 
     @staticmethod
     def get_number_of_files_by_gallery(gallery: Gallery):
-        return FileDAO.all_files_by_gallery(gallery, page, page_size).count()
+        return FileDAO.all_files_by_gallery(gallery).count()
     
     @staticmethod
     def get_number_of_not_pending_files_by_gallery(gallery: Gallery):
