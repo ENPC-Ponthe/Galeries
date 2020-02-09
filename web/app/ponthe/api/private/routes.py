@@ -15,7 +15,7 @@ from PIL import Image
 
 from . import api
 from ... import db, mail, app
-from ...dao import YearDAO, EventDAO, GalleryDAO, FileDAO
+from ...dao import YearDAO, EventDAO, GalleryDAO, FileDAO, ReactionDAO
 from ...services import GalleryService, ReactionService, UserService
 from ...file_helper import is_allowed_file, get_base64_encoding
 from ...services import FileService
@@ -617,9 +617,46 @@ class CreateReaction(Resource):
         image_slug = request.json.get('image_slug')
 
         reaction_from_enum = ReactionService.get_enum_reaction(reaction)
-        # ReactionService.create(reaction_from_enum, image_slug, current_user)
+        ReactionService.create(reaction, image_slug, current_user)
         
         return {
             "msg": "Réaction enregistrée !",
             "reaction": reaction_from_enum
+        }, 200
+
+@api.route('/get-all-user-reactions')
+@api.doc(params={
+    'reaction': 'your reaction on a picture',
+    'image_slug': 'the image you reacted to'
+})
+class GetAllUserReaction(Resource):
+    @api.response(200, 'Success')
+    @api.response(400, 'Request incorrect - JSON not valid')
+    @api.response(403, 'Not authorized - account not valid')
+    def get(self):
+        '''Add a reaction on a picture'''
+        reactions = ReactionDAO.find_all_by_user(user=current_user)
+        # ReactionService.create(reaction_from_enum, image_slug, current_user)
+        
+        return {
+            "reactions": reactions
+        }, 200
+
+@api.route('/get-all-reactions-for-image')
+@api.doc(params={
+    'reaction': 'your reaction on a picture',
+    'image_slug': 'the image you reacted to'
+})
+class GetAllUserReaction(Resource):
+    @api.response(200, 'Success')
+    @api.response(400, 'Request incorrect - JSON not valid')
+    @api.response(403, 'Not authorized - account not valid')
+    def get(self):
+        '''Add a reaction on a picture'''
+        image_slug = request.json.get('image_slug')
+        reactions = ReactionDAO.find_all_by_slug(slug=image_slug)
+        # ReactionService.create(reaction_from_enum, image_slug, current_user)
+        
+        return {
+            "reactions": reactions
         }, 200
