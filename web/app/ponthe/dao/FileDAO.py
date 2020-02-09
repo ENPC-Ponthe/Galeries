@@ -54,14 +54,18 @@ class FileDAO(ResourceDAO):
         return File.query.filter_by(pending=False).order_by(desc(File.created)).offset((page-1)*page_size).limit(page_size).all()
 
     @staticmethod
-    def find_all_files_by_gallery(gallery: Gallery, page=None, page_size=None):
+    def all_files_by_gallery(gallery: Gallery, page=None, page_size=None):
         if page_size is None:
-            files = File.query.filter_by(gallery=gallery).all()
+            files = File.query.filter_by(gallery=gallery)
         else:
             if page is None:
                 page = 1
-            files = File.query.filter_by(gallery=gallery).offset((page - 1) * page_size).limit(page_size).all()
+            files = File.query.filter_by(gallery=gallery).offset((page - 1) * page_size).limit(page_size)
         return files
+
+    @staticmethod
+    def find_all_files_by_gallery(gallery: Gallery, page=None, page_size=None):
+        return all_files_by_gallery(gallery, page, page_size).all()
 
     @staticmethod
     def find_not_pending_files_by_gallery(gallery: Gallery, page=None, page_size=None):
@@ -70,7 +74,7 @@ class FileDAO(ResourceDAO):
 
     @staticmethod
     def get_number_of_files_by_gallery(gallery: Gallery):
-        return len(find_all_files_by_gallery(gallery))
+        return all_files_by_gallery(gallery, page, page_size).count()
     
     @staticmethod
     def get_number_of_not_pending_files_by_gallery(gallery: Gallery):
