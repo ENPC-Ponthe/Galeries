@@ -65,7 +65,7 @@ class FileDAO(ResourceDAO):
 
     @staticmethod
     def find_all_files_by_gallery(gallery: Gallery, page=None, page_size=None):
-        return all_files_by_gallery(gallery, page, page_size).all()
+        return FileDAO.all_files_by_gallery(gallery, page, page_size).all()
 
     @staticmethod
     def find_not_pending_files_by_gallery(gallery: Gallery, page=None, page_size=None):
@@ -74,8 +74,8 @@ class FileDAO(ResourceDAO):
 
     @staticmethod
     def get_number_of_files_by_gallery(gallery: Gallery):
-        return all_files_by_gallery(gallery, page, page_size).count()
+        return FileDAO.all_files_by_gallery(gallery, page, page_size).count()
     
     @staticmethod
     def get_number_of_not_pending_files_by_gallery(gallery: Gallery):
-        return len(find_not_pending_files_by_gallery(gallery))
+        return len(FileDAO.find_not_pending_files_by_gallery(gallery))
