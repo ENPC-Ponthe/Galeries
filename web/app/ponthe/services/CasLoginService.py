@@ -66,7 +66,7 @@ class CasLoginService:
             return { "title": "Erreur - Utilisateur non-autorisé",
                     "body": "Ce compte DSI n'appartient pas à un élève, les membres de l'administration et les prof"
                                 "esseurs ne sont pas autorisés."
-                           )
+            }
         user = UserDAO.find_by_email(email)
         if user is None:
             user = cls.create_user(email, fullname, firstname, lastname)
