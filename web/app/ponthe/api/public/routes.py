@@ -177,6 +177,4 @@ class CasAuthenticate(Resource):
         """
             Authenticates the user with CAS
         """
-        with open(os.path.join(ASSET_FOLDER, "data/cgu.json")) as cgu:
-            return json.load(cgu, strict=False), 200
         return CasLoginService.login_v2() or { "msg": "Erreur d'authentification" }, 400
