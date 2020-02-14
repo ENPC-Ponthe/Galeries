@@ -23,7 +23,7 @@ def load(app: Flask):
             JWT_ALGORITHM = 'RS256',
             JWT_ACCESS_TOKEN_EXPIRES = False,
             CAS_SERVER = 'https://cas.enpc.fr',
-            CAS_AFTER_LOGIN = 'public.cas',
+            CAS_AFTER_LOGIN = 'https://ponthe-testing.enpc.org/#/sso',
         )
         # FIXME: Hotfix, it valued "/app/ponthe/./instance" in docker
         app.instance_path = "/app/instance"
