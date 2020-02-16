@@ -22,6 +22,7 @@ migrate = Migrate(app, db)
 FlaskCLI(app)
 thumb = Thumbnail(app)
 cas = CAS(app, '/v1/cas')
+cas_v2 = CAS(app, '/api/cas')
 CORS(app)
 
 login_manager = LoginManager()
@@ -40,9 +41,12 @@ from . import cli
 from . import models
 from . import views
 
-app.register_blueprint(public, url_prefix='/v1')
-app.register_blueprint(private, url_prefix='/v1')
-app.register_blueprint(admin, url_prefix='/v1')
-app.register_blueprint(admin_api, url_prefix='/api')
-app.register_blueprint(public_api, url_prefix='/api')
-app.register_blueprint(private_api, url_prefix='/api')
+API_V1 = '/v1'
+API_V2 = '/api'
+
+app.register_blueprint(public, url_prefix=API_V1)
+app.register_blueprint(private, url_prefix=API_V1)
+app.register_blueprint(admin, url_prefix=API_V1)
+app.register_blueprint(admin_api, url_prefix=API_V2)
+app.register_blueprint(public_api, url_prefix=API_V2)
+app.register_blueprint(private_api, url_prefix=API_V2)
