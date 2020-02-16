@@ -5,7 +5,7 @@ from flask_jwt_extended import create_access_token
 from ..dao import UserDAO
 from ..models import User
 from ..config import Constants
-from .. import app, db, cas
+from .. import app, db, cas, cas_v2
 
 
 class CasLoginService:
@@ -52,12 +52,12 @@ class CasLoginService:
 
     @classmethod
     def login_v2(cls):
-        app.logger.info("Logging user via CAS: ", cas.username)
-        app.logger.debug("with attributes: ", cas.attributes)
-        return cls.authenticate_v2(cas.attributes['cas:mail'],
-                                cas.attributes['cas:cn'],
-                                cas.attributes['cas:givenName'],
-                                cas.attributes['cas:sn'])
+        app.logger.info("Logging user via CAS: ", cas_v2.username)
+        app.logger.debug("with attributes: ", cas_v2.attributes)
+        return cls.authenticate_v2(cas_v2.attributes['cas:mail'],
+                                cas_v2.attributes['cas:cn'],
+                                cas_v2.attributes['cas:givenName'],
+                                cas_v2.attributes['cas:sn'])
 
     @classmethod
     def authenticate_v2(cls, email, fullname, firstname, lastname):
