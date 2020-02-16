@@ -72,4 +72,4 @@ class CasLoginService:
             user = cls.create_user(email, fullname, firstname, lastname)
         login_user(user)
         access_token = create_access_token(identity=user)
-        return {"token": access_token}, 200
+        return access_token}

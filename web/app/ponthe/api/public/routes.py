@@ -177,4 +177,8 @@ class CasAuthenticate(Resource):
         """
             Authenticates the user with CAS
         """
-        return CasLoginService.login_v2() or { "msg": "Erreur d'authentification" }, 400
+        token = CasLoginService.login_v2()
+        if token is not None:
+            return CasLoginService.login_v2(), 200
+        else:
+            return { "msg": "Erreur d'authentification" }, 400
