@@ -179,6 +179,6 @@ class CasAuthenticate(Resource):
         """
         token = CasLoginService.login_v2()
         if token is not None:
-            return CasLoginService.login_v2(), 200
+            return { "access_token": token }, 200
         else:
             return { "msg": "Erreur d'authentification" }, 400
