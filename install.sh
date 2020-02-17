@@ -22,8 +22,11 @@ echo -e "\e[1m\e[34mInstallation de la base de données\e[0m"
 sudo apt-get install mysql-server
 echo "CREATE DATABASE ponthe;CREATE USER 'ponthe'@'localhost' IDENTIFIED BY ''; GRANT ALL ON ponthe.* TO 'ponthe'@'localhost'" | mysql -u root -p
 
+cd web/app/instance/keys
+openssl genrsa -out jwtRS256-private.pem 2048 && openssl rsa -in jwtRS256-private.pem -pubout -out jwtRS256-public.pem
+cd ../..
+
 echo -e "\e[1m\e[34mInstallation de l'environnement python\e[0m"
-cd web
 pip3 install virtualenvwrapper
 echo "export VIRTUALENVWRAPPER_PYTHON=/usr/bin/python3;" >> ~/.bashrc
 echo "export WORKON_HOME=$HOME/virtenvs;" >> ~/.bashrc
@@ -32,13 +35,10 @@ mkvirtualenv ponthe
 workon ponthe
 pip install --editable .
 export FLASK_APP=ponthe
-flask db init
 flask db upgrade
-app/ponthe/manager.py load_data
+flask load-data
 
-mkdir -p app/instance/static/uploads && mkdir -p app/instance/static/thumbs && mkdir -p app/instance/tmp/uploads
-cd app/instance/keys
-openssl genrsa -out jwtRS256-private.pem 2048 && openssl rsa -in jwtRS256-private.pem -pubout -out jwtRS256-public.pem
+mkdir -p instance/static/uploads && mkdir -p instance/static/thumbs && mkdir -p instance/tmp/uploads
 
 echo -e "\e[1m\e[34mInstallation de la base de données\e[0m"
 sudo apt-get install mysql-server

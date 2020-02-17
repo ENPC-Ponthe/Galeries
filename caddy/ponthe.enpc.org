@@ -1,14 +1,18 @@
-localhost:8000 {
+ponthe.enpc.org {
     import ../common
 
-    root /srv/ponthe.enpc.org/volumes/static
+    root /srv/ponthe.enpc.org/front
 
     proxy /phpmyadmin localhost:7500 {
         without /phpmyadmin
         transparent
     }
-    proxy / localhost:7000 {
-        except /thumbs /assets
+
+    proxy /api localhost:7000 {
+        transparent
+    }
+
+    proxy /v1 localhost:7000 {
         transparent
     }
 }

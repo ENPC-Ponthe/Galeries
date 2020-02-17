@@ -7,7 +7,6 @@ from werkzeug.security import generate_password_hash, check_password_hash
 import codecs, translitcodec, enum, re, string, random
 
 from .file_helper import split_filename
-
 from . import db
 
 _punct_re = re.compile(r'[\t !"#$%&\'()*\-/<=>?@\[\\\]^_`{|},.]+')  #   Les slug DSI enlève les ' au lieu de les remplacer par un -
@@ -29,11 +28,12 @@ def slugify(text: str, delim: str=u'-'):
 
 
 class ReactionEnum(enum.Enum):
-    LIKE = 1
-    DISLIKE = 2
-    LOVE = 3
-    HAPPY = 4
-    SAD = 5
+    NONE = 1
+    LIKE = 2
+    DISLIKE = 3
+    LOVE = 4
+    HAPPY = 5
+    SAD = 6
 
 
 class FileTypeEnum(enum.Enum):
@@ -297,9 +297,15 @@ class Event(Resource):
                     return gallery.files[0]
             return File.query.filter_by(slug="default-image").one()
 
+    def serialize(self):
+        return {
+            "description": self.description,
+            "slug": self.slug,
+            "name": self.name
+        }
+
     def __repr__(self):
         return '<Event {}>'.format(self.name)
-
 
 class Year(Resource):
     __tablename__ = 'years'
@@ -366,7 +372,7 @@ class Gallery(Resource):
         if self.cover_image:
             return self.cover_image
         else:
-            if len(self.files) > 0 and self.files[0].type == FileTypeEnum.IMAGE:
+            if self.files and self.files[0].type == FileTypeEnum.IMAGE:
                 return self.files[0]
             return File.query.filter_by(slug="default-image").one()
 
@@ -377,6 +383,13 @@ class Gallery(Resource):
     def __repr__(self):
         return '<Gallery {}>'.format(self.name)
 
+    def serialize(self):
+        return {
+            "cover_image_id": self.cover_image_id,
+            "description": self.description,
+            "slug": self.slug,
+            "name": self.name
+        }
 
 file_tag = db.Table('file_tag',
     db.Column('tag_id', db.Integer, db.ForeignKey('tags.id', name='fk_file_tags_tag'), primary_key=True),

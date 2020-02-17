@@ -4,3 +4,5 @@ from .FileService import FileService
 from .YearService import YearService
 from .EventService import EventService
 from .CasLoginService import CasLoginService
+from .CategoryService import CategoryService
+from .ReactionService import ReactionService
