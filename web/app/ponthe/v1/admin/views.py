@@ -1,8 +1,8 @@
-from flask import request, redirect, flash, abort, render_template
+from flask import request, redirect, flash, abort, render_template, url_for
 from flask_login import current_user, login_required
 
-from ..dao import CategoryDAO
-from ..services import YearService, EventService, GalleryService, FileService
+from ...dao import CategoryDAO
+from ...services import YearService, EventService, GalleryService, FileService
 from . import admin
 
 
@@ -21,7 +21,7 @@ def create_event():
         event_description = request.form.get('description')
         if name:
             EventService.create(name, event_description, category_slug, current_user)
-            return redirect('/create-gallery')
+            return redirect(url_for('private.create_gallery'))
         else:
             flash("Veuillez indiquer le nom du nouvel événement","error")
 
@@ -36,7 +36,7 @@ def create_year():
         year_description = request.form.get('description')
         if year_value:
             YearService.create(year_value, year_description, current_user)
-            return redirect('/create-event')
+            return redirect(url_for('admin.create_event'))
         else:
             flash("Veuillez indiquer la nouvelle année", "error")
     return render_template('create_year.html')
@@ -47,13 +47,13 @@ def moderation():
     if request.method == 'POST':
         if "delete" in request.form:
             gallery_slug = request.form["delete"]
-            GalleryService.delete(gallery_slug)
+            GalleryService.delete(gallery_slug, current_user)
         if "approve" in request.form:
             gallery_slug = request.form["approve"]
-            GalleryService.approve(gallery_slug)
+            GalleryService.approve(gallery_slug, current_user)
         if 'delete_file' in request.form:
             file_slug = request.form['delete_file']
-            FileService.delete(file_slug)
+            FileService.delete(file_slug, current_user)
         if 'approve_file' in request.form:
             file_slug = request.form['approve_file']
             FileService.approve_by_slug(file_slug)

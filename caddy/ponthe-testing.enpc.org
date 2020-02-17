@@ -1,0 +1,18 @@
+ponthe-testing.enpc.org {
+    import ../common
+
+    root /srv/ponthe-testing.enpc.org/front
+
+    proxy /phpmyadmin localhost:7600 {
+        without /phpmyadmin
+        transparent
+    }
+
+    proxy /api localhost:7100 {
+        transparent
+    }
+
+    proxy /v1 localhost:7100 {
+        transparent
+    }
+}

@@ -1,16 +1,9 @@
 #!/bin/env python
 # coding=utf-8
-import click, os, csv
+import click, os
 
-from flask import render_template
-from flask_mail import Message
-from smtplib import SMTPException
-
-from sqlalchemy.exc import IntegrityError
-
-from . import app, mail, db
+from . import app, db
 from .file_helper import create_folder, copy_folder, delete_folders_in_folder,copy_folders_in_folder, copy_file
-from .models import User
 from .services import UserService
 
 
@@ -78,34 +71,4 @@ def load_data():
 def create_accounts():
     csv_file = os.path.join(app.instance_path, 'tmp', 'accounts.csv')
     with open(csv_file, "r") as input:
-        csv_reader = csv.reader(input)
-        for gender, lastname, firstname, email, origin, department, promotion in csv_reader:
-            user = User(firstname=firstname, lastname=lastname, gender=gender, origin=origin, department=department, promotion=promotion, email=email, admin=False, email_confirmed=True)
-            password = User.generate_random_password()
-            user.set_password(password)
-            db.session.add(user)
-            try:
-                db.session.commit()
-                msg = Message('Bienvenue aux Ponts', sender='Ponthé <no-reply@ponthe.enpc.org>',
-                              recipients=[user.email])
-                msg.body = 'Ton club d\'audiovisuel te souhaite la bienvenue aux Ponts ! '\
-                    + 'Ton compte Ponthé a été créé sur https://ponthe.enpc.org. '\
-                    + 'Connecte-toi dès maintenant avec les identifiants suivants :\n'\
-                    + 'Email : {}\n'.format(user.email)\
-                    + 'Mot de passe : {}'.format(password)
-                msg.html = render_template(
-                    'email/create_account.html',
-                    firstname=user.firstname,
-                    email=user.email,
-                    password=password,
-                    reset_link=UserService.get_reset_link(user)
-                )
-                mail.send(msg)
-                app.logger.info(f"Account successfully created for user {user}")
-            except IntegrityError:
-                db.session.rollback()
-                app.logger.warning(f"Account can't be created. User {user} already exists.")
-            except SMTPException as e:
-                db.session.rollback()
-                app.logger.error(f"Account creation canceled for user {user}"
-                                f" because email could not be sent to {user.email}.")
+        UserService.create_users(input)

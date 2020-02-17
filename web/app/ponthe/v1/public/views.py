@@ -1,20 +1,22 @@
 # -- coding: utf-8 --"
+import os
 
 import re
 
-from flask import render_template, request, flash, redirect, url_for, abort
+from flask import render_template, request, flash, redirect, url_for, abort, send_file
 from flask_cas import login_required as cas_login_required
 from urllib.parse import urlparse, urljoin
 from flask_login import login_user, current_user
 from itsdangerous import SignatureExpired, BadSignature
 from datetime import datetime
+from werkzeug.exceptions import NotFound
 
 from . import public
-from .. import app, db, login_manager
+from ... import app, db, login_manager
 from ..private.views import get_home
-from ..services import UserService, CasLoginService
-from ..config import Constants
-from ..dao import UserDAO
+from ...services import UserService, CasLoginService
+from ...config import Constants
+from ...dao import UserDAO
 
 
 def is_safe_url(target: str):  # empêche les redirections malicieuses
@@ -44,6 +46,14 @@ def get_login_page():
     return render_template('login.html')
 
 
+@public.route('/assets/<path:file_path>')  # utilisé en dev, en prod c'était servi par le serveur web
+def assets(file_path: str):
+    try:
+        return send_file(os.path.join(app.config['ASSET_ROOT'], file_path))
+    except FileNotFoundError:
+        raise NotFound()
+
+
 @public.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'GET':
@@ -70,7 +80,7 @@ def login():
         login_user(logging_user)
         app.logger.info("Logging user: ", logging_user)
         next = get_redirect_target()
-        return redirect(next) if next and urlparse(next).path != '/logout' else get_home()
+        return redirect(next) if next and urlparse(next).path != url_for('private.logout') else get_home()
     else:
         flash("Identifiants incorrectes", "error")
         return get_login_page()
@@ -170,7 +180,7 @@ def resetting(token: str):
             db.session.add(user)
             db.session.commit()
             flash("Mot de passe réinitialisé avec succès", "success")
-            return redirect('login')
+            return redirect(url_for('public.login'))
 
     return render_template('resetting.html', firstname=user.firstname)
 

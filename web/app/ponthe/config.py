@@ -23,8 +23,10 @@ def load(app: Flask):
             JWT_ALGORITHM = 'RS256',
             JWT_ACCESS_TOKEN_EXPIRES = False,
             CAS_SERVER = 'https://cas.enpc.fr',
-            CAS_AFTER_LOGIN = 'public.cas',
+            CAS_AFTER_LOGIN = 'https://ponthe-testing.enpc.org/#/sso',
         )
+        # FIXME: Hotfix, it valued "/app/ponthe/./instance" in docker
+        app.instance_path = "/app/instance"
     else:
         app.logger.warning("Galeries Ponthé starting in DEV mode")
         app.config.from_pyfile('ponthe.cfg')
@@ -40,4 +42,4 @@ def load(app: Flask):
     app.config['MEDIA_ROOT'] = os.path.join(app.instance_path, 'static', 'uploads')
     app.config['THUMBNAIL_MEDIA_ROOT'] = app.config['MEDIA_ROOT']
     app.config['THUMBNAIL_MEDIA_THUMBNAIL_ROOT'] = os.path.join(app.instance_path, 'static', 'thumbs')
-    app.config['THUMBNAIL_MEDIA_THUMBNAIL_URL'] = '/thumbs'
+    app.config['THUMBNAIL_MEDIA_THUMBNAIL_URL'] = '/v1/thumbs'
