@@ -178,7 +178,10 @@ class CasAuthenticate(Resource):
         """
             Authenticates the user with CAS
         """
-        token = CasLoginService.login_v2()
+        try:
+            token = CasLoginService.login_v2()
+        except:
+            return { "erreur": "Erreur dans tout le processus" }, 200
         if token is not None:
             return { "access_token": token }, 200
         else:

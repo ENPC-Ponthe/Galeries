@@ -63,7 +63,10 @@ class CasLoginService:
                                 cas_v2.attributes['cas:givenName'],
                                 cas_v2.attributes['cas:sn'])
         except:
-            return 'Erreur dans authenticate_v2, le reste fonctionne.' + cas_v2.attributes
+            try:
+                return 'Erreur dans authenticate_v2, le reste fonctionne.' + str(cas_v2.attributes)
+            except:
+                return 'Problème avec cas_v2.attributes'
 
     @classmethod
     def authenticate_v2(cls, email, fullname, firstname, lastname):
@@ -73,22 +76,22 @@ class CasLoginService:
                 return { "title": "Erreur - Utilisateur non-autorisé",
                         "body": "Ce compte DSI n'appartient pas à un élève, les membres de l'administration et les prof"
                                     "esseurs ne sont pas autorisés.",
-                                    "perso": email + ' ++ ' + fullname + ' ++ ' + firstname + ' ++ ' + lastname
+                                    "perso": str(email) + ' ++ ' + str(fullname) + ' ++ ' + str(firstname) + ' ++ ' + str(lastname)
                 }
         except:
-            return "Erreur car pas bon mail ++ " #+ email + ' ++ ' + fullname + ' ++ ' + firstname + ' ++ ' + lastname
+            return "Erreur car pas bon mail ++ " + str(email) + ' ++ ' + str(fullname) + ' ++ ' + str(firstname) + ' ++ ' + str(lastname)
         try:
             user = UserDAO.find_by_email(email)
             if user is None:
                 user = cls.create_user(email, fullname, firstname, lastname)
         except:
-            return "Erreur pour obtenir le user ++" #+ email + ' ++ ' + fullname + ' ++ ' + firstname + ' ++ ' + lastname
+            return "Erreur pour obtenir le user ++" + str(email) + ' ++ ' + str(fullname) + ' ++ ' + str(firstname) + ' ++ ' + str(lastname)
         try:
             login_user(user)
         except:
-            return "Erreur pour login le user ++ " #+ email + ' ++ ' + fullname + ' ++ ' + firstname + ' ++ ' + lastname
+            return "Erreur pour login le user ++ " + str(email) + ' ++ ' + str(fullname) + ' ++ ' + str(firstname) + ' ++ ' + str(lastname)
         try:
             access_token = create_access_token(identity=user)
         except:
-            return "Problème de création de token ++" #+ email + " ++ " + fullname + " ++ " + firstname + " ++ " + lastname
+            return "Problème de création de token ++" + str(email) + ' ++ ' + str(fullname) + ' ++ ' + str(firstname) + ' ++ ' + str(lastname)
         return access_token
