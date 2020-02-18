@@ -52,8 +52,11 @@ class CasLoginService:
 
     @classmethod
     def login_v2(cls):
-        app.logger.info("Logging user via CAS: ", cas_v2.username)
-        app.logger.debug("with attributes: ", cas_v2.attributes)
+        try:
+            app.logger.info("Logging user via CAS: ", cas_v2.username)
+            app.logger.debug("with attributes: ", cas_v2.attributes)
+        except:
+            return "Erreur pour log au début du login"
         try:
             return cls.authenticate_v2(cas_v2.attributes['cas:mail'],
                                 cas_v2.attributes['cas:cn'],
