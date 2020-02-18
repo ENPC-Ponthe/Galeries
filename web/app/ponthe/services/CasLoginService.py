@@ -57,7 +57,7 @@ class CasLoginService:
             app.logger.debug("with attributes: ", cas_v2.attributes)
         except:
             return "Erreur pour log au début du login"
-        return cas_v2.attributes
+        return { "v2": cas_v2.attributes, "v1": cas.attributes }
         try:
             return cls.authenticate_v2(cas_v2.attributes['cas:mail'],
                                 cas_v2.attributes['cas:cn'],
