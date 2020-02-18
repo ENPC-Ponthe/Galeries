@@ -70,4 +70,4 @@ class GalleryDAO(ResourceDAO):
         else:
             if page is None:
                 page = 1
-            return Gallery.query.join(Gallery.year).filter(Gallery.private == False).filter(Year.slug >= beginning_year, Year.slug <= ending_year).order_by(desc(Gallery.created)).offset((page-1)*page_size).limit(page_size).all()    
+            return Gallery.query.join(Gallery.year).filter(Gallery.private == False).filter(Year.slug >= beginning_year, Year.slug <= ending_year).order_by(desc(Gallery.created)).offset((page-1)*page_size).limit(page_size).all()
