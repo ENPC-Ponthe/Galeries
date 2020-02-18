@@ -1,6 +1,7 @@
 from flask import render_template
 from flask_login import login_user
 from flask_jwt_extended import create_access_token
+import inspect
 
 from ..dao import UserDAO
 from ..models import User
@@ -57,7 +58,7 @@ class CasLoginService:
             app.logger.debug("with attributes: ", cas_v2.attributes)
         except:
             return "Erreur pour log au début du login"
-        return { "v2name": cas_v2.username, "v2": cas_v2.attributes, "v1name": cas.username, "v1": cas.attributes }
+        return { "v2name": cas_v2.username, "v2": cas_v2.attributes, "v1name": cas.username, "v1": cas.attributes, "methods": inspect.getmembers(cas_v2, predicate=inspect.ismethod) }
         try:
             return cls.authenticate_v2(cas_v2.attributes['cas:mail'],
                                 cas_v2.attributes['cas:cn'],
