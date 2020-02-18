@@ -73,19 +73,19 @@ class CasLoginService:
                                     "perso": email + ' ++ ' + fullname + ' ++ ' + firstname + ' ++ ' + lastname
                 }
         except:
-            return "Erreur car pas bon mail ++ " + email + ' ++ ' + fullname + ' ++ ' + firstname + ' ++ ' + lastname
+            return "Erreur car pas bon mail ++ " #+ email + ' ++ ' + fullname + ' ++ ' + firstname + ' ++ ' + lastname
         try:
             user = UserDAO.find_by_email(email)
             if user is None:
                 user = cls.create_user(email, fullname, firstname, lastname)
         except:
-            return "Erreur pour obtenir le user ++" + email + ' ++ ' + fullname + ' ++ ' + firstname + ' ++ ' + lastname
+            return "Erreur pour obtenir le user ++" #+ email + ' ++ ' + fullname + ' ++ ' + firstname + ' ++ ' + lastname
         try:
             login_user(user)
         except:
-            return "Erreur pour login le user ++ " + email + ' ++ ' + fullname + ' ++ ' + firstname + ' ++ ' + lastname
+            return "Erreur pour login le user ++ " #+ email + ' ++ ' + fullname + ' ++ ' + firstname + ' ++ ' + lastname
         try:
             access_token = create_access_token(identity=user)
         except:
-            return "Problème de création de token" + email + ' ++ ' + fullname + ' ++ ' + firstname + ' ++ ' + lastname
+            return "Problème de création de token ++" #+ email + " ++ " + fullname + " ++ " + firstname + " ++ " + lastname
         return access_token
