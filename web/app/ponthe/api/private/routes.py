@@ -96,7 +96,6 @@ class Materiel(Resource):
 
 @api.route('/contact')
 @api.doc(params={
-    'device': 'object you would like to borrow to the club',
     'message': 'your message'
 })
 class Contact(Resource):
@@ -215,7 +214,7 @@ class GetAllGalleries(Resource):
             number_of_public_galleries = GalleryDAO().count_all_public_sorted_by_date()
         else:
             public_galleries = GalleryDAO().find_public_sorted_by_date_filtered_by_years(starting_year, ending_year, page, page_size)
-            number_of_public_galleries = GalleryDAO().count_all_public_sorted_by_date_filtered_by_years(beginning_year, ending_year)
+            number_of_public_galleries = GalleryDAO().count_all_public_sorted_by_date_filtered_by_years(starting_year, ending_year)
         for gallery in public_galleries:
             list_of_files = list(filter(lambda file: not file.pending, gallery.files))
             if list_of_files:
