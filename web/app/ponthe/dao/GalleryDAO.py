@@ -35,11 +35,11 @@ class GalleryDAO(ResourceDAO):
 
     @staticmethod
     def find_all_public_sorted_by_date():
-        return all_public_sorted_by_date().all()
+        return GalleryDAO.all_public_sorted_by_date().all()
     
     @staticmethod
     def count_all_public_sorted_by_date():
-        return all_public_sorted_by_date().count()
+        return GalleryDAO.all_public_sorted_by_date().count()
 
     @staticmethod
     def find_public_sorted_by_date(page=None, page_size=None):
@@ -57,11 +57,11 @@ class GalleryDAO(ResourceDAO):
 
     @staticmethod
     def find_all_public_sorted_by_date_filtered_by_years(beginning_year, ending_year):
-        return all_public_sorted_by_date_filtered_by_years(beginning_year, ending_year).all()
+        return GalleryDAO.all_public_sorted_by_date_filtered_by_years(beginning_year, ending_year).all()
     
     @staticmethod
     def count_all_public_sorted_by_date_filtered_by_years(beginning_year, ending_year):
-        return all_public_sorted_by_date_filtered_by_years(beginning_year, ending_year).count()
+        return GalleryDAO.all_public_sorted_by_date_filtered_by_years(beginning_year, ending_year).count()
 
     @staticmethod
     def find_public_sorted_by_date_filtered_by_years(beginning_year, ending_year, page=None, page_size=None):
