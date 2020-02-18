@@ -87,7 +87,33 @@ class Materiel(Resource):
         msg = Message(subject=f"Demande d'emprunt de {object} par {current_user.firstname} {current_user.lastname}",
                       body=message,
                       sender=f"{current_user.full_name} <no-reply@ponthe.enpc.org>",
-                      recipients=['alexperez3498@hotmail.fr', 'ponthe@liste.enpc.fr'])#['ponthe@liste.enpc.fr'])
+                      recipients=['ponthe@liste.enpc.fr'])
+        mail.send(msg)
+        return {
+            "msg": "Mail envoyé !"
+        }, 200
+
+
+@api.route('/contact')
+@api.doc(params={
+    'message': 'your message'
+})
+class Contact(Resource):
+    @api.response(200, 'Success - Mail sent')
+    @api.response(400, 'Request incorrect - JSON not valid')
+    @api.response(403, 'Not authorized - account not valid')
+    def post(self):
+        '''Send a mail to ponthe to borrow material'''
+        message = request.json.get('message')
+        if not message:
+            return {
+                "title": "Erreur - Aucun message",
+                "body": "Veuillez saisir un message"
+            }, 400
+        msg = Message(subject=f"Message de la part de {current_user.firstname} {current_user.lastname}",
+                      body=message,
+                      sender=f"{current_user.full_name} <no-reply@ponthe.enpc.org>",
+                      recipients=['ponthe@liste.enpc.fr'])
         mail.send(msg)
         return {
             "msg": "Mail envoyé !"
@@ -176,15 +202,19 @@ class GetGalleriesByYear(Resource):
 @api.route('/get-all-galleries')
 class GetAllGalleries(Resource):
     @api.response(200, 'Success')
-    def get(self):
+    def post(self):
+        page = request.json.get("page")
+        page_size = request.json.get("page_size")
         starting_year, ending_year = UserService.get_user_allowed_years(current_user.promotion)
 
         '''Get the list of public galleries of all years'''
         gallery_list = []
         if current_user.admin:
-            public_galleries = GalleryDAO().find_all_public_sorted_by_date()
+            public_galleries = GalleryDAO().find_public_sorted_by_date(page, page_size)
+            number_of_public_galleries = GalleryDAO().count_all_public_sorted_by_date()
         else:
-            public_galleries = GalleryDAO().find_all_public_sorted_by_date_filtered_by_years(starting_year, ending_year)
+            public_galleries = GalleryDAO().find_public_sorted_by_date_filtered_by_years(starting_year, ending_year, page, page_size)
+            number_of_public_galleries = GalleryDAO().count_all_public_sorted_by_date_filtered_by_years(starting_year, ending_year)
         for gallery in public_galleries:
             list_of_files = list(filter(lambda file: not file.pending, gallery.files))
             if list_of_files:
@@ -198,6 +228,7 @@ class GetAllGalleries(Resource):
                 "image": encoded_string
             })
         data =  {
+                    "number_of_galleries": number_of_public_galleries,
                     "galleries": gallery_list
                 }
         return data, 200
