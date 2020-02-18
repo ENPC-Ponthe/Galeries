@@ -212,8 +212,10 @@ class GetAllGalleries(Resource):
         gallery_list = []
         if current_user.admin:
             public_galleries = GalleryDAO().find_public_sorted_by_date(page, page_size)
+            number_of_public_galleries = GalleryDAO().count_all_public_sorted_by_date()
         else:
             public_galleries = GalleryDAO().find_public_sorted_by_date_filtered_by_years(starting_year, ending_year, page, page_size)
+            number_of_public_galleries = GalleryDAO().count_all_public_sorted_by_date_filtered_by_years(beginning_year, ending_year)
         for gallery in public_galleries:
             list_of_files = list(filter(lambda file: not file.pending, gallery.files))
             if list_of_files:
@@ -227,6 +229,7 @@ class GetAllGalleries(Resource):
                 "image": encoded_string
             })
         data =  {
+                    "number_of_galleries": number_of_public_galleries,
                     "galleries": gallery_list
                 }
         return data, 200
