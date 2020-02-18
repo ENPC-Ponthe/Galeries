@@ -63,10 +63,7 @@ class CasLoginService:
                                 cas_v2.attributes['cas:givenName'],
                                 cas_v2.attributes['cas:sn'])
         except:
-            try:
-                return 'Erreur dans authenticate_v2, le reste fonctionne.' + str(cas_v2.attributes)
-            except:
-                return 'Problème avec cas_v2.attributes'
+            return 'Erreur dans authenticate_v2, le reste fonctionne. cas_v2 vaut :' + str(cas_v2.attributes) + " +++  " + str(cas_v2)
 
     @classmethod
     def authenticate_v2(cls, email, fullname, firstname, lastname):
@@ -94,4 +91,4 @@ class CasLoginService:
             access_token = create_access_token(identity=user)
         except:
             return "Problème de création de token ++" + str(email) + ' ++ ' + str(fullname) + ' ++ ' + str(firstname) + ' ++ ' + str(lastname)
-        return access_token
+        return access_token + str(email) + ' ++ ' + str(fullname) + ' ++ ' + str(firstname) + ' ++ ' + str(lastname)
