@@ -54,13 +54,17 @@ class CasLoginService:
     def login_v2(cls):
         app.logger.info("Logging user via CAS: ", cas_v2.username)
         app.logger.debug("with attributes: ", cas_v2.attributes)
-        return cls.authenticate_v2(cas_v2.attributes['cas:mail'],
+        try:
+            return cls.authenticate_v2(cas_v2.attributes['cas:mail'],
                                 cas_v2.attributes['cas:cn'],
                                 cas_v2.attributes['cas:givenName'],
                                 cas_v2.attributes['cas:sn'])
+        except:
+            return 'Erreur dans authenticate_v2, le reste fonctionne.'
 
     @classmethod
     def authenticate_v2(cls, email, fullname, firstname, lastname):
+        return email + ' ++ ' + fullname + ' ++ ' + firstname + ' ++ ' + lastname
         if '@eleves.enpc.fr' not in email:
             app.logger.error(f"CAS login failed because email {email} is not a student's one")
             return { "title": "Erreur - Utilisateur non-autorisé",
