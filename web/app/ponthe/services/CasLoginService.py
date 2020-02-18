@@ -64,13 +64,16 @@ class CasLoginService:
 
     @classmethod
     def authenticate_v2(cls, email, fullname, firstname, lastname):
-        if '@eleves.enpc.fr' not in email:
-            app.logger.error(f"CAS login failed because email {email} is not a student's one")
-            return { "title": "Erreur - Utilisateur non-autorisé",
-                    "body": "Ce compte DSI n'appartient pas à un élève, les membres de l'administration et les prof"
-                                "esseurs ne sont pas autorisés.",
-                                "perso": email + ' ++ ' + fullname + ' ++ ' + firstname + ' ++ ' + lastname
-            }
+        try:
+            if '@eleves.enpc.fr' not in email:
+                app.logger.error(f"CAS login failed because email {email} is not a student's one")
+                return { "title": "Erreur - Utilisateur non-autorisé",
+                        "body": "Ce compte DSI n'appartient pas à un élève, les membres de l'administration et les prof"
+                                    "esseurs ne sont pas autorisés.",
+                                    "perso": email + ' ++ ' + fullname + ' ++ ' + firstname + ' ++ ' + lastname
+                }
+        except:
+            return "Erreur car pas bon mail ++ " + email + ' ++ ' + fullname + ' ++ ' + firstname + ' ++ ' + lastname
         try:
             user = UserDAO.find_by_email(email)
             if user is None:
@@ -81,5 +84,8 @@ class CasLoginService:
             login_user(user)
         except:
             return "Erreur pour login le user ++ " + email + ' ++ ' + fullname + ' ++ ' + firstname + ' ++ ' + lastname
-        access_token = create_access_token(identity=user)
+        try:
+            access_token = create_access_token(identity=user)
+        except:
+            return "Problème de création de token" + email + ' ++ ' + fullname + ' ++ ' + firstname + ' ++ ' + lastname
         return access_token
