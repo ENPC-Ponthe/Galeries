@@ -57,6 +57,18 @@ jobs:
             rm ~/.docker/config.json
             EOF
 
+  logs:
+    machine:
+      enabled: true
+    steps:
+      - run:
+          name: Fetch logs over SSH
+          command: |
+            ssh $SSH_USER@$SSH_HOST << EOF
+            cd /srv/ponthe$([ "${CIRCLE_BRANCH}" == "master" ] || echo "-${CIRCLE_BRANCH}").enpc.org/back
+            docker-compose logs
+            EOF
+
 workflows:
   version: 2
   main:
@@ -74,6 +86,14 @@ workflows:
       - deploy:
           requires:
             - build
+          filters:
+            branches:
+              only:
+                - master
+                - testing
+      - logs:
+          requires:
+            - deploy
           filters:
             branches:
               only:
