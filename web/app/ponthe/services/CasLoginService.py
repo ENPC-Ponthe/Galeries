@@ -52,12 +52,12 @@ class CasLoginService:
 
     @classmethod
     def login_v2(cls):
-        app.logger.info("Logging user via CAS: ", cas_v2.username)
-        app.logger.debug("with attributes: ", cas_v2.attributes)
-        return cls.authenticate_v2(cas_v2.attributes['cas:mail'],
-                                cas_v2.attributes['cas:cn'],
-                                cas_v2.attributes['cas:givenName'],
-                                cas_v2.attributes['cas:sn'])
+        app.logger.info("Logging user via CAS: ", cas.username)
+        app.logger.debug("with attributes: ", cas.attributes)
+        return cls.authenticate_v2(cas.attributes['cas:mail'],
+                            cas.attributes['cas:cn'],
+                            cas.attributes['cas:givenName'],
+                            cas.attributes['cas:sn'])
 
     @classmethod
     def authenticate_v2(cls, email, fullname, firstname, lastname):

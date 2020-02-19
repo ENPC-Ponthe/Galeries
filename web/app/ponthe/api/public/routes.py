@@ -170,6 +170,7 @@ class Cgu(Resource):
         with open(os.path.join(ASSET_FOLDER, "data/cgu.json")) as cgu:
             return json.load(cgu, strict=False), 200
 
+
 @api.route('/cas/authenticate')
 @api.response(200, 'Success')
 class CasAuthenticate(Resource):
