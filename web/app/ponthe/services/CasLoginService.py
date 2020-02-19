@@ -92,4 +92,4 @@ class CasLoginService:
             access_token = create_access_token(identity=user)
         except:
             return "Problème de création de token ++" + str(email) + ' ++ ' + str(fullname) + ' ++ ' + str(firstname) + ' ++ ' + str(lastname)
-        return access_token + str(email) + ' ++ ' + str(fullname) + ' ++ ' + str(firstname) + ' ++ ' + str(lastname)
+        return access_token
