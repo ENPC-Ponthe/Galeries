@@ -54,7 +54,6 @@ class CasLoginService:
     def login_v2(cls):
         app.logger.info("Logging user via CAS: ", cas.username)
         app.logger.debug("with attributes: ", cas.attributes)
-        return { "v1": cas.attributes, "v2": cas_v2.attributes }
         return cls.authenticate_v2(cas.attributes['cas:mail'],
                             cas.attributes['cas:cn'],
                             cas.attributes['cas:givenName'],
