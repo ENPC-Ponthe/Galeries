@@ -4,7 +4,7 @@ import datetime
 import json
 
 from flask_restplus import Resource
-from flask import request
+from flask import request, redirect
 from flask_jwt_extended import JWTManager, create_access_token
 from itsdangerous import SignatureExpired, BadSignature
 
@@ -180,6 +180,6 @@ class CasAuthenticate(Resource):
         """
         token = CasLoginService.login_v2()
         if token is not None:
-            return { "access_token": token }, 200
+            return redirect('https://ponthe-testing.enpc.org/?token={}'.format(token), code=200)
         else:
             return { "msg": "Erreur d'authentification" }, 400

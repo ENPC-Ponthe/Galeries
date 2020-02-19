@@ -1,4 +1,4 @@
-from flask import render_template, redirect
+from flask import render_template
 from flask_login import login_user
 from flask_jwt_extended import create_access_token
 
@@ -54,7 +54,6 @@ class CasLoginService:
     def login_v2(cls):
         app.logger.info("Logging user via CAS: ", cas.username)
         app.logger.debug("with attributes: ", cas.attributes)
-        return { "v1": cas.attributes, "v2": cas_v2.attributes }
         return cls.authenticate_v2(cas.attributes['cas:mail'],
                             cas.attributes['cas:cn'],
                             cas.attributes['cas:givenName'],
@@ -73,4 +72,4 @@ class CasLoginService:
             user = cls.create_user(email, fullname, firstname, lastname)
         login_user(user)
         access_token = create_access_token(identity=user)
-        return redirect('https://ponthe-testing.enpc.org/?token={}'.format(access_token))
+        return access_token
