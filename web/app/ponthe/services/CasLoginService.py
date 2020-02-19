@@ -1,4 +1,4 @@
-from flask import render_template
+from flask import render_template, redirect
 from flask_login import login_user
 from flask_jwt_extended import create_access_token
 
@@ -73,4 +73,4 @@ class CasLoginService:
             user = cls.create_user(email, fullname, firstname, lastname)
         login_user(user)
         access_token = create_access_token(identity=user)
-        return access_token
+        return redirect('https://ponthe-testing.enpc.org/?token={}'.format(access_token))
