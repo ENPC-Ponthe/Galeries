@@ -23,7 +23,6 @@ FlaskCLI(app)
 thumb = Thumbnail(app)
 
 cas_v2 = CAS(app, '/api/cas')
-cas = CAS(app, '/v1/cas')
 CORS(app)
 
 login_manager = LoginManager()

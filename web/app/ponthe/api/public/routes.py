@@ -180,6 +180,7 @@ class CasAuthenticate(Resource):
         """
         token = CasLoginService.login_v2()
         if token is not None:
-            return redirect('https://ponthe.enpc.org/?token={}'.format(token))
+            app_base_url = 'https://ponthe.enpc.org/'
+            return redirect(app_base_url + '?token={}'.format(token))
         else:
             return { "msg": "Erreur d'authentification" }, 400
