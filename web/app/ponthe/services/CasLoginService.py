@@ -9,6 +9,7 @@ from .. import app, db, cas, cas_v2
 
 
 class CasLoginService:
+    # V1 login, not used anymore ?
     @classmethod
     def login(cls):
         app.logger.info("Logging user via CAS: ", cas.username)
@@ -18,6 +19,7 @@ class CasLoginService:
                                 cas.attributes['cas:givenName'],
                                 cas.attributes['cas:sn'])
 
+    # V1 auth, not used anymore ?
     @classmethod
     def authenticate(cls, email, fullname, firstname, lastname):
         if '@eleves.enpc.fr' not in email:
