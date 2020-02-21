@@ -77,7 +77,7 @@ class GalleryDAO(ResourceDAO):
     @staticmethod
     def find_public_sorted_by_date_filtered_by_years(beginning_year, ending_year, page=None, page_size=None):
         if page_size is None:
-            return find_all_public_sorted_by_date_filtered_by_years(beginning_year, ending_year)
+            return GalleryDAO.find_all_public_sorted_by_date_filtered_by_years(beginning_year, ending_year)
         else:
             if page is None:
                 page = 1
