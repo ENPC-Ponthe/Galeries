@@ -110,3 +110,11 @@ class UserService:
         starting_year = full_promotion_year - 3
         ending_year = starting_year + 3
         return starting_year, ending_year
+    
+    @staticmethod
+    def has_basic_user_right_on_gallery(gallery, current_user: User):
+        first_allowed_year, last_allowed_year = UserService.get_user_allowed_years(current_user.promotion)
+        gallery_year = gallery.year.value
+        if gallery_year >= first_allowed_year and gallery_year <= last_allowed_year:
+            return True
+        return False
