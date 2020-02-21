@@ -567,7 +567,14 @@ class GetLatestGalleries(Resource):
         page = request.json.get("page")
         page_size = request.json.get("page_size")
 
-        public_galleries = GalleryDAO().find_public_sorted_by_date(page, page_size)
+        starting_year, ending_year = UserService.get_user_allowed_years(current_user.promotion)
+
+        '''Get the list of public galleries, with a filter on allowed years for non admin users'''
+        if current_user.admin:
+            public_galleries = GalleryDAO().find_public_sorted_by_date(page, page_size)
+        else:
+            public_galleries = GalleryDAO().find_public_sorted_by_date_filtered_by_years(starting_year, ending_year, page, page_size)
+
         gallery_list =[]
 
         for gallery in public_galleries:

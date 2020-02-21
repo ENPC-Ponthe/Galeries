@@ -108,5 +108,5 @@ class UserService:
     def get_user_allowed_years(user_promotion: str):
         full_promotion_year = int('2' + user_promotion)
         starting_year = full_promotion_year - 3
-        ending_year = starting_year + 2
+        ending_year = starting_year + 3
         return starting_year, ending_year

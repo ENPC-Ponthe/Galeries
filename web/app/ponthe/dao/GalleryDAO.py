@@ -51,6 +51,7 @@ class GalleryDAO(ResourceDAO):
             return Gallery.query.filter_by(private=False).order_by(desc(Gallery.created)).offset(
                 (page - 1) * page_size).limit(page_size).all()
 
+    # Add a filter by years on find_public_sorted_by_date methods
     @staticmethod
     def all_public_sorted_by_date_filtered_by_years(beginning_year, ending_year):
         return Gallery.query.join(Gallery.year).filter(Gallery.private == False).filter(Year.slug >= beginning_year, Year.slug <= ending_year).order_by(desc(Gallery.created))
