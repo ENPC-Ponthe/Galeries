@@ -1,12 +1,22 @@
 from sqlalchemy import desc, between
 
 from .ResourceDAO import ResourceDAO
+from ..services import UserService
 from ..models import Gallery, Year, Event, User
 
 
 class GalleryDAO(ResourceDAO):
     def __init__(self):
         super().__init__(Gallery)
+    
+    @staticmethod
+    def has_basic_user_right_on(gallery, current_user: User):
+        first_allowed_year, last_allowed_year = UserService.get_user_allowed_years(current_user.promotion)
+        gallery_year = gallery.year
+        if gallery_year >= first_allowed_year and gallery_year <= last_allowed_year:
+            return True
+        return False
+
 
     @staticmethod
     def find_by_event_and_year_slugs(event_slug: str,  year_slug: str):
@@ -44,7 +54,7 @@ class GalleryDAO(ResourceDAO):
     @staticmethod
     def find_public_sorted_by_date(page=None, page_size=None):
         if page_size is None:
-            return find_all_public_sorted_by_date()
+            return GalleryDAO.find_all_public_sorted_by_date()
         else:
             if page is None:
                 page = 1
