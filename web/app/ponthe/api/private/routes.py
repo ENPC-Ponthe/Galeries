@@ -346,7 +346,7 @@ class GetImages(Resource):
             }, 404
 
         if (gallery.private and not GalleryDAO.has_right_on(gallery, current_user) or 
-                not gallery.private and not GalleryDAO.has_basic_user_right_on(gallery, current_user)):
+                not gallery.private and not UserService.has_basic_user_right_on_gallery(gallery, current_user)):
             return {
                 "title": "Error - Forbidden",
                 "body": "Vous n'avez pas les droits pour accéder à : " + gallery_slug
