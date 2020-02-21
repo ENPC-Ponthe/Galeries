@@ -12,7 +12,7 @@ class GalleryDAO(ResourceDAO):
     @staticmethod
     def has_basic_user_right_on(gallery, current_user: User):
         first_allowed_year, last_allowed_year = UserService.get_user_allowed_years(current_user.promotion)
-        gallery_year = gallery.year
+        gallery_year = gallery.year.value
         if gallery_year >= first_allowed_year and gallery_year <= last_allowed_year:
             return True
         return False
