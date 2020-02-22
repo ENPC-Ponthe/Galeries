@@ -635,14 +635,17 @@ class UpdateReaction(Resource):
         reaction_from_enum = ReactionService.get_enum_reaction(reaction)
 
         if ReactionService.image_has_reaction_from_user(image_slug, current_user):
-            ReactionService.update(reaction_from_enum, image_slug, current_user)
+            current_reaction = ReactionService.update(reaction_from_enum, image_slug, current_user)
         else:
             ReactionService.create(reaction_from_enum, image_slug, current_user)
         
         return {
             "msg": "Réaction enregistrée !",
             "reaction": reaction_from_enum,
-            "had_reaction": ReactionService.image_has_reaction_from_user(image_slug, current_user)
+            "had_reaction": ReactionService.image_has_reaction_from_user(image_slug, current_user),
+            "user_id": current_reaction.user_id,
+            "resource_id": current_reaction.resource_id,
+            "type": current_reaction.type
         }, 200
 
 
@@ -669,10 +672,6 @@ class CreateReaction(Resource):
         }, 200
 
 @api.route('/get-all-user-reactions')
-@api.doc(params={
-    'reaction': 'your reaction on a picture',
-    'image_slug': 'the image you reacted to'
-})
 class GetAllUserReaction(Resource):
     @api.response(200, 'Success')
     @api.response(400, 'Request incorrect - JSON not valid')
