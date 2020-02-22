@@ -665,7 +665,7 @@ class GetAllUserReactions(Resource):
             gallery_of_file = file.gallery 
             list_of_reactions.append({
                 "reaction": reaction_type,
-                "name": gallery_of_file.name
+                "name": gallery_of_file.name,
                 "image": encoded_string
             })
 
