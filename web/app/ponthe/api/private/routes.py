@@ -375,22 +375,24 @@ class GetImages(Resource):
             for i in range(len(list_of_files)):
                 file_slug = list_of_files[i].slug
                 own_reaction = ReactionDAO().find_by_slug_and_user(file_slug, current_user)
+                own_reaction_type = ReactionService.get_enum_reaction_name(own_reaction.type)
                 all_reactions = ReactionDAO().find_all_by_slug(file_slug)
                 approved_files.append({
                     'file_path': list_of_files[i].file_path,
                     'full_dimension': list_of_dim[i],
-                    'own_reaction': own_reaction,
+                    'own_reaction': own_reaction_type,
                     "all_reactions": all_reactions,
                 })
         else:
             for i in range(len(list_of_files)):
                 file_slug = list_of_files[i].slug
                 own_reaction = ReactionDAO().find_by_slug_and_user(file_slug, current_user)
+                own_reaction_type = ReactionService.get_enum_reaction_name(own_reaction.type)
                 all_reactions = ReactionDAO().find_all_by_slug(file_slug)
                 approved_files.append({
                     'file_path': list_of_files[i].file_path,
                     'full_dimension': list_of_dim[i],
-                    'own_reaction': own_reaction,
+                    'own_reaction': own_reaction_type,
                     "all_reactions": all_reactions,
                     'base64': encoded_list_of_files[i]
                 })
