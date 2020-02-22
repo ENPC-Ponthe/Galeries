@@ -7,7 +7,7 @@ from ..models import User, ReactionEnum, Reaction
 class ReactionService():
     @staticmethod
     def create(reaction: ReactionEnum, image_slug: str, user: User):
-        resource = FileDAO.find_by_slug(image_slug)
+        resource = FileDAO().find_by_slug(image_slug)
         new_reaction = Reaction(user=user, resource=resource, type=reaction)
         
         db.session.add(new_reaction)
