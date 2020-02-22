@@ -18,7 +18,6 @@ class ReactionService():
         current_reaction = ReactionDAO().find_by_slug_and_user(image_slug, user)
         current_reaction.type = new_reaction_type
         db.session.commit()
-        return current_reaction
     
     @staticmethod
     def get_enum_reaction(reaction: str):
