@@ -1,7 +1,7 @@
 import os
 
 from .. import app, db
-from ..dao import FileDAO
+from ..dao import FileDAO, ReactionDAO
 from ..models import User, ReactionEnum, Reaction
 
 class ReactionService():
@@ -15,10 +15,18 @@ class ReactionService():
 
     @staticmethod
     def update(reaction: ReactionEnum, image_slug: str, user: User):
-        reaction = Reaction.query.filter(Reaction.resource == image_slug, Reaction.user == user)
+        resource = FileDAO().find_by_slug(image_slug)
+        reaction = Reaction.query.filter(Reaction.resource == resource, Reaction.user == user)
         reaction.type = reaction
         db.session.commit()
     
     @staticmethod
     def get_enum_reaction(reaction: str):
         return ReactionEnum[reaction].value
+
+    @staticmethod
+    def image_has_reaction_from_user(image_slug: str, user: User):
+        reaction = ReactionDAO().find_by_slug_and_user(image_slug, user)
+        if reaction is not None:
+            return True
+        return False

@@ -634,7 +634,7 @@ class UpdateReaction(Resource):
 
         reaction_from_enum = ReactionService.get_enum_reaction(reaction)
 
-        if image_has_reaction_from_user(image_slug, current_user):
+        if ReactionService.image_has_reaction_from_user(image_slug, current_user):
             ReactionService.update(reaction_from_enum, image_slug, current_user)
         else:
             ReactionService.create(reaction_from_enum, image_slug, current_user)
