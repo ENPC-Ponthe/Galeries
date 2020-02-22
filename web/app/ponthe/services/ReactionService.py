@@ -16,7 +16,7 @@ class ReactionService():
     @staticmethod
     def update(new_reaction_type: ReactionEnum, image_slug: str, user: User):
         resource = FileDAO().find_by_slug(image_slug)
-        current_reaction = Reaction.query.filter(Reaction.resource == resource, Reaction.user == user)
+        current_reaction = ReactionDAO().find_by_slug_and_user(image_slug, user)
         return current_reaction
         current_reaction.type = new_reaction_type
         db.session.commit()
