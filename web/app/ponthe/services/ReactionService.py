@@ -34,3 +34,15 @@ class ReactionService():
         if reaction is not None:
             return True
         return False
+    
+    @staticmethod
+    def count_reactions_by_image_slug(image_slug: str):
+        reactions = ReactionDAO().find_all_by_slug(slug=image_slug)
+        count_reactions = {}
+
+        for reaction in reactions:
+            reaction_type = ReactionService.get_enum_reaction_name(reaction.type)
+            if not reaction_type in count_reactions:
+                count_reactions[reaction_type] = 1
+            else:
+                count_reactions[reaction_type] += 1

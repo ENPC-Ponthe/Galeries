@@ -683,7 +683,8 @@ class GetAllUserReaction(Resource):
 
         list_of_reactions = []
         for reaction in reactions:
-            list_of_reactions.append({ "slug": reaction.resource.slug, "reaction": reaction.type})
+            reaction_type = ReactionService.get_enum_reaction_name(reaction.type)
+            list_of_reactions.append({ "slug": reaction.resource.slug, "reaction": reaction_type})
 
         return {
             "reactions": list_of_reactions
@@ -691,26 +692,17 @@ class GetAllUserReaction(Resource):
 
 @api.route('/get-all-reactions-for-image')
 @api.doc(params={
-    'reaction': 'your reaction on a picture',
-    'image_slug': 'the image you reacted to'
+    'image_slug': 'the image you want to get the list of reactions'
 })
 class GetAllReactionsForImage(Resource):
     @api.response(200, 'Success')
     @api.response(400, 'Request incorrect - JSON not valid')
     @api.response(403, 'Not authorized - account not valid')
     def get(self):
-        '''Add a reaction on a picture'''
+        '''Get a set of all reactions for a given image_slug'''
         image_slug = request.json.get('image_slug')
 
-        reactions = ReactionDAO().find_all_by_slug(slug=image_slug)
-        count_reactions = {}
-
-        for reaction in reactions:
-            reaction_type = ReactionService.get_enum_reaction_name(reaction.type)
-            if not reaction.type in count_reactions:
-                count_reactions[reaction_type] = 1
-            else:
-                count_reactions[reaction_type] += 1
+        count_reactions = ReactionService.count_reactions_by_image_slug(image_slug)
         
         return {
             "reactions": count_reactions
