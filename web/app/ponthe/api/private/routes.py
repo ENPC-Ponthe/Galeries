@@ -650,9 +650,12 @@ class GetAllUserReaction(Resource):
     @api.response(200, 'Success')
     @api.response(400, 'Request incorrect - JSON not valid')
     @api.response(403, 'Not authorized - account not valid')
-    def get(self):
+    def post(self):
         '''Add a reaction on a picture'''
-        reactions = ReactionDAO().find_all_by_user(user=current_user)
+        page = request.json.get("page")
+        page_size = request.json.get("page_size")
+
+        reactions = ReactionDAO().find_by_user(current_user, page, page_size)
 
         list_of_reactions = []
         for reaction in reactions:
@@ -674,7 +677,7 @@ class GetAllReactionsForImage(Resource):
     @api.response(403, 'Not authorized - account not valid')
     def get(self):
         '''Get a set of all reactions for a given image_slug'''
-        image_slug = request.json.get('image_slug')
+        image_slug = request.json.get("image_slug")
 
         count_reactions = ReactionService.count_reactions_by_image_slug(image_slug)
         
