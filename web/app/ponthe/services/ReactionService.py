@@ -15,11 +15,10 @@ class ReactionService():
 
     @staticmethod
     def update(new_reaction_type: ReactionEnum, image_slug: str, user: User):
-        resource = FileDAO().find_by_slug(image_slug)
         current_reaction = ReactionDAO().find_by_slug_and_user(image_slug, user)
-        return current_reaction
         current_reaction.type = new_reaction_type
         db.session.commit()
+        return current_reaction
     
     @staticmethod
     def get_enum_reaction(reaction: str):
