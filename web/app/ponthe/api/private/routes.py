@@ -374,7 +374,7 @@ class GetImages(Resource):
         for i in range(len(list_of_files)):
             file_slug = list_of_files[i].slug
             own_reaction_type = ReactionService.get_user_reaction_type_by_slug(file_slug, current_user)
-            all_reactions = ReactionDAO().find_all_by_slug(file_slug)
+            all_reactions = ReactionService.count_reactions_by_image_slug(file_slug)
             approved_file = {
                 'file_path': list_of_files[i].file_path,
                 'full_dimension': list_of_dim[i],
