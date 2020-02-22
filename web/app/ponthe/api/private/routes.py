@@ -677,8 +677,7 @@ class GetAllUserReaction(Resource):
     @api.response(403, 'Not authorized - account not valid')
     def get(self):
         '''Add a reaction on a picture'''
-        reactions = ReactionDAO.find_all_by_user(user=current_user)
-        # ReactionService.create(reaction_from_enum, image_slug, current_user)
+        reactions = ReactionDAO().find_all_by_user(user=current_user)
         
         return {
             "reactions": reactions
@@ -689,15 +688,15 @@ class GetAllUserReaction(Resource):
     'reaction': 'your reaction on a picture',
     'image_slug': 'the image you reacted to'
 })
-class GetAllUserReaction(Resource):
+class GetAllReactionsForImage(Resource):
     @api.response(200, 'Success')
     @api.response(400, 'Request incorrect - JSON not valid')
     @api.response(403, 'Not authorized - account not valid')
     def get(self):
         '''Add a reaction on a picture'''
         image_slug = request.json.get('image_slug')
-        reactions = ReactionDAO.find_all_by_slug(slug=image_slug)
-        # ReactionService.create(reaction_from_enum, image_slug, current_user)
+
+        reactions = ReactionDAO().find_all_by_slug(slug=image_slug)
         
         return {
             "reactions": reactions
