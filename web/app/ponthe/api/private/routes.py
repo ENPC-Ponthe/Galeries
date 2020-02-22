@@ -681,7 +681,7 @@ class GetAllUserReaction(Resource):
 
         list_of_reactions = []
         for reaction in reactions:
-            list_of_reactions.append({ "slug": reaction.resource, "reaction": reaction.type})
+            list_of_reactions.append({ "slug": reaction.slug, "reaction": reaction.type})
 
         return {
             "reactions": list_of_reactions
@@ -705,9 +705,9 @@ class GetAllReactionsForImage(Resource):
 
         for reaction in reactions:
             if not reaction.type in count_reactions:
-                count_reactions[reactions.type] = 1
+                count_reactions[reaction.type] = 1
             else:
-                count_reactions[reactions.type] += 1
+                count_reactions[reaction.type] += 1
         
         return {
             "reactions": count_reactions
