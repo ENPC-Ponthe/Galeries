@@ -645,7 +645,7 @@ class UpdateReaction(Resource):
             "had_reaction": ReactionService.image_has_reaction_from_user(image_slug, current_user),
             "user_id": current_reaction.user_id,
             "resource_id": current_reaction.resource_id,
-            "type": current_reaction.type
+            "type": ReactionService.get_enum_reaction_name(current_reaction.type)
         }, 200
 
 
