@@ -17,6 +17,7 @@ class ReactionService():
     def update(new_reaction_type: ReactionEnum, image_slug: str, user: User):
         resource = FileDAO().find_by_slug(image_slug)
         current_reaction = Reaction.query.filter(Reaction.resource == resource, Reaction.user == user)
+        return current_reaction
         current_reaction.type = new_reaction_type
         db.session.commit()
     
@@ -46,3 +47,4 @@ class ReactionService():
                 count_reactions[reaction_type] = 1
             else:
                 count_reactions[reaction_type] += 1
+        return count_reactions
