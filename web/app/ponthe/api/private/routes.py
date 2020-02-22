@@ -373,15 +373,25 @@ class GetImages(Resource):
         approved_files = []
         if without_base64:
             for i in range(len(list_of_files)):
+                file_slug = list_of_files[i].slug
+                own_reaction = ReactionDAO().find_by_slug_and_user(file_slug, current_user)
+                all_reactions = ReactionDAO().find_all_by_slug(file_slug)
                 approved_files.append({
                     'file_path': list_of_files[i].file_path,
                     'full_dimension': list_of_dim[i],
+                    'own_reaction': own_reaction,
+                    "all_reactions": all_reactions,
                 })
         else:
             for i in range(len(list_of_files)):
+                file_slug = list_of_files[i].slug
+                own_reaction = ReactionDAO().find_by_slug_and_user(file_slug, current_user)
+                all_reactions = ReactionDAO().find_all_by_slug(file_slug)
                 approved_files.append({
                     'file_path': list_of_files[i].file_path,
                     'full_dimension': list_of_dim[i],
+                    'own_reaction': own_reaction,
+                    "all_reactions": all_reactions,
                     'base64': encoded_list_of_files[i]
                 })
 
@@ -628,7 +638,7 @@ class UpdateReaction(Resource):
     @api.response(400, 'Request incorrect - JSON not valid')
     @api.response(403, 'Not authorized - account not valid')
     def post(self):
-        '''Add a reaction on a picture'''
+        '''Create, update or delete a reaction on a picture'''
         reaction = request.json.get('reaction')
         image_slug = request.json.get('image_slug')
 
