@@ -678,9 +678,13 @@ class GetAllUserReaction(Resource):
     def get(self):
         '''Add a reaction on a picture'''
         reactions = ReactionDAO().find_all_by_user(user=current_user)
-        
+
+        list_of_reactions = []
+        for reaction in reactions:
+            list_of_reactions.append({ "slug": reaction.resource, "reaction": reaction.type})
+
         return {
-            "reactions": reactions
+            "reactions": list_of_reactions
         }, 200
 
 @api.route('/get-all-reactions-for-image')
@@ -697,7 +701,14 @@ class GetAllReactionsForImage(Resource):
         image_slug = request.json.get('image_slug')
 
         reactions = ReactionDAO().find_all_by_slug(slug=image_slug)
+        count_reactions = {}
+
+        for reaction in reactions:
+            if not reaction.type in count_reactions:
+                count_reactions[reactions.type] = 1
+            else:
+                count_reactions[reactions.type] += 1
         
         return {
-            "reactions": reactions
+            "reactions": count_reactions
         }, 200
