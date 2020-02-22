@@ -662,7 +662,7 @@ class GetAllUserReactions(Resource):
             reaction_type = ReactionService.get_enum_reaction_name(reaction.type)
             file = reaction.resource
             encoded_string = FileService.get_base64_encoding_full(file)
-            gallery_of_file = file.gallery 
+            gallery_of_file = file.gallery
             list_of_reactions.append({
                 "reaction": reaction_type,
                 "name": gallery_of_file.name,
@@ -693,9 +693,12 @@ class GetRandomUserReactions(Resource):
         if number_of_pics > len(list_of_reactions):
             for reaction in reactions:
                 reaction_type = ReactionService.get_enum_reaction_name(reaction.type)
-                encoded_string = FileService.get_base64_encoding_full(reaction.resource)
+                file = reaction.resource
+                encoded_string = FileService.get_base64_encoding_full(file)
+                gallery_of_file = file.gallery
                 response_reactions.append({
                     "reaction": reaction_type,
+                    "name": gallery_of_file.name,
                     "image": encoded_string
                 })
         else:
@@ -704,9 +707,12 @@ class GetRandomUserReactions(Resource):
                 i = random.randint(0, len(resource_ids) - 1)
                 reaction = ReactionDAO().find_by_resource_id_and_user(resource_ids[i], current_user)
                 reaction_type = ReactionService.get_enum_reaction_name(reaction.type)
-                encoded_string = FileService.get_base64_encoding_full(reaction.resource)
+                file = reaction.resource
+                encoded_string = FileService.get_base64_encoding_full(file)
+                gallery_of_file = file.gallery
                 response_reactions.append({
                     "reaction": reaction_type,
+                    "name": gallery_of_file.name,
                     "image": encoded_string
                 })
                 del resource_ids[i]
