@@ -646,12 +646,12 @@ class UpdateReaction(Resource):
 
 
 @api.route('/get-all-user-reactions')
-class GetAllUserReaction(Resource):
+class GetAllUserReactions(Resource):
     @api.response(200, 'Success')
     @api.response(400, 'Request incorrect - JSON not valid')
     @api.response(403, 'Not authorized - account not valid')
     def post(self):
-        '''Add a reaction on a picture'''
+        '''Get all the pictures the user reacted to'''
         page = request.json.get("page")
         page_size = request.json.get("page_size")
 
@@ -664,6 +664,47 @@ class GetAllUserReaction(Resource):
 
         return {
             "reactions": list_of_reactions
+        }, 200
+
+
+@api.route('/get-random-user-reactions')
+@api.doc(params={
+    'number_of_pics': 'the number of pics with reactions you want'
+})
+class GetRandomUserReactions(Resource):
+    @api.response(200, 'Success')
+    @api.response(400, 'Request incorrect - JSON not valid')
+    @api.response(403, 'Not authorized - account not valid')
+    def post(self):
+        '''Get random pictures among those the user reacted to'''
+        number_of_pics = request.json.get("number_of_pics")
+
+        reactions = ReactionDAO().find_all_by_user(current_user)
+        list_of_reactions = list(reactions)
+
+        response_reactions = []
+        if number_of_pics <= len(list_of_reactions):
+            for reaction in reactions:
+                reaction_type = ReactionService.get_enum_reaction_name(reaction.type)
+                encoded_string = FileService.get_base64_encoding_full(reaction.resource)
+                response_reactions.append({
+                    "reaction": reaction_type,
+                    "image": encoded_string
+                })
+        else:
+            picture_ids = []
+            for i in range(number_of_pics):
+                picture = list_of_reactions[i]
+                if picture.id not in picture_ids:
+                    reaction_type = ReactionService.get_enum_reaction_name(reaction.type)
+                    encoded_string = FileService.get_base64_encoding_full(reaction.resource)
+                    response_reactions.append({
+                        "reaction": reaction_type,
+                        "image": encoded_string
+                    })
+
+        return {
+            "reactions": response_reactions
         }, 200
 
 
