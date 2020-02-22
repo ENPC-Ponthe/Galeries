@@ -660,7 +660,11 @@ class GetAllUserReactions(Resource):
         list_of_reactions = []
         for reaction in reactions:
             reaction_type = ReactionService.get_enum_reaction_name(reaction.type)
-            list_of_reactions.append({ "slug": reaction.resource.slug, "reaction": reaction_type})
+            encoded_string = FileService.get_base64_encoding_full(reaction.resource)
+            list_of_reactions.append({
+                "reaction": reaction_type,
+                "image": encoded_string
+            })
 
         return {
             "reactions": list_of_reactions
@@ -683,7 +687,7 @@ class GetRandomUserReactions(Resource):
         list_of_reactions = list(reactions)
 
         response_reactions = []
-        if number_of_pics <= len(list_of_reactions):
+        if number_of_pics > len(list_of_reactions):
             for reaction in reactions:
                 reaction_type = ReactionService.get_enum_reaction_name(reaction.type)
                 encoded_string = FileService.get_base64_encoding_full(reaction.resource)
@@ -692,16 +696,17 @@ class GetRandomUserReactions(Resource):
                     "image": encoded_string
                 })
         else:
-            picture_ids = []
-            for i in range(number_of_pics):
-                picture = list_of_reactions[i]
-                if picture.id not in picture_ids:
-                    reaction_type = ReactionService.get_enum_reaction_name(reaction.type)
-                    encoded_string = FileService.get_base64_encoding_full(reaction.resource)
-                    response_reactions.append({
-                        "reaction": reaction_type,
-                        "image": encoded_string
-                    })
+            resource_ids = list(map(lambda reaction: reaction.resource_id, reactions))
+            for pic in range(number_of_pics):
+                i = random.randint(0, len(resource_ids) - 1)
+                reaction = ReactionDAO().find_by_resource_id_and_user(resource_ids[i], current_user)
+                reaction_type = ReactionService.get_enum_reaction_name(reaction.type)
+                encoded_string = FileService.get_base64_encoding_full(reaction.resource)
+                response_reactions.append({
+                    "reaction": reaction_type,
+                    "image": encoded_string
+                })
+                del resource_ids[i]
 
         return {
             "reactions": response_reactions
