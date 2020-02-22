@@ -10,7 +10,7 @@ class ReactionDAO:
     
     @staticmethod
     def find_by_resource_id_and_user(resource_id: int, user: User):
-        return Reaction.query.filter(resource_id=resource_id, user=user).first()
+        return Reaction.query.filter(Reaction.resource_id == resource_id, Reaction.user == user).first()
 
     @staticmethod
     def find_all_by_slug(slug: str):

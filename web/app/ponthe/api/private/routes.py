@@ -660,9 +660,12 @@ class GetAllUserReactions(Resource):
         list_of_reactions = []
         for reaction in reactions:
             reaction_type = ReactionService.get_enum_reaction_name(reaction.type)
-            encoded_string = FileService.get_base64_encoding_full(reaction.resource)
+            file = reaction.resource
+            encoded_string = FileService.get_base64_encoding_full(file)
+            gallery_of_file = file.gallery 
             list_of_reactions.append({
                 "reaction": reaction_type,
+                "name": gallery_of_file.name
                 "image": encoded_string
             })
 
