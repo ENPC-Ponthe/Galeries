@@ -632,11 +632,13 @@ class UpdateReaction(Resource):
         reaction = request.json.get('reaction')
         image_slug = request.json.get('image_slug')
 
-        if ReactionService.image_has_reaction_from_user(image_slug, current_user):
+        if reaction == "NONE":
+            ReactionService.delete(image_slug, current_user)
+        elif ReactionService.image_has_reaction_from_user(image_slug, current_user):
             ReactionService.update(reaction, image_slug, current_user)
         else:
             ReactionService.create(reaction, image_slug, current_user)
-        
+
         return {
             "msg": "Réaction enregistrée !",
             "reaction": reaction,

@@ -20,6 +20,12 @@ class ReactionService():
         db.session.commit()
     
     @staticmethod
+    def delete(image_slug: str, user: User):
+        reaction = ReactionDAO().find_by_slug_and_user(image_slug, user)
+        db.session.delete(reaction)
+        db.session.commit()
+    
+    @staticmethod
     def get_enum_reaction(reaction: str):
         return ReactionEnum[reaction].value
     
