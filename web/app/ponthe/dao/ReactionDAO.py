@@ -8,7 +8,7 @@ class ReactionDAO:
 
     @staticmethod
     def find_all_by_slug(slug: str):
-        return Reaction.query.join(Reaction.resource).filter_by(Resource.slug == slug).all()
+        return Reaction.query.join(Reaction.resource).filter(Resource.slug == slug).all()
     
     @staticmethod
     def find_all_by_user(user: User):
