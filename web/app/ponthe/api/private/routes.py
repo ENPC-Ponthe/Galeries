@@ -632,44 +632,16 @@ class UpdateReaction(Resource):
         reaction = request.json.get('reaction')
         image_slug = request.json.get('image_slug')
 
-        reaction_from_enum = ReactionService.get_enum_reaction(reaction)
-
         if ReactionService.image_has_reaction_from_user(image_slug, current_user):
-            current_reaction = ReactionService.update(reaction, image_slug, current_user)
+            ReactionService.update(reaction, image_slug, current_user)
         else:
             ReactionService.create(reaction, image_slug, current_user)
         
         return {
             "msg": "Réaction enregistrée !",
-            "reaction": reaction_from_enum,
-            "had_reaction": ReactionService.image_has_reaction_from_user(image_slug, current_user),
-            "user_id": current_reaction.user_id,
-            "resource_id": current_reaction.resource_id,
-            "type": ReactionService.get_enum_reaction_name(current_reaction.type)
+            "reaction": reaction,
         }, 200
 
-
-@api.route('/create-reaction')
-@api.doc(params={
-    'reaction': 'your reaction on a picture',
-    'image_slug': 'the image you reacted to'
-})
-class CreateReaction(Resource):
-    @api.response(200, 'Success')
-    @api.response(400, 'Request incorrect - JSON not valid')
-    @api.response(403, 'Not authorized - account not valid')
-    def post(self):
-        '''Add a reaction on a picture'''
-        reaction = request.json.get('reaction')
-        image_slug = request.json.get('image_slug')
-
-        reaction_from_enum = ReactionService.get_enum_reaction(reaction)
-        ReactionService.create(reaction, image_slug, current_user)
-        
-        return {
-            "msg": "Réaction enregistrée !",
-            "reaction": reaction_from_enum
-        }, 200
 
 @api.route('/get-all-user-reactions')
 class GetAllUserReaction(Resource):
@@ -688,6 +660,7 @@ class GetAllUserReaction(Resource):
         return {
             "reactions": list_of_reactions
         }, 200
+
 
 @api.route('/get-all-reactions-for-image')
 @api.doc(params={
