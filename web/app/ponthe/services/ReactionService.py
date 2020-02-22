@@ -52,3 +52,12 @@ class ReactionService():
             else:
                 count_reactions[reaction_type] += 1
         return count_reactions
+
+    @staticmethod
+    def get_user_reaction_type_by_slug(slug: str, user: User):
+        own_reaction = ReactionDAO().find_by_slug_and_user(slug, user)
+        if own_reaction is not None:
+            own_reaction_type = ReactionService.get_enum_reaction_name(own_reaction.type)
+        else :
+            own_reaction_type = None
+        return own_reaction_type

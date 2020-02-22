@@ -371,31 +371,19 @@ class GetImages(Resource):
             list_of_dim.append({"width": width, "height": height})
 
         approved_files = []
-        if without_base64:
-            for i in range(len(list_of_files)):
-                file_slug = list_of_files[i].slug
-                own_reaction = ReactionDAO().find_by_slug_and_user(file_slug, current_user)
-                own_reaction_type = ReactionService.get_enum_reaction_name(own_reaction.type)
-                all_reactions = ReactionDAO().find_all_by_slug(file_slug)
-                approved_files.append({
-                    'file_path': list_of_files[i].file_path,
-                    'full_dimension': list_of_dim[i],
-                    'own_reaction': own_reaction_type,
-                    "all_reactions": all_reactions,
-                })
-        else:
-            for i in range(len(list_of_files)):
-                file_slug = list_of_files[i].slug
-                own_reaction = ReactionDAO().find_by_slug_and_user(file_slug, current_user)
-                own_reaction_type = ReactionService.get_enum_reaction_name(own_reaction.type)
-                all_reactions = ReactionDAO().find_all_by_slug(file_slug)
-                approved_files.append({
-                    'file_path': list_of_files[i].file_path,
-                    'full_dimension': list_of_dim[i],
-                    'own_reaction': own_reaction_type,
-                    "all_reactions": all_reactions,
-                    'base64': encoded_list_of_files[i]
-                })
+        for i in range(len(list_of_files)):
+            file_slug = list_of_files[i].slug
+            own_reaction_type = ReactionService.get_user_reaction_type_by_slug(file_slug, current_user)
+            all_reactions = ReactionDAO().find_all_by_slug(file_slug)
+            approved_file = {
+                'file_path': list_of_files[i].file_path,
+                'full_dimension': list_of_dim[i],
+                'own_reaction': own_reaction_type,
+                "all_reactions": all_reactions,
+            }
+            if not without_base64:
+                approved_file['base64'] = encoded_list_of_files[i]
+            approved_files.append(approved_file)
 
         return {
             "gallery": gallery.serialize(),
