@@ -640,7 +640,9 @@ class UpdateReaction(Resource):
             ReactionService.create(reaction_from_enum, image_slug, current_user)
         
         return {
-            "msg": "Réaction enregistrée !"
+            "msg": "Réaction enregistrée !",
+            "reaction": reaction_from_enum,
+            "had_reaction": ReactionService.image_has_reaction_from_user(image_slug, current_user)
         }, 200
 
 
@@ -681,7 +683,7 @@ class GetAllUserReaction(Resource):
 
         list_of_reactions = []
         for reaction in reactions:
-            list_of_reactions.append({ "slug": reaction.slug, "reaction": reaction.type})
+            list_of_reactions.append({ "slug": reaction.resource.slug, "reaction": reaction.type})
 
         return {
             "reactions": list_of_reactions
@@ -704,10 +706,11 @@ class GetAllReactionsForImage(Resource):
         count_reactions = {}
 
         for reaction in reactions:
+            reaction_type = ReactionService.get_enum_reaction_name(reaction.type)
             if not reaction.type in count_reactions:
-                count_reactions[reaction.type] = 1
+                count_reactions[reaction_type] = 1
             else:
-                count_reactions[reaction.type] += 1
+                count_reactions[reaction_type] += 1
         
         return {
             "reactions": count_reactions
