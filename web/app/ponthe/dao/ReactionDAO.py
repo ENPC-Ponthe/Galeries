@@ -7,6 +7,10 @@ class ReactionDAO:
     @staticmethod
     def find_by_slug_and_user(slug: str, user: User):
         return Reaction.query.join(Reaction.resource).filter(Resource.slug == slug, Reaction.user == user).first()
+    
+    @staticmethod
+    def find_by_resource_id_and_user(resource_id: int, user: User):
+        return Reaction.query.filter(resource_id=resource_id, user=user).first()
 
     @staticmethod
     def find_all_by_slug(slug: str):
