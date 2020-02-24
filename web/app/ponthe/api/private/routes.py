@@ -664,8 +664,9 @@ class GetAllUserReactions(Resource):
             encoded_string = FileService.get_base64_encoding_thumb(file, SIZE_LARGE_THUMB)
             gallery_of_file = file.gallery
             list_of_reactions.append({
-                "reaction": reaction_type,
+                "own_reaction": reaction_type,
                 "name": gallery_of_file.name,
+                "file_path": file.slug,
                 "image": encoded_string
             })
 
@@ -697,8 +698,9 @@ class GetRandomUserReactions(Resource):
                 encoded_string = FileService.get_base64_encoding_thumb(file, SIZE_LARGE_THUMB)
                 gallery_of_file = file.gallery
                 response_reactions.append({
-                    "reaction": reaction_type,
+                    "own_reaction": reaction_type,
                     "name": gallery_of_file.name,
+                    "file_path": file.slug,
                     "image": encoded_string
                 })
         else:
@@ -711,8 +713,9 @@ class GetRandomUserReactions(Resource):
                 encoded_string = FileService.get_base64_encoding_thumb(file, SIZE_LARGE_THUMB)
                 gallery_of_file = file.gallery
                 response_reactions.append({
-                    "reaction": reaction_type,
+                    "own_reaction": reaction_type,
                     "name": gallery_of_file.name,
+                    "file_path": file.slug,
                     "image": encoded_string
                 })
                 del resource_ids[i]
