@@ -661,7 +661,7 @@ class GetAllUserReactions(Resource):
         for reaction in reactions:
             reaction_type = ReactionService.get_enum_reaction_name(reaction.type)
             file = reaction.resource
-            encoded_string = FileService.get_base64_encoding_thumb(file)
+            encoded_string = FileService.get_base64_encoding_thumb(file, SIZE_LARGE_THUMB)
             gallery_of_file = file.gallery
             list_of_reactions.append({
                 "reaction": reaction_type,
@@ -708,7 +708,7 @@ class GetRandomUserReactions(Resource):
                 reaction = ReactionDAO().find_by_resource_id_and_user(resource_ids[i], current_user)
                 reaction_type = ReactionService.get_enum_reaction_name(reaction.type)
                 file = reaction.resource
-                encoded_string = FileService.get_base64_encoding_thumb(file)
+                encoded_string = FileService.get_base64_encoding_thumb(file, SIZE_LARGE_THUMB)
                 gallery_of_file = file.gallery
                 response_reactions.append({
                     "reaction": reaction_type,
