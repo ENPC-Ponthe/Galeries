@@ -656,6 +656,7 @@ class GetAllUserReactions(Resource):
         page_size = request.json.get("page_size")
 
         reactions = ReactionDAO().find_by_user(current_user, page, page_size)
+        number_of_reactions = ReactionDAO().count_all_by_user(current_user)
 
         list_of_reactions = []
         for reaction in reactions:
@@ -671,6 +672,7 @@ class GetAllUserReactions(Resource):
             })
 
         return {
+            "number_of_reactions": number_of_reactions,
             "reactions": list_of_reactions
         }, 200
 

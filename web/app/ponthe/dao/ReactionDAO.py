@@ -17,8 +17,16 @@ class ReactionDAO:
         return Reaction.query.join(Reaction.resource).filter(Resource.slug == slug).all()
     
     @staticmethod
+    def all_by_user(user: User):
+        return Reaction.query.filter_by(user=user)
+
+    @staticmethod
     def find_all_by_user(user: User):
-        return Reaction.query.filter_by(user=user).all()
+        return ReactionDAO().all_by_user(user).all()
+    
+    @staticmethod
+    def count_all_by_user(user: User):
+        return ReactionDAO().all_by_user(user).count()
     
     @staticmethod
     def find_by_user(user: User, page=None, page_size=None):
