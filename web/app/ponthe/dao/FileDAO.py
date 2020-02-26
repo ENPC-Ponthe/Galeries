@@ -27,6 +27,10 @@ class FileDAO(ResourceDAO):
         return os.path.join(THUMB_FOLDER, file.gallery.slug,
                                   utils.generate_filename(file.filename, size, "fit", "90"))
 
+    @staticmethod
+    def get_video_path(file: File):
+        return os.path.join(UPLOAD_FOLDER, file.filename)
+
     @classmethod
     def get_thumb_path_or_create_it(cls, file: File, size=DEFAULT_SIZE_THUMB):
         thumb_file_path = cls.get_thumb_path(file, size)

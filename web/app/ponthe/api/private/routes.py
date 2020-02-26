@@ -758,5 +758,8 @@ class GetVideo(Resource):
         '''Get a set of all reactions for a given image_slug'''
         # image_slug = request.json.get("image_slug")
         video = FileDAO.get_video()
-        
-        return video, 200
+
+        return send_file(
+            open(FileDAO.get_video_path(video), "rb"),
+            mimetype='video/mp4'
+            ), 200
