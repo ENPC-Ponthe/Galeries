@@ -760,6 +760,6 @@ class GetVideo(Resource):
         video = FileDAO.get_video()
 
         return send_file(
-            open(FileDAO.get_video_path(video), "rb"),
+            open(FileService.get_absolute_file_path(video), "rb"),
             mimetype='video/mp4'
             ), 200
