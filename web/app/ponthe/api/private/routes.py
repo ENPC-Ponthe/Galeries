@@ -762,4 +762,4 @@ class GetVideo(Resource):
         return send_file(
             open(FileService.get_absolute_file_path(video), "rb"),
             mimetype='video/mp4'
-            ), 200
+            )
