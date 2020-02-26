@@ -667,7 +667,7 @@ class GetAllUserReactions(Resource):
             list_of_reactions.append({
                 "own_reaction": reaction_type,
                 "name": gallery_of_file.name,
-                "file_path": file.slug,
+                "file_path": file.file_path,
                 "image": encoded_string
             })
 
@@ -702,7 +702,7 @@ class GetRandomUserReactions(Resource):
                 response_reactions.append({
                     "own_reaction": reaction_type,
                     "name": gallery_of_file.name,
-                    "file_path": file.slug,
+                    "file_path": file.file_path,
                     "image": encoded_string
                 })
         else:
@@ -717,7 +717,7 @@ class GetRandomUserReactions(Resource):
                 response_reactions.append({
                     "own_reaction": reaction_type,
                     "name": gallery_of_file.name,
-                    "file_path": file.slug,
+                    "file_path": file.file_path,
                     "image": encoded_string
                 })
                 del resource_ids[i]
@@ -744,5 +744,3 @@ class GetAllReactionsForImage(Resource):
         return {
             "reactions": count_reactions
         }, 200
-
-
