@@ -5,7 +5,7 @@ from .ResourceDAO import ResourceDAO
 from .. import app, db, thumb
 from ..file_helper import delete_file
 from ..filters import thumb_filter, category_thumb_filter
-from ..models import File, Gallery
+from ..models import File, Gallery, FileTypeEnum
 
 import os
 
@@ -79,3 +79,7 @@ class FileDAO(ResourceDAO):
     @staticmethod
     def get_number_of_not_pending_files_by_gallery(gallery: Gallery):
         return len(FileDAO.find_not_pending_files_by_gallery(gallery))
+
+    @staticmethod
+    def get_video():
+        return File.query.filter_by(type=FileTypeEnum.VIDEO.name).first()
