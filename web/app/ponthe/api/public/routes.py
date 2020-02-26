@@ -4,15 +4,15 @@ import datetime
 import json
 
 from flask_restplus import Resource
-from flask import request, redirect
+from flask import request, redirect, send_file
 from flask_jwt_extended import JWTManager, create_access_token
 from itsdangerous import SignatureExpired, BadSignature
 
 from . import api
 from ... import db, app
 from ...models import User
-from ...services import UserService, CasLoginService
-from ...dao import UserDAO
+from ...services import UserService, CasLoginService, FileService
+from ...dao import UserDAO, FileDAO
 
 
 jwt = JWTManager(app)
@@ -184,3 +184,22 @@ class CasAuthenticate(Resource):
             return redirect(app_base_url + '?token={}'.format(token))
         else:
             return { "msg": "Erreur d'authentification" }, 400
+    
+
+@api.route('/get-video')
+@api.doc(params={
+    'image_slug': 'the image you want to get the list of reactions'
+})
+class GetVideo(Resource):
+    @api.response(200, 'Success')
+    @api.response(400, 'Request incorrect - JSON not valid')
+    @api.response(403, 'Not authorized - account not valid')
+    def get(self):
+        '''Get a set of all reactions for a given image_slug'''
+        # image_slug = request.json.get("image_slug")
+        video = FileDAO.get_video()
+
+        return send_file(
+            open(FileService.get_absolute_file_path(video), "rb"),
+            mimetype='video/mp4'
+            )
