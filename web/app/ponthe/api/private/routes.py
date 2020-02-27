@@ -760,12 +760,12 @@ class GetFilmography(Resource):
             all_videos = FileDAO.find_all_public_videos(page, page_size)
             for video in all_videos:
                 video_galleries_list.append(video.gallery)
-            number_of_video_galleries = FileDAO().count_all_public_videos_sorted_by_date()
+            number_of_video_galleries = FileDAO().count_all_public_videos()
         else:
-            all_videos = FileDAO.find_all_public_videos_filtered_by_years(starting_year, ending_year, page, page_size)
+            all_videos = FileDAO.find_all_public_videos(page, page_size, starting_year, ending_year)
             for video in all_videos:
                 video_galleries_list.append(video.gallery)
-            number_of_video_galleries = FileDAO().count_all_public_videos_sorted_by_date_filtered_by_years(starting_year, ending_year)
+            number_of_video_galleries = FileDAO().count_all_public_videos(starting_year, ending_year)
 
         video_galleries = []
         for gallery in video_galleries_list:
