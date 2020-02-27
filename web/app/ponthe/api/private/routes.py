@@ -769,10 +769,6 @@ class GetFilmography(Resource):
             if cover_image is not None:
                 encoded_string = FileService.get_base64_encoding_thumb(cover_image, SIZE_LARGE_THUMB)
                 gallery_data["image"] = encoded_string
-            
-            video = FileDAO().get_video_from_gallery(gallery)
-            if video is not None:
-                gallery_data["video_slug"] = video.file_path
 
             video_galleries_data.append(gallery_data)
 

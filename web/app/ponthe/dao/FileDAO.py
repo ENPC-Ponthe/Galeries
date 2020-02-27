@@ -112,5 +112,5 @@ class FileDAO(ResourceDAO):
         return File.query.filter_by(gallery=gallery, type=FileTypeEnum.IMAGE.name).first()
 
     @staticmethod
-    def get_video_from_gallery(gallery: Gallery):
-        return File.query.filter_by(gallery=gallery, type=FileTypeEnum.VIDEO.name).first()
+    def get_video_from_gallery_slug(gallery_slug: str):
+        return File.query.join(File.gallery).filter(Gallery.slug == gallery_slug, File.type == FileTypeEnum.VIDEO.name).first()
