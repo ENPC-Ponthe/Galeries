@@ -14,6 +14,15 @@ THUMB_FOLDER = app.config['THUMBNAIL_MEDIA_THUMBNAIL_ROOT']
 DEFAULT_SIZE_THUMB = "226x226"
 
 
+def return_query_with_offset(query, page=None, page_size=None):
+    if page_size is None:
+        return query
+    else:
+        if page is None:
+            page = 1
+        return query.offset((page - 1) * page_size).limit(page_size)
+
+
 class FileDAO(ResourceDAO):
     def __init__(self):
         super().__init__(File)
@@ -90,37 +99,38 @@ class FileDAO(ResourceDAO):
         return File.query.filter_by(type=FileTypeEnum.VIDEO.name).first()
     
     @staticmethod
-    def all_public_videos(page=None, page_size=None):
-        files = File.query.join(File.gallery).filter(File.type == FileTypeEnum.VIDEO.name, Gallery.private == False)
-        if page_size is None:
-            return files
-        else:
-            if page is None:
-                page = 1
-            return files.offset((page - 1) * page_size).limit(page_size)
+    def all_public_videos(page=None, page_size=None, starting_year=None, ending_year=None):
+        if starting_year is None and ending_year is None:
+            files = File.query.join(File.gallery).filter(File.type == FileTypeEnum.VIDEO.name, Gallery.private == False)
+        else if starting_year is not None and ending_year is not None:
+            files = File.query.join(File.gallery).join(Gallery.year).filter(File.type == FileTypeEnum.VIDEO.name, Gallery.private == False).filter(Year.slug >= starting_year, Year.slug <= ending_year)
+        else :
+            return []
+
+        return return_query_with_offset(files, page, page_size)
     
     @staticmethod
-    def find_all_public_videos(page, page_size):
-        return FileDAO().all_public_videos(page, page_size).all()
+    def find_all_public_videos(page, page_size, starting_year=None, ending_year=None):
+        return FileDAO().all_public_videos(page, page_size, starting_year, ending_year).all()
     
     @staticmethod
-    def count_all_public_videos_sorted_by_date():
-        return FileDAO().all_public_videos().count()
+    def count_all_public_videos(starting_year=None, ending_year=None):
+        return FileDAO().all_public_videos(starting_year=starting_year, ending_year=ending_year).count()
     
-    @staticmethod
-    def all_public_videos_filtered_by_years(starting_year, ending_year, page=None, page_size=None):
-        files = File.query.join(File.gallery).join(Gallery.year).filter(File.type == FileTypeEnum.VIDEO.name, Gallery.private == False).filter(Year.slug >= starting_year, Year.slug <= ending_year)
-        if page_size is None:
-            return files
-        else:
-            if page is None:
-                page = 1
-            return files.offset((page - 1) * page_size).limit(page_size)
+    # @staticmethod
+    # def all_public_videos_filtered_by_years(starting_year, ending_year, page=None, page_size=None):
+    #     files = File.query.join(File.gallery).join(Gallery.year).filter(File.type == FileTypeEnum.VIDEO.name, Gallery.private == False).filter(Year.slug >= starting_year, Year.slug <= ending_year)
+    #     if page_size is None:
+    #         return files
+    #     else:
+    #         if page is None:
+    #             page = 1
+    #         return files.offset((page - 1) * page_size).limit(page_size)
     
-    @staticmethod
-    def find_all_public_videos_filtered_by_years(starting_year, ending_year, page, page_size):
-        return FileDAO().all_public_videos_filtered_by_years(starting_year, ending_year, page, page_size).all()
+    # @staticmethod
+    # def find_all_public_videos_filtered_by_years(starting_year, ending_year, page, page_size):
+    #     return FileDAO().all_public_videos_filtered_by_years(starting_year, ending_year, page, page_size).all()
     
-    @staticmethod
-    def count_all_public_videos_sorted_by_date_filtered_by_years(starting_year, ending_year):
-        return FileDAO().all_public_videos_filtered_by_years(starting_year, ending_year).count()
+    # @staticmethod
+    # def count_all_public_videos_sorted_by_date_filtered_by_years(starting_year, ending_year):
+    #     return FileDAO().all_public_videos_filtered_by_years(starting_year, ending_year).count()
