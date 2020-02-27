@@ -1,7 +1,7 @@
 from sqlalchemy import desc, between
 
 from .ResourceDAO import ResourceDAO
-from ..models import Gallery, Year, Event, User
+from ..models import Gallery, Year, Event, User, GalleryTypeEnum
 
 
 def query_with_offset(query, page=None, page_size=None):
@@ -40,19 +40,19 @@ class GalleryDAO(ResourceDAO):
 
     # Get all public galleries
     @staticmethod
-    def all_public_sorted_by_date(page=None, page_size=None, starting_year=None, ending_year=None):
+    def all_public_photo_sorted_by_date(page=None, page_size=None, starting_year=None, ending_year=None):
         if starting_year is None and ending_year is None:
-            galleries = Gallery.query.filter_by(private=False)
+            galleries = Gallery.query.filter_by(private=False, type=GalleryTypeEnum.PHOTO.name)
         elif starting_year is not None and ending_year is not None:
-            galleries = Gallery.query.join(Gallery.year).filter(Gallery.private == False).filter(Year.slug >= starting_year, Year.slug <= ending_year)
+            galleries = Gallery.query.join(Gallery.year).filter(Gallery.private == False, Gallery.type == type=GalleryTypeEnum.PHOTO.name, Year.slug >= starting_year, Year.slug <= ending_year)
         else:
             return []
         return query_with_offset(galleries.order_by(desc(Gallery.created)), page, page_size)
 
     @staticmethod
-    def find_all_public_sorted_by_date(page=None, page_size=None, starting_year=None, ending_year=None):
-        return GalleryDAO.all_public_sorted_by_date(page, page_size, starting_year, ending_year).all()
+    def find_all_public_photo_sorted_by_date(page=None, page_size=None, starting_year=None, ending_year=None):
+        return GalleryDAO.all_public_photo_sorted_by_date(page, page_size, starting_year, ending_year).all()
     
     @staticmethod
-    def count_all_public_sorted_by_date(starting_year=None, ending_year=None):
-        return GalleryDAO.all_public_sorted_by_date(starting_year=starting_year, ending_year=ending_year).count()
+    def count_all_public_photo_sorted_by_date(starting_year=None, ending_year=None):
+        return GalleryDAO.all_public_photo_sorted_by_date(starting_year=starting_year, ending_year=ending_year).count()

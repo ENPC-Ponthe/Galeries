@@ -209,10 +209,10 @@ class GetAllGalleries(Resource):
 
         '''Get the list of public galleries of all years'''
         gallery_list = []
-        public_galleries = GalleryDAO().find_all_public_sorted_by_date(page, page_size, starting_year, ending_year)
+        public_galleries = GalleryDAO().find_all_public_photo_sorted_by_date(page, page_size, starting_year, ending_year)
         public_image_galleries = list(filter(lambda gallery: not GalleryService.is_video_gallery(gallery), public_galleries))
-        # number_of_public_galleries = GalleryDAO().count_all_public_sorted_by_date(starting_year, ending_year)
-        number_of_public_image_galleries = len(public_image_galleries)
+        number_of_public_image_galleries = GalleryDAO().count_all_public_photo_sorted_by_date(starting_year, ending_year)
+        # number_of_public_image_galleries = len(public_image_galleries)
 
         for gallery in public_image_galleries:
             list_of_files = list(filter(lambda file: not file.pending, gallery.files))
@@ -571,7 +571,8 @@ class GetLatestGalleries(Resource):
         starting_year, ending_year = UserService.get_user_allowed_years(current_user)
 
         '''Get the list of public galleries, with a filter on allowed years for non admin users'''
-        public_galleries = GalleryDAO().find_all_public_sorted_by_date(page, page_size, starting_year, ending_year)
+        # Change this route for getting video galleries
+        public_galleries = GalleryDAO().find_all_public_photo_sorted_by_date(page, page_size, starting_year, ending_year)
 
         gallery_list =[]
 
