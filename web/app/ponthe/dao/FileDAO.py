@@ -5,7 +5,7 @@ from .ResourceDAO import ResourceDAO
 from .. import app, db, thumb
 from ..file_helper import delete_file
 from ..filters import thumb_filter, category_thumb_filter
-from ..models import File, Gallery, FileTypeEnum
+from ..models import File, Gallery, FileTypeEnum, Year
 
 import os
 
@@ -109,7 +109,7 @@ class FileDAO(ResourceDAO):
     
     @staticmethod
     def all_public_videos_filtered_by_years(starting_year, ending_year, page=None, page_size=None):
-        files = File.query.join(File.gallery).filter(File.type == FileTypeEnum.VIDEO.name, Gallery.private == False).filter(Gallery.year >= starting_year, Gallery.year <= ending_year)
+        files = File.query.join(File.gallery).join(Gallery.year).filter(File.type == FileTypeEnum.VIDEO.name, Gallery.private == False).filter(Year.slug >= starting_year, Year.slug <= ending_year)
         if page_size is None:
             return files
         else:
