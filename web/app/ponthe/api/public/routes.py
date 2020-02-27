@@ -5,7 +5,7 @@ import json
 
 from flask_restplus import Resource
 from flask import request, redirect, send_file
-from flask_login import login_user
+from flask_login import login_user, login_required
 from flask_jwt_extended import JWTManager, create_access_token
 from itsdangerous import SignatureExpired, BadSignature
 
@@ -192,6 +192,7 @@ class CasAuthenticate(Resource):
 @api.doc(params={
     'image_slug': 'the image you want to get the list of reactions'
 })
+@login_required
 class GetVideo(Resource):
     @api.response(200, 'Success')
     @api.response(400, 'Request incorrect - JSON not valid')
