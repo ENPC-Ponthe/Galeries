@@ -744,3 +744,51 @@ class GetAllReactionsForImage(Resource):
         return {
             "reactions": count_reactions
         }, 200
+
+
+@api.route('/get-filmography')
+class GetFilmography(Resource):
+    @api.response(200, 'Success')
+    def post(self):
+        page = request.json.get("page")
+        page_size = request.json.get("page_size")
+        starting_year, ending_year = UserService.get_user_allowed_years(current_user.promotion)
+
+        '''Get the list of public galleries of all years'''
+        video_galleries_list = []
+        if current_user.admin:
+            all_videos = FileDAO.find_all_public_videos()
+            for video in all_videos:
+                video_galleries_list.append(video.gallery)
+            number_of_video_galleries = FileDAO().count_all_public_videos_sorted_by_date(page, page_size)
+        else:
+            all_videos = FileDAO.find_all_public_videos_filtered_by_years(starting_year, ending_year, page, page_size)
+            for video in all_videos:
+                video_galleries_list.append(video.gallery)
+            number_of_video_galleries = FileDAO().count_all_public_videos_sorted_by_date_filtered_by_years(starting_year, ending_year)
+
+        video_galleries = []
+        for gallery in video_galleries_list:
+            video_galleries.append({
+                "name": gallery.name,
+                "slug": gallery.slug
+            })
+
+            # public_galleries = GalleryDAO().find_public_sorted_by_date_filtered_by_years(starting_year, ending_year, page, page_size)
+            # number_of_public_galleries = GalleryDAO().count_all_public_sorted_by_date_filtered_by_years(starting_year, ending_year)
+        # for gallery in public_galleries:
+        #     list_of_files = list(filter(lambda file: not file.pending, gallery.files))
+        #     if list_of_files:
+        #         i = random.randint(0, len(list_of_files)-1)
+        #         encoded_string = FileService.get_base64_encoding_thumb(list_of_files[i], SIZE_LARGE_THUMB)
+        #     else:
+        #         encoded_string = ""
+        #     gallery_list.append({
+        #         "name": gallery.name,
+        #         "slug": gallery.slug,
+        #         "image": encoded_string
+        #     })
+        return {
+                    "number_of_videos": number_of_video_galleries,
+                    "galleries": video_galleries
+                }, 200

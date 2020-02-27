@@ -84,6 +84,44 @@ class FileDAO(ResourceDAO):
     def get_number_of_not_pending_files_by_gallery(gallery: Gallery):
         return len(FileDAO.find_not_pending_files_by_gallery(gallery))
 
+    # Videos
     @staticmethod
     def get_video():
         return File.query.filter_by(type=FileTypeEnum.VIDEO.name).first()
+    
+    @staticmethod
+    def all_public_videos(page=None, page_size=None):
+        files = File.query.join(File.gallery).filter(File.type == FileTypeEnum.VIDEO.name, Gallery.private == False)
+        if page_size is None:
+            return files
+        else:
+            if page is None:
+                page = 1
+            return files.offset((page - 1) * page_size).limit(page_size)
+    
+    @staticmethod
+    def find_all_public_videos(page, page_size):
+        return FileDAO().all_public_videos(page, page_size).all()
+    
+    @staticmethod
+    def count_all_public_videos_sorted_by_date():
+        return FileDAO().all_public_videos().count()
+    
+    @staticmethod
+    def all_public_videos_filtered_by_years(starting_year, ending_year, page, page_size):
+        files = File.query.join(File.gallery)
+            .filter(File.type == FileTypeEnum.VIDEO.name, Gallery.private == False, Gallery.year >= starting_year, Gallery.year <= ending_year)
+        if page_size is None:
+            return files
+        else:
+            if page is None:
+                page = 1
+            return files.offset((page - 1) * page_size).limit(page_size)
+    
+    @staticmethod
+    def find_all_public_videos_filtered_by_years(starting_year, ending_year, page, page_size):
+        return FileDAO().all_public_videos_filtered_by_years(starting_year, ending_year, page, page_size).all()
+    
+    @staticmethod
+    def count_all_public_videos_sorted_by_date_filtered_by_years(starting_year, ending_year):
+        return FileDAO().all_public_videos_filtered_by_years(starting_year, ending_year).count()
