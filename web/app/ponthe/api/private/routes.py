@@ -210,9 +210,11 @@ class GetAllGalleries(Resource):
         '''Get the list of public galleries of all years'''
         gallery_list = []
         public_galleries = GalleryDAO().find_all_public_sorted_by_date(page, page_size, starting_year, ending_year)
-        number_of_public_galleries = GalleryDAO().count_all_public_sorted_by_date(starting_year, ending_year)
+        public_image_galleries = list(filter(lambda gallery: not GalleryService.is_video_gallery(gallery), public_galleries))
+        # number_of_public_galleries = GalleryDAO().count_all_public_sorted_by_date(starting_year, ending_year)
+        number_of_public_image_galleries = len(public_image_galleries)
 
-        for gallery in public_galleries:
+        for gallery in public_image_galleries:
             list_of_files = list(filter(lambda file: not file.pending, gallery.files))
             if list_of_files:
                 i = random.randint(0, len(list_of_files)-1)
@@ -225,7 +227,7 @@ class GetAllGalleries(Resource):
                 "image": encoded_string
             })
         data =  {
-                    "number_of_galleries": number_of_public_galleries,
+                    "number_of_galleries": number_of_public_image_galleries,
                     "galleries": gallery_list
                 }
         return data, 200
