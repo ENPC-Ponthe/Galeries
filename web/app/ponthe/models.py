@@ -357,7 +357,7 @@ class Gallery(Resource):
     private = db.Column(db.Boolean, nullable=False, default=False)
     type = db.Column(db.Enum(GalleryTypeEnum), nullable=False)
 
-    def __init__(self, year=None, year_id=None, event=None, event_id=None, cover_image=None, cover_image_id=None, description=None, private=None, **kwargs):
+    def __init__(self, year=None, year_id=None, event=None, event_id=None, cover_image=None, cover_image_id=None, description=None, private=None, type=None, **kwargs):
         super().__init__(**kwargs)
         self.private = private
         if year_id:
@@ -373,6 +373,7 @@ class Gallery(Resource):
         elif cover_image:
             self.cover_image = cover_image
         self.description = description
+        self.type = type
 
     @property
     def cover(self):
