@@ -4,6 +4,15 @@ from .ResourceDAO import ResourceDAO
 from ..models import Gallery, Year, Event, User
 
 
+def query_with_offset(query, page=None, page_size=None):
+    if page_size is None:
+        return query
+    else:
+        if page is None:
+            page = 1
+        return query.offset((page - 1) * page_size).limit(page_size)
+
+
 class GalleryDAO(ResourceDAO):
     def __init__(self):
         super().__init__(Gallery)
@@ -30,45 +39,47 @@ class GalleryDAO(ResourceDAO):
         return Gallery.query.filter_by(private=True).all()
 
     @staticmethod
-    def all_public_sorted_by_date():
-        return Gallery.query.filter_by(private=False).order_by(desc(Gallery.created))
+    def all_public_sorted_by_date(page=None, page_size=None, starting_year=None, ending_year=None):
+        if starting_year is None and ending_year is None:
+            galleries = Gallery.query.filter_by(private=False)
+        elif starting_year is not None and ending_year is not None:
+            galleries = Gallery.query.join(Gallery.year).filter(Gallery.private == False).filter(Year.slug >= beginning_year, Year.slug <= ending_year)
+        else:
+            return []
+        return query_with_offset(galleries.order_by(desc(Gallery.created)), page, page_size)
 
     @staticmethod
-    def find_all_public_sorted_by_date():
-        return GalleryDAO.all_public_sorted_by_date().all()
+    def find_all_public_sorted_by_date(page=None, page_size=None, starting_year=None, ending_year=None):
+        return GalleryDAO.all_public_sorted_by_date(page, page_size, starting_year, ending_year).all()
     
     @staticmethod
-    def count_all_public_sorted_by_date():
-        return GalleryDAO.all_public_sorted_by_date().count()
+    def count_all_public_sorted_by_date(starting_year=None, ending_year=None):
+        return GalleryDAO.all_public_sorted_by_date(starting_year=starting_year, ending_year=ending_year).count()
 
-    @staticmethod
-    def find_public_sorted_by_date(page=None, page_size=None):
-        if page_size is None:
-            return GalleryDAO.find_all_public_sorted_by_date()
-        else:
-            if page is None:
-                page = 1
-            return Gallery.query.filter_by(private=False).order_by(desc(Gallery.created)).offset(
-                (page - 1) * page_size).limit(page_size).all()
+    # @staticmethod
+    # def find_public_sorted_by_date(page=None, page_size=None, starting_year=None, ending_year=None):
+    #     if starting_year is None and ending_year is None:
+    #         galleries = GalleryDAO.all_public_sorted_by_date()
+    #     elif starting_year is not None and ending_year is not None:
+    #         galleries = GalleryDAO.all_public_sorted_by_date_filtered_by_years(beginning_year, ending_year)
+    #     else:
+    #         return []
+    #     return query_with_offset(galleries, page, page_size).all()
 
-    # Add a filter by years on find_public_sorted_by_date methods
-    @staticmethod
-    def all_public_sorted_by_date_filtered_by_years(beginning_year, ending_year):
-        return Gallery.query.join(Gallery.year).filter(Gallery.private == False).filter(Year.slug >= beginning_year, Year.slug <= ending_year).order_by(desc(Gallery.created))
+    # # Add a filter by years on find_public_sorted_by_date methods
+    # @staticmethod
+    # def all_public_sorted_by_date_filtered_by_years(beginning_year, ending_year):
+    #     return Gallery.query.join(Gallery.year).filter(Gallery.private == False).filter(Year.slug >= beginning_year, Year.slug <= ending_year).order_by(desc(Gallery.created))
 
-    @staticmethod
-    def find_all_public_sorted_by_date_filtered_by_years(beginning_year, ending_year):
-        return GalleryDAO.all_public_sorted_by_date_filtered_by_years(beginning_year, ending_year).all()
+    # @staticmethod
+    # def find_all_public_sorted_by_date_filtered_by_years(beginning_year, ending_year):
+    #     return GalleryDAO.all_public_sorted_by_date_filtered_by_years(beginning_year, ending_year).all()
     
-    @staticmethod
-    def count_all_public_sorted_by_date_filtered_by_years(beginning_year, ending_year):
-        return GalleryDAO.all_public_sorted_by_date_filtered_by_years(beginning_year, ending_year).count()
+    # @staticmethod
+    # def count_all_public_sorted_by_date_filtered_by_years(beginning_year, ending_year):
+    #     return GalleryDAO.all_public_sorted_by_date_filtered_by_years(beginning_year, ending_year).count()
 
-    @staticmethod
-    def find_public_sorted_by_date_filtered_by_years(beginning_year, ending_year, page=None, page_size=None):
-        if page_size is None:
-            return GalleryDAO.find_all_public_sorted_by_date_filtered_by_years(beginning_year, ending_year)
-        else:
-            if page is None:
-                page = 1
-            return Gallery.query.join(Gallery.year).filter(Gallery.private == False).filter(Year.slug >= beginning_year, Year.slug <= ending_year).order_by(desc(Gallery.created)).offset((page-1)*page_size).limit(page_size).all()
+    # @staticmethod
+    # def find_public_sorted_by_date_filtered_by_years(beginning_year, ending_year, page=None, page_size=None):
+    #     galleries = GalleryDAO.all_public_sorted_by_date_filtered_by_years(beginning_year, ending_year)
+    #     return query_with_offset(galleries, page, page_size).all()
