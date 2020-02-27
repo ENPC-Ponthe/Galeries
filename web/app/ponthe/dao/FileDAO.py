@@ -97,7 +97,6 @@ class FileDAO(ResourceDAO):
             files = File.query.join(File.gallery).join(Gallery.year).filter(File.type == FileTypeEnum.VIDEO.name, Gallery.private == False).filter(Year.slug >= starting_year, Year.slug <= ending_year)
         else :
             return []
-
         return query_with_offset(files, page, page_size)
     
     @staticmethod
@@ -107,6 +106,10 @@ class FileDAO(ResourceDAO):
     @staticmethod
     def count_all_public_videos(starting_year=None, ending_year=None):
         return FileDAO().all_public_videos(starting_year=starting_year, ending_year=ending_year).count()
+
+    @staticmethod
+    def get_cover_image_of_video_gallery(gallery: Gallery):
+        return File.query.filter_by(gallery=gallery, type=FileTypeEnum.IMAGE.name).first()
 
     @staticmethod
     def get_video_from_gallery(gallery: Gallery):
