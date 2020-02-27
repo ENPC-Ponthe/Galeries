@@ -5,7 +5,7 @@ import json
 
 from flask_restplus import Resource
 from flask import request, redirect, send_file
-from flask_login import login_user, login_required
+from flask_login import login_user
 from flask_jwt_extended import JWTManager, create_access_token
 from itsdangerous import SignatureExpired, BadSignature
 
