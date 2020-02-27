@@ -102,7 +102,7 @@ class FileDAO(ResourceDAO):
     def all_public_videos(page=None, page_size=None, starting_year=None, ending_year=None):
         if starting_year is None and ending_year is None:
             files = File.query.join(File.gallery).filter(File.type == FileTypeEnum.VIDEO.name, Gallery.private == False)
-        else if starting_year is not None and ending_year is not None:
+        elif starting_year is not None and ending_year is not None:
             files = File.query.join(File.gallery).join(Gallery.year).filter(File.type == FileTypeEnum.VIDEO.name, Gallery.private == False).filter(Year.slug >= starting_year, Year.slug <= ending_year)
         else :
             return []
