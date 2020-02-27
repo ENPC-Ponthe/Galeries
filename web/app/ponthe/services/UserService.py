@@ -105,7 +105,10 @@ class UserService:
                                  f" because email could not be sent to {user.email}.")
 
     @staticmethod
-    def get_user_allowed_years(user_promotion: str):
+    def get_user_allowed_years(user: User):
+        if user.admin:
+            return None, None
+        user_promotion = user.promotion
         full_promotion_year = int('2' + user_promotion)
         starting_year = full_promotion_year - 3
         ending_year = starting_year + 3
@@ -113,7 +116,7 @@ class UserService:
     
     @staticmethod
     def has_basic_user_right_on_gallery(gallery, current_user: User):
-        first_allowed_year, last_allowed_year = UserService.get_user_allowed_years(current_user.promotion)
+        first_allowed_year, last_allowed_year = UserService.get_user_allowed_years(current_user)
         gallery_year = gallery.year.value
         if gallery_year >= first_allowed_year and gallery_year <= last_allowed_year:
             return True

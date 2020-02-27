@@ -205,16 +205,13 @@ class GetAllGalleries(Resource):
     def post(self):
         page = request.json.get("page")
         page_size = request.json.get("page_size")
-        starting_year, ending_year = UserService.get_user_allowed_years(current_user.promotion)
+        starting_year, ending_year = UserService.get_user_allowed_years(current_user)
 
         '''Get the list of public galleries of all years'''
         gallery_list = []
-        if current_user.admin:
-            public_galleries = GalleryDAO().find_public_sorted_by_date(page, page_size)
-            number_of_public_galleries = GalleryDAO().count_all_public_sorted_by_date()
-        else:
-            public_galleries = GalleryDAO().find_public_sorted_by_date_filtered_by_years(starting_year, ending_year, page, page_size)
-            number_of_public_galleries = GalleryDAO().count_all_public_sorted_by_date_filtered_by_years(starting_year, ending_year)
+        public_galleries = GalleryDAO().find_all_public_sorted_by_date(page, page_size, starting_year, ending_year)
+        number_of_public_galleries = GalleryDAO().count_all_public_sorted_by_date(starting_year, ending_year)
+
         for gallery in public_galleries:
             list_of_files = list(filter(lambda file: not file.pending, gallery.files))
             if list_of_files:
@@ -568,13 +565,11 @@ class GetLatestGalleries(Resource):
         page = request.json.get("page")
         page_size = request.json.get("page_size")
 
-        starting_year, ending_year = UserService.get_user_allowed_years(current_user.promotion)
+        # If user is admin, then starting and ending years equal to None
+        starting_year, ending_year = UserService.get_user_allowed_years(current_user)
 
         '''Get the list of public galleries, with a filter on allowed years for non admin users'''
-        if current_user.admin:
-            public_galleries = GalleryDAO().find_public_sorted_by_date(page, page_size)
-        else:
-            public_galleries = GalleryDAO().find_public_sorted_by_date_filtered_by_years(starting_year, ending_year, page, page_size)
+        public_galleries = GalleryDAO().find_all_public_sorted_by_date(page, page_size, starting_year, ending_year)
 
         gallery_list =[]
 
@@ -752,20 +747,21 @@ class GetFilmography(Resource):
     def post(self):
         page = request.json.get("page")
         page_size = request.json.get("page_size")
-        starting_year, ending_year = UserService.get_user_allowed_years(current_user.promotion)
+        # Starting and ending year are None for admins
+        starting_year, ending_year = UserService.get_user_allowed_years(current_user)
 
         '''Get the list of public galleries of all years'''
         video_galleries_list = []
-        if current_user.admin:
-            all_videos = FileDAO.find_all_public_videos(page, page_size)
-            for video in all_videos:
-                video_galleries_list.append(video.gallery)
-            number_of_video_galleries = FileDAO().count_all_public_videos()
-        else:
-            all_videos = FileDAO.find_all_public_videos(page, page_size, starting_year, ending_year)
-            for video in all_videos:
-                video_galleries_list.append(video.gallery)
-            number_of_video_galleries = FileDAO().count_all_public_videos(starting_year, ending_year)
+        # if current_user.admin:
+        #     all_videos = FileDAO.find_all_public_videos(page, page_size)
+        #     for video in all_videos:
+        #         video_galleries_list.append(video.gallery)
+        #     number_of_video_galleries = FileDAO().count_all_public_videos()
+        # else:
+        all_videos = FileDAO.find_all_public_videos(page, page_size, starting_year, ending_year)
+        for video in all_videos:
+            video_galleries_list.append(video.gallery)
+        number_of_video_galleries = FileDAO().count_all_public_videos(starting_year, ending_year)
 
         video_galleries = []
         for gallery in video_galleries_list:
