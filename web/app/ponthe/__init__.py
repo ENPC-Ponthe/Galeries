@@ -37,6 +37,7 @@ from .v1.admin import admin
 from .api.admin import admin_api
 from .api.public import public_api
 from .api.private import private_api
+from .api.resources import resources_api
 
 from . import cli
 from . import models
@@ -51,3 +52,4 @@ app.register_blueprint(admin, url_prefix=API_V1)
 app.register_blueprint(admin_api, url_prefix=API_V2)
 app.register_blueprint(public_api, url_prefix=API_V2)
 app.register_blueprint(private_api, url_prefix=API_V2)
+app.register_blueprint(resources_api, url_prefix=API_V2)
