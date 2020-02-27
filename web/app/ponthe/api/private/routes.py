@@ -757,10 +757,10 @@ class GetFilmography(Resource):
         '''Get the list of public galleries of all years'''
         video_galleries_list = []
         if current_user.admin:
-            all_videos = FileDAO.find_all_public_videos()
+            all_videos = FileDAO.find_all_public_videos(page, page_size)
             for video in all_videos:
                 video_galleries_list.append(video.gallery)
-            number_of_video_galleries = FileDAO().count_all_public_videos_sorted_by_date(page, page_size)
+            number_of_video_galleries = FileDAO().count_all_public_videos_sorted_by_date()
         else:
             all_videos = FileDAO.find_all_public_videos_filtered_by_years(starting_year, ending_year, page, page_size)
             for video in all_videos:
