@@ -41,6 +41,12 @@ class FileTypeEnum(enum.Enum):
     VIDEO = 2
 
 
+class GalleryTypeEnum(enum.Enum):
+    PHOTO = 1
+    VIDEO = 2
+    MIXED = 3
+
+
 class GenderEnum(enum.Enum):
     M = 1
     F = 2
@@ -349,6 +355,7 @@ class Gallery(Resource):
     cover_image = db.relationship('File', backref='galleries', foreign_keys=[cover_image_id])
     description = db.Column(db.String(1024), nullable=True)
     private = db.Column(db.Boolean, nullable=False, default=False)
+    type = db.Column(db.Enum(GalleryTypeEnum), nullable=False)
 
     def __init__(self, year=None, year_id=None, event=None, event_id=None, cover_image=None, cover_image_id=None, description=None, private=None, **kwargs):
         super().__init__(**kwargs)
