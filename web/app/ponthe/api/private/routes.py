@@ -756,7 +756,7 @@ class GetFilmography(Resource):
         '''Get the list of public galleries of all years'''
 
         public_video_galleries = GalleryDAO().find_all_public_video_sorted_by_date(page, page_size, starting_year, ending_year)
-        number_of_public_video_galleries = GalleryDAO().count_all_public_video_sorted_by_date(page, page_size, starting_year, ending_year)
+        number_of_public_video_galleries = GalleryDAO().count_all_public_video_sorted_by_date(starting_year, ending_year)
 
         video_galleries_data = []
         for gallery in public_video_galleries:
