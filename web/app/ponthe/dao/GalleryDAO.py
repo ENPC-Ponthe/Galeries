@@ -43,7 +43,7 @@ class GalleryDAO(ResourceDAO):
         if starting_year is None and ending_year is None:
             galleries = Gallery.query.filter_by(private=False)
         elif starting_year is not None and ending_year is not None:
-            galleries = Gallery.query.join(Gallery.year).filter(Gallery.private == False).filter(Year.slug >= beginning_year, Year.slug <= ending_year)
+            galleries = Gallery.query.join(Gallery.year).filter(Gallery.private == False).filter(Year.slug >= starting_year, Year.slug <= ending_year)
         else:
             return []
         return query_with_offset(galleries.order_by(desc(Gallery.created)), page, page_size)
