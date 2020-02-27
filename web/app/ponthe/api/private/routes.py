@@ -754,21 +754,13 @@ class GetFilmography(Resource):
         starting_year, ending_year = UserService.get_user_allowed_years(current_user)
 
         '''Get the list of public galleries of all years'''
-        video_galleries_list = []
-        # if current_user.admin:
-        #     all_videos = FileDAO.find_all_public_videos(page, page_size)
-        #     for video in all_videos:
-        #         video_galleries_list.append(video.gallery)
-        #     number_of_video_galleries = FileDAO().count_all_public_videos()
-        # else:
-        all_videos = FileDAO.find_all_public_videos(page, page_size, starting_year, ending_year)
-        for video in all_videos:
-            video_galleries_list.append(video.gallery)
-        number_of_video_galleries = FileDAO().count_all_public_videos(starting_year, ending_year)
 
-        video_galleries = []
-        for gallery in video_galleries_list:
-            video_galleries.append({
+        public_video_galleries = GalleryDAO().find_all_public_video_sorted_by_date(page, page_size, starting_year, ending_year)
+        number_of_public_video_galleries = GalleryDAO().count_all_public_video_sorted_by_date(page, page_size, starting_year, ending_year)
+
+        video_galleries_data = []
+        for gallery in public_video_galleries:
+            video_galleries_data.append({
                 "name": gallery.name,
                 "slug": gallery.slug
             })
@@ -788,6 +780,6 @@ class GetFilmography(Resource):
         #         "image": encoded_string
         #     })
         return {
-                    "number_of_videos": number_of_video_galleries,
-                    "galleries": video_galleries
+                    "number_of_videos": number_of_public_video_galleries,
+                    "galleries": video_galleries_data
                 }, 200
