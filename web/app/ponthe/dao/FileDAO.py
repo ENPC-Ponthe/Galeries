@@ -110,4 +110,4 @@ class FileDAO(ResourceDAO):
 
     @staticmethod
     def get_video_from_gallery(gallery: Gallery):
-        return File.query.filter_by(, gallery=gallery, type=FileTypeEnum.VIDEO.name).first()
+        return File.query.filter_by(gallery=gallery, type=FileTypeEnum.VIDEO.name).first()
