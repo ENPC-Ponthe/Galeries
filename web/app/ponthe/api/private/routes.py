@@ -760,25 +760,22 @@ class GetFilmography(Resource):
 
         video_galleries_data = []
         for gallery in public_video_galleries:
-            video_galleries_data.append({
+            gallery_data = {
                 "name": gallery.name,
                 "slug": gallery.slug
-            })
+            }
 
-            # public_galleries = GalleryDAO().find_public_sorted_by_date_filtered_by_years(starting_year, ending_year, page, page_size)
-            # number_of_public_galleries = GalleryDAO().count_all_public_sorted_by_date_filtered_by_years(starting_year, ending_year)
-        # for gallery in public_galleries:
-        #     list_of_files = list(filter(lambda file: not file.pending, gallery.files))
-        #     if list_of_files:
-        #         i = random.randint(0, len(list_of_files)-1)
-        #         encoded_string = FileService.get_base64_encoding_thumb(list_of_files[i], SIZE_LARGE_THUMB)
-        #     else:
-        #         encoded_string = ""
-        #     gallery_list.append({
-        #         "name": gallery.name,
-        #         "slug": gallery.slug,
-        #         "image": encoded_string
-        #     })
+            cover_image = FileDAO().get_cover_image_of_video_gallery(gallery)
+            if cover_image is not None:
+                encoded_string = FileService.get_base64_encoding_thumb(cover_image, SIZE_LARGE_THUMB)
+                gallery_data["image"] = encoded_string
+            
+            video = FileDAO().get_video_from_gallery(gallery)
+            if video is not None:
+                gallery_data["video_slug"] = video.file_path
+
+            video_galleries_data.append(gallery_data)
+
         return {
                     "number_of_videos": number_of_public_video_galleries,
                     "galleries": video_galleries_data
