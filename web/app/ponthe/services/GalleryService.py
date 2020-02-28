@@ -42,7 +42,7 @@ class GalleryService:
 
     @staticmethod
     def create(name: str, author: User, description: str, private: bool, year_slug: str, event_slug: str, gallery_type: str) -> Gallery:
-        gallery = Gallery(name=name, author=author)
+        gallery = Gallery(name=name, author=author, type=GalleryTypeEnum[gallery_type].name)
         if year_slug:
             year = YearDAO().find_by_slug(slug=year_slug)
             gallery.year = year
@@ -53,8 +53,6 @@ class GalleryService:
             gallery.description = description
         if private:
             gallery.private = True
-        if gallery_type:
-            gallery.type = GalleryTypeEnum[gallery_type].name
 
         db.session.add(gallery)
         db.session.commit()
