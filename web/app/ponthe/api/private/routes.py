@@ -239,7 +239,8 @@ class GetAllGalleries(Resource):
     'description': '',
     'year_slug': 'Slug of the year of the galery. Ex: 2019',
     'event_slug': 'Slug of the parent event of the galery.',
-    'private': 'Boolean'
+    'private': 'Boolean',
+    'type': 'Type of gallery to create, part of an enum'
 })
 class CreateGallery(Resource):
     @api.response(201, 'Success - Gallery created')
@@ -251,6 +252,7 @@ class CreateGallery(Resource):
         year_slug = request.json.get('year_slug')
         event_slug = request.json.get('event_slug')
         private = request.json.get('private')
+        gallery_type = request.json.get('type')
 
         if not gallery_name:
             return {
@@ -259,7 +261,7 @@ class CreateGallery(Resource):
             }, 401
 
         try:
-            GalleryService.create(gallery_name, current_user, gallery_description, private == "on", year_slug, event_slug)
+            GalleryService.create(gallery_name, current_user, gallery_description, private == "on", year_slug, event_slug, gallery_type)
 
         except Exception as e:
             return  {

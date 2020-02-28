@@ -1,6 +1,6 @@
 import os
 
-from ..models import User, Gallery, FileTypeEnum
+from ..models import User, Gallery, FileTypeEnum, GalleryTypeEnum
 from ..file_helper import delete_folder
 from .FileService import FileService
 from ..dao import GalleryDAO, YearDAO, EventDAO, FileDAO
@@ -41,7 +41,7 @@ class GalleryService:
             db.session.commit()
 
     @staticmethod
-    def create(name: str, author: User, description: str, private: bool, year_slug: str, event_slug: str) -> Gallery:
+    def create(name: str, author: User, description: str, private: bool, year_slug: str, event_slug: str, gallery_type: str) -> Gallery:
         gallery = Gallery(name=name, author=author)
         if year_slug:
             year = YearDAO().find_by_slug(slug=year_slug)
@@ -53,6 +53,8 @@ class GalleryService:
             gallery.description = description
         if private:
             gallery.private = True
+        if gallery_type:
+            gallery.type = GalleryTypeEnum[gallery_type].name
 
         db.session.add(gallery)
         db.session.commit()
