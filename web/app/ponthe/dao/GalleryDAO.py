@@ -31,12 +31,38 @@ class GalleryDAO(ResourceDAO):
         return list(filter(lambda gallery: cls.has_right_on(gallery, current_user), galleries))
 
     @staticmethod
-    def find_public():
-        return Gallery.query.filter_by(private=False).all()
-
-    @staticmethod
     def find_private():
         return Gallery.query.filter_by(private=True).all()
+
+
+    # Get all private photo galleries
+    @staticmethod
+    def all_private_photo(page=None, page_size=None):
+        private_galleries = Gallery.query.filter_by(private=True, type=GalleryTypeEnum.PHOTO.name).order_by(desc(Gallery.created))
+        return query_with_offset(private_galleries, page, page_size)
+    
+    @staticmethod
+    def find_all_private_photo(page=None, page_size=None):
+        return GalleryDAO.all_private_photo(page, page_size).all()
+    
+    @staticmethod
+    def count_all_private_photo(page=None, page_size=None):
+        return GalleryDAO.all_private_photo(page, page_size).count()
+    
+
+    # Get all private video galleries
+    @staticmethod
+    def all_private_video(page=None, page_size=None):
+        private_galleries = Gallery.query.filter_by(private=True, type=GalleryTypeEnum.VIDEO.name).order_by(desc(Gallery.created))
+        return query_with_offset(private_galleries, page, page_size)
+    
+    @staticmethod
+    def find_all_private_video(page=None, page_size=None):
+        return GalleryDAO.all_private_video(page, page_size).all()
+    
+    @staticmethod
+    def count_all_private_video(page=None, page_size=None):
+        return GalleryDAO.all_private_video(page, page_size).count()
 
 
     # Get all public galleries
