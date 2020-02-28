@@ -778,3 +778,20 @@ class GetFilmography(Resource):
                     "number_of_videos": number_of_public_video_galleries,
                     "galleries": video_galleries_data
                 }, 200
+
+
+@api.route('/get-video-data')
+@api.doc(params={
+    'gallery_slug': 'the video gallery which owns the video you want'
+})
+class GetVideoData(Resource):
+    @api.response(200, 'Success')
+    @api.response(400, 'Request incorrect - JSON not valid')
+    @api.response(403, 'Not authorized - account not valid')
+    def post(self):
+        '''Get information about a video which is in gallery of slug gallery_slug'''
+        gallery_slug = request.json.get("gallery_slug")
+
+        gallery = GalleryDAO().find_by_slug(gallery_slug)
+
+        return { "description": gallery.description }, 200
