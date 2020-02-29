@@ -794,4 +794,7 @@ class GetVideoData(Resource):
 
         gallery = GalleryDAO().find_by_slug(gallery_slug)
 
-        return { "description": gallery.description }, 200
+        return {
+            "name": gallery.name,
+            "description": gallery.description
+            }, 200
