@@ -385,7 +385,10 @@ class GetVideoCoverImage(Resource):
         '''Get the video cover image in some gallery with slug gallery_slug'''
         gallery = GalleryDAO().find_by_slug(gallery_slug)
         cover_image = FileDAO().get_cover_image_of_video_gallery(gallery)
-        encoded_string = FileService.get_base64_encoding_thumb(cover_image)
+        if cover_image is None:
+            encoded_string = ""
+        else:
+            encoded_string = FileService.get_base64_encoding_thumb(cover_image)
 
         return {
             "image": encoded_string
