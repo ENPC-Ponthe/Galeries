@@ -370,26 +370,3 @@ class ImportUsers(Resource):
             raise BadRequest("No CSV uploaded")
 
         UserService.create_users(file)
-
-
-@api.route('/get-video-cover-image')
-@api.doc(params={
-    'gallery_slug': 'the video gallery which owns the video you want'
-})
-class GetVideoCoverImage(Resource):
-    @api.response(200, 'Success')
-    @api.response(400, 'Request incorrect - JSON not valid')
-    @api.response(403, 'Not authorized - account not valid')
-    def post(self):
-        gallery_slug = request.json.get("gallery_slug")
-        '''Get the video cover image in some gallery with slug gallery_slug'''
-        gallery = GalleryDAO().find_by_slug(gallery_slug)
-        cover_image = FileDAO().get_cover_image_of_video_gallery(gallery)
-        if cover_image is None:
-            encoded_string = ""
-        else:
-            encoded_string = FileService.get_base64_encoding_thumb(cover_image)
-
-        return {
-            "image": encoded_string
-        }, 200
