@@ -35,5 +35,5 @@ class ReactionDAO:
         else:
             if page is None:
                 page = 1
-            return Reaction.query.filter_by(user=user).order_by(desc(Reaction.updated)).offset(
+            return Reaction.query.filter_by(user=user).order_by(desc(Reaction.updated), desc(Reaction.created)).offset(
                 (page - 1) * page_size).limit(page_size).all()
