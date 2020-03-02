@@ -2,18 +2,16 @@ import random
 import base64
 import os
 import time
-import json
 
 from flask_jwt_extended import current_user
 from flask_restplus import Resource
 from sqlalchemy.orm.exc import NoResultFound
-from flask import send_file
+from flask import send_file, request
 from werkzeug.utils import secure_filename
-from flask import request
 from PIL import Image
 
 from . import api
-from ... import db, app
+from ... import app
 from ...dao import YearDAO, EventDAO, GalleryDAO, FileDAO
 from ...services import GalleryService, ReactionService, UserService
 from ...file_helper import is_allowed_file, get_base64_encoding
@@ -21,7 +19,6 @@ from ...services import FileService
 
 
 UPLOAD_FOLDER = app.config['MEDIA_ROOT']
-ASSET_FOLDER = app.config['ASSET_ROOT']
 SIZE_LARGE_THUMB = "630x500"
 
 
@@ -49,20 +46,6 @@ class Upload(Resource):
             return {
                 "msg": "File has been saved"
             }, 200
-
-
-@api.route('/get-user-by-jwt')
-class GetUser(Resource):
-    @api.response(200, 'Success')
-    @api.response(403, 'Not authorized - account not valid')
-    def get(self):
-        return {
-            "firstname": current_user.firstname,
-            "lastname": current_user.lastname,
-            "email": current_user.email,
-            "admin": current_user.admin,
-            "promotion": current_user.promotion
-        }, 200
 
 
 @api.route('/get-galleries-of-year/<year_slug>')
@@ -217,13 +200,6 @@ class CreateGallery(Resource):
         return {
             "msg": "Gallerie créée"
         }, 201
-
-@api.route('/members')
-class Members(Resource):
-    def get(self):
-        '''Get Ponthe members'''
-        with open(os.path.join(ASSET_FOLDER, "data/members.json")) as members:
-            return json.load(members, strict=False)
 
 
 @api.route('/get-galleries/<event_slug>')
@@ -540,78 +516,3 @@ class GetLatestGalleries(Resource):
                     "galleries": gallery_list
                 }
         return data, 200
-
-
-@api.route('/reset-password')
-@api.doc(params={
-    'current_password': 'your current password',
-    'new_password': 'your new password'
-})
-class ResetPasword(Resource):
-    @api.response(200, 'Success')
-    @api.response(400, 'Request incorrect - JSON not valid')
-    @api.response(403, 'Unauthorized - JWT not valid')
-    def post(self):
-        current_password = request.json.get('current_password')
-        new_password = request.json.get('new_password')
-        if current_user.check_password(current_password):
-            current_user.set_password(new_password)
-            db.session.add(current_user)
-            db.session.commit()
-            return {"msg": "Mot de passe réinitialisé avec succès"}, 200
-        else:
-            return {"msg": "Mot de passe incorrect"}, 400
-
-
-@api.route('/get-filmography')
-class GetFilmography(Resource):
-    @api.response(200, 'Success')
-    def post(self):
-        page = request.json.get("page")
-        page_size = request.json.get("page_size")
-        # Starting and ending year are None for admins
-        starting_year, ending_year = UserService.get_user_allowed_years(current_user)
-
-        '''Get the list of public galleries of all years'''
-
-        public_video_galleries = GalleryDAO().find_all_public_video_sorted_by_date(page, page_size, starting_year, ending_year)
-        number_of_public_video_galleries = GalleryDAO().count_all_public_video_sorted_by_date(starting_year, ending_year)
-
-        video_galleries_data = []
-        for gallery in public_video_galleries:
-            gallery_data = {
-                "name": gallery.name,
-                "slug": gallery.slug
-            }
-
-            cover_image = FileDAO().get_cover_image_of_video_gallery(gallery)
-            if cover_image is not None:
-                encoded_string = FileService.get_base64_encoding_thumb(cover_image, SIZE_LARGE_THUMB)
-                gallery_data["image"] = encoded_string
-
-            video_galleries_data.append(gallery_data)
-
-        return {
-                    "number_of_videos": number_of_public_video_galleries,
-                    "galleries": video_galleries_data
-                }, 200
-
-
-@api.route('/get-video-data')
-@api.doc(params={
-    'gallery_slug': 'the video gallery which owns the video you want'
-})
-class GetVideoData(Resource):
-    @api.response(200, 'Success')
-    @api.response(400, 'Request incorrect - JSON not valid')
-    @api.response(403, 'Not authorized - account not valid')
-    def post(self):
-        '''Get information about a video which is in gallery of slug gallery_slug'''
-        gallery_slug = request.json.get("gallery_slug")
-
-        gallery = GalleryDAO().find_by_slug(gallery_slug)
-
-        return {
-            "name": gallery.name,
-            "description": gallery.description
-            }, 200
