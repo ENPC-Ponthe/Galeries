@@ -498,6 +498,13 @@ class GetLatestGalleries(Resource):
         gallery_list =[]
 
         for gallery in public_galleries:
+            formatted_gallery = {
+                "name": gallery.name,
+                "slug": gallery.slug,
+                "description": gallery.description,
+                "type": gallery.type
+            }
+
             if GalleryService.is_photo_gallery(gallery):
                 list_of_files = list(filter(lambda file: not file.pending, gallery.files))
                 if list_of_files:
@@ -505,6 +512,7 @@ class GetLatestGalleries(Resource):
                     encoded_string = FileService.get_base64_encoding_full(list_of_files[i])
                 else:
                     encoded_string = ""
+                formatted_gallery["image"] = encoded_string
 
             elif GalleryService.is_video_gallery(gallery):
                 cover_image = FileDAO().get_cover_image_of_video_gallery(gallery)
@@ -512,13 +520,9 @@ class GetLatestGalleries(Resource):
                     encoded_string = FileService.get_base64_encoding_full(cover_image)
                 else:
                     encoded_string = ""
+                formatted_gallery["image"] = encoded_string
 
-            gallery_list.append({
-                "name": gallery.name,
-                "slug": gallery.slug,
-                "image": encoded_string,
-                "description": gallery.description
-            })
+            gallery_list.append(formatted_gallery)
         return {
                     "galleries": gallery_list
                 }, 200
