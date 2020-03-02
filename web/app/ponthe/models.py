@@ -215,6 +215,7 @@ class Reaction(TimestampMixin, db.Model):   # relation many-to-many type Slack, 
         elif resource:
             self.resource = resource
         self.type = type
+        self.updated = datetime.utcnow
 
 
 class Comment(Resource):
