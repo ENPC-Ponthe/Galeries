@@ -496,14 +496,14 @@ class GetLatestGalleries(Resource):
         # Change this route for getting video galleries
         public_galleries = GalleryDAO().find_all_public_galleries_sorted_by_date(page, page_size, starting_year, ending_year)
 
-        gallery_list =[]
+        gallery_list = []
 
         for gallery in public_galleries:
             formatted_gallery = {
                 "name": gallery.name,
                 "slug": gallery.slug,
                 "description": gallery.description,
-                "type": GalleryTypeEnum[gallery.type].name
+                "type": str(gallery.type)
             }
 
             if GalleryService.is_photo_gallery(gallery):
