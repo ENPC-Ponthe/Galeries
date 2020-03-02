@@ -106,3 +106,11 @@ class GalleryService:
         if GalleryDAO.has_right_on(gallery, current_user):
             for file in gallery.files:
                 FileService.approve(file)
+
+    @staticmethod
+    def is_photo_gallery(gallery: Gallery):
+        return gallery.type == GalleryTypeEnum.PHOTO.name
+    
+    @staticmethod
+    def is_video_gallery(gallery: Gallery):
+        return gallery.type == GalleryTypeEnum.VIDEO.name
