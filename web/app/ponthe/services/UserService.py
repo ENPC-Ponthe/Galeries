@@ -117,6 +117,8 @@ class UserService:
     @staticmethod
     def has_basic_user_right_on_gallery(gallery, current_user: User):
         first_allowed_year, last_allowed_year = UserService.get_user_allowed_years(current_user)
+        if first_allowed_year is None and last_allowed_year is None:
+            return True
         gallery_year = gallery.year.value
         if gallery_year >= first_allowed_year and gallery_year <= last_allowed_year:
             return True
