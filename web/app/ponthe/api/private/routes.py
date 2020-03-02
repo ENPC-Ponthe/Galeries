@@ -6,7 +6,6 @@ import json
 
 from flask_jwt_extended import current_user
 from flask_restplus import Resource
-from flask_mail import Message
 from sqlalchemy.orm.exc import NoResultFound
 from flask import send_file
 from werkzeug.utils import secure_filename
@@ -14,8 +13,8 @@ from flask import request
 from PIL import Image
 
 from . import api
-from ... import db, mail, app
-from ...dao import YearDAO, EventDAO, GalleryDAO, FileDAO, ReactionDAO
+from ... import db, app
+from ...dao import YearDAO, EventDAO, GalleryDAO, FileDAO
 from ...services import GalleryService, ReactionService, UserService
 from ...file_helper import is_allowed_file, get_base64_encoding
 from ...services import FileService
@@ -63,60 +62,6 @@ class GetUser(Resource):
             "email": current_user.email,
             "admin": current_user.admin,
             "promotion": current_user.promotion
-        }, 200
-
-
-@api.route('/materiel')
-@api.doc(params={
-    'device': 'object you would like to borrow to the club',
-    'message': 'your message'
-})
-class Materiel(Resource):
-    @api.response(200, 'Success - Mail sent')
-    @api.response(400, 'Request incorrect - JSON not valid')
-    @api.response(403, 'Not authorized - account not valid')
-    def post(self):
-        '''Send a mail to ponthe to borrow material'''
-        object = request.json.get('device')
-        message = request.json.get('message')
-        if not message:
-            return {
-                "title": "Erreur - Aucun message",
-                "body": "Veuillez saisir un message"
-            }, 400
-        msg = Message(subject=f"Demande d'emprunt de {object} par {current_user.firstname} {current_user.lastname}",
-                      body=message,
-                      sender=f"{current_user.full_name} <no-reply@ponthe.enpc.org>",
-                      recipients=['ponthe@liste.enpc.fr'])
-        mail.send(msg)
-        return {
-            "msg": "Mail envoyé !"
-        }, 200
-
-
-@api.route('/contact')
-@api.doc(params={
-    'message': 'your message'
-})
-class Contact(Resource):
-    @api.response(200, 'Success - Mail sent')
-    @api.response(400, 'Request incorrect - JSON not valid')
-    @api.response(403, 'Not authorized - account not valid')
-    def post(self):
-        '''Send a mail to ponthe to borrow material'''
-        message = request.json.get('message')
-        if not message:
-            return {
-                "title": "Erreur - Aucun message",
-                "body": "Veuillez saisir un message"
-            }, 400
-        msg = Message(subject=f"Message de la part de {current_user.firstname} {current_user.lastname}",
-                      body=message,
-                      sender=f"{current_user.full_name} <no-reply@ponthe.enpc.org>",
-                      recipients=['ponthe@liste.enpc.fr'])
-        mail.send(msg)
-        return {
-            "msg": "Mail envoyé !"
         }, 200
 
 
