@@ -1,4 +1,5 @@
 import os
+from typing import List
 
 from .. import app, db
 from ..dao import FileDAO, ReactionDAO
