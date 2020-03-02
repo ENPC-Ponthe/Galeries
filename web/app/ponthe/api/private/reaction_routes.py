@@ -5,7 +5,6 @@ from flask_restplus import Resource
 from flask import request
 
 from . import api
-from ... import app
 from ...dao import ReactionDAO
 from ...services import ReactionService
 from ...services import FileService
@@ -51,7 +50,7 @@ class GetAllUserReactions(Resource):
         reactions = ReactionDAO().find_by_user(current_user, page, page_size)
         number_of_reactions = ReactionDAO().count_all_by_user(current_user)
 
-        list_of_reactions = ReactionService(reactions)
+        list_of_reactions = ReactionService.format_reactions_to_json(reactions)
 
         return {
             "number_of_reactions": number_of_reactions,
@@ -85,7 +84,7 @@ class GetRandomUserReactions(Resource):
                 reactions.append(reaction)
                 del resource_ids[i]
 
-        response_reactions = ReactionService(reactions)
+        response_reactions = ReactionService.format_reactions_to_json(reactions)
 
         return {
             "reactions": response_reactions
