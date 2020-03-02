@@ -503,7 +503,7 @@ class GetLatestGalleries(Resource):
                 "name": gallery.name,
                 "slug": gallery.slug,
                 "description": gallery.description,
-                "type": str(gallery.type)
+                "type": gallery.type.name
             }
 
             if GalleryService.is_photo_gallery(gallery):
