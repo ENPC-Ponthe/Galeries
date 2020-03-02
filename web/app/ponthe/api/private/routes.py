@@ -16,6 +16,7 @@ from ...dao import YearDAO, EventDAO, GalleryDAO, FileDAO
 from ...services import GalleryService, ReactionService, UserService
 from ...file_helper import is_allowed_file, get_base64_encoding
 from ...services import FileService
+from ...models import GalleryTypeEnum
 
 
 UPLOAD_FOLDER = app.config['MEDIA_ROOT']
@@ -502,7 +503,7 @@ class GetLatestGalleries(Resource):
                 "name": gallery.name,
                 "slug": gallery.slug,
                 "description": gallery.description,
-                "type": gallery.type
+                "type": GalleryTypeEnum[gallery.type].name
             }
 
             if GalleryService.is_photo_gallery(gallery):
