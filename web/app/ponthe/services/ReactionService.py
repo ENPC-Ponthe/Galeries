@@ -84,7 +84,7 @@ class ReactionService():
     @staticmethod
     def format_reactions_to_json(reactions: List[Reaction]):
         list_of_reactions = []
-        for reaction of reactions:
+        for reaction in reactions:
             reaction_type = ReactionService.get_enum_reaction_name(reaction.type)
             file = reaction.resource
             encoded_string = FileService.get_base64_encoding_thumb(file, SIZE_LARGE_THUMB)
