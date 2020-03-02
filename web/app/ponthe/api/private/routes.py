@@ -493,24 +493,32 @@ class GetLatestGalleries(Resource):
 
         '''Get the list of public galleries, with a filter on allowed years for non admin users'''
         # Change this route for getting video galleries
-        public_galleries = GalleryDAO().find_all_public_photo_sorted_by_date(page, page_size, starting_year, ending_year)
+        public_galleries = GalleryDAO().find_all_public_galleries_sorted_by_date(page, page_size, starting_year, ending_year)
 
         gallery_list =[]
 
         for gallery in public_galleries:
-            list_of_files = list(filter(lambda file: not file.pending, gallery.files))
-            if list_of_files:
-                i = random.randint(0, len(list_of_files)-1)
-                encoded_string = FileService.get_base64_encoding_full(list_of_files[i])
-            else:
-                encoded_string = ""
+            if GalleryService.is_photo_gallery(gallery):
+                list_of_files = list(filter(lambda file: not file.pending, gallery.files))
+                if list_of_files:
+                    i = random.randint(0, len(list_of_files)-1)
+                    encoded_string = FileService.get_base64_encoding_full(list_of_files[i])
+                else:
+                    encoded_string = ""
+
+            elif GalleryService.is_video_gallery(gallery):
+                cover_image = FileDAO().get_cover_image_of_video_gallery(gallery)
+                if cover_image is not None:
+                    encoded_string = FileService.get_base64_encoding_full(cover_image)
+                else:
+                    encoded_string = ""
+
             gallery_list.append({
                 "name": gallery.name,
                 "slug": gallery.slug,
                 "image": encoded_string,
                 "description": gallery.description
             })
-        data =  {
+        return {
                     "galleries": gallery_list
-                }
-        return data, 200
+                }, 200

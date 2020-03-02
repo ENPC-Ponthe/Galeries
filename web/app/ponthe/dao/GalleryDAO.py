@@ -75,6 +75,11 @@ class GalleryDAO(ResourceDAO):
         else:
             return []
         return galleries.order_by(desc(Gallery.created))
+    
+    @staticmethod
+    def find_all_public_galleries_sorted_by_date(page=None, page_size=None, starting_year=None, ending_year=None):
+        galleries = GalleryDAO.all_public_sorted_by_date(page, page_size, starting_year, ending_year)
+        return query_with_offset(galleries, page, page_size)
 
 
     # Get all public photo galleries
