@@ -3,6 +3,11 @@ import os
 from .. import app, db
 from ..dao import FileDAO, ReactionDAO
 from ..models import User, ReactionEnum, Reaction
+from ..services import FileService
+
+
+SIZE_LARGE_THUMB = "630x500"
+
 
 class ReactionService():
     @staticmethod
@@ -61,3 +66,33 @@ class ReactionService():
         else :
             own_reaction_type = None
         return own_reaction_type
+
+
+    @staticmethod
+    def format_reaction_to_json(reaction: Reaction):
+        reaction_type = ReactionService.get_enum_reaction_name(reaction.type)
+        file = reaction.resource
+        encoded_string = FileService.get_base64_encoding_thumb(file, SIZE_LARGE_THUMB)
+        gallery_of_file = file.gallery
+        return {
+            "own_reaction": reaction_type,
+            "name": gallery_of_file.name,
+            "file_path": file.file_path,
+            "image": encoded_string
+        }
+    
+    @staticmethod
+    def format_reactions_to_json(reactions: List[Reaction]):
+        list_of_reactions = []
+        for reaction of reactions:
+            reaction_type = ReactionService.get_enum_reaction_name(reaction.type)
+            file = reaction.resource
+            encoded_string = FileService.get_base64_encoding_thumb(file, SIZE_LARGE_THUMB)
+            gallery_of_file = file.gallery
+            list_of_reactions.append({
+                "own_reaction": reaction_type,
+                "name": gallery_of_file.name,
+                "file_path": file.file_path,
+                "image": encoded_string
+            })
+        return list_of_reactions
