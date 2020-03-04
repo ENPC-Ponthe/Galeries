@@ -62,5 +62,6 @@ class GetVideoData(Resource):
 
         return {
             "name": gallery.name,
-            "description": gallery.description
+            "description": gallery.description,
+            "private": gallery.private
             }, 200
