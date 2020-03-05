@@ -47,15 +47,14 @@ class GetAllUserReactions(Resource):
         page = request.json.get("page")
         page_size = request.json.get("page_size")
 
-        reactions = ReactionDAO().find_by_user(current_user, page, page_size)
-        number_of_reactions = ReactionDAO().count_all_by_user(current_user)
+        reactions = ReactionDAO().find_all_reactions_on_photos_by_user(current_user, page, page_size)
+        number_of_reactions = ReactionDAO().count_all_reactions_on_photos_by_user(current_user)
 
         list_of_reactions = ReactionService.format_reactions_to_json(reactions)
 
         return {
             "number_of_reactions": number_of_reactions,
-            "reactions": list_of_reactions,
-            "gallery": reactions[0].gallery.name
+            "reactions": list_of_reactions
         }, 200
 
 
@@ -71,7 +70,7 @@ class GetRandomUserReactions(Resource):
         '''Get random pictures among those the user reacted to'''
         number_of_pics = request.json.get("number_of_pics")
 
-        all_reactions = ReactionDAO().find_all_by_user(current_user)
+        all_reactions = ReactionDAO().find_all_reactions_on_photos_by_user(current_user)
         list_of_reactions = list(all_reactions)
 
         if number_of_pics > len(list_of_reactions):

@@ -6,7 +6,7 @@ from . import api
 from ... import app
 from ...dao import GalleryDAO, FileDAO
 from ...services import UserService
-from ...services import FileService
+from ...services import FileService, ReactionService
 
 
 SIZE_LARGE_THUMB = "630x500"
@@ -37,6 +37,10 @@ class GetFilmography(Resource):
             if cover_image is not None:
                 encoded_string = FileService.get_base64_encoding_thumb(cover_image, SIZE_LARGE_THUMB)
                 gallery_data["image"] = encoded_string
+            
+            video = FileDAO().get_video_from_gallery_slug(gallery.slug)
+            if video is not None:
+                gallery_data["video_slug"] = video.slug
 
             video_galleries_data.append(gallery_data)
 
@@ -65,10 +69,15 @@ class GetVideoData(Resource):
         video = FileDAO().get_video_from_gallery_slug(gallery.slug)
         has_video = video is not None
 
+        own_reaction_type = ReactionService.get_user_reaction_type_by_slug(video.slug, current_user)
+        all_reactions = ReactionService.count_reactions_by_image_slug(video.slug)
+
         return {
             "name": gallery.name,
             "description": gallery.description,
             "private": gallery.private,
             "has_cover_image": has_cover_image,
-            "has_video": has_video
+            "has_video": has_video,
+            "own_reaction": own_reaction_type,
+            "all_reactions": all_reactions
             }, 200
