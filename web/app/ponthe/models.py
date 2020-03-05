@@ -220,6 +220,10 @@ class Reaction(TimestampMixin, db.Model):   # relation many-to-many type Slack, 
     @property
     def gallery(self):
         return self.resource.gallery
+    
+    @property
+    def gallery_type(self):
+        return self.gallery.type
 
 
 class Comment(Resource):
