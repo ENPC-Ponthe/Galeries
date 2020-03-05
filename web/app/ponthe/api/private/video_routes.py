@@ -60,8 +60,15 @@ class GetVideoData(Resource):
 
         gallery = GalleryDAO().find_by_slug(gallery_slug)
 
+        cover_image = FileDAO().get_cover_image_of_video_gallery(gallery)
+        has_cover_image = cover_image is not None
+        video = FileDAO().get_video_from_gallery_slug(gallery.slug)
+        has_video = video is not None
+
         return {
             "name": gallery.name,
             "description": gallery.description,
-            "private": gallery.private
+            "private": gallery.private,
+            "has_cover_image": has_cover_image,
+            "has_video" = has_video
             }, 200
