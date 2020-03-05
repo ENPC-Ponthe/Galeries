@@ -68,6 +68,10 @@ class GetVideoData(Resource):
         has_cover_image = cover_image is not None
         video = FileDAO().get_video_from_gallery_slug(gallery.slug)
         has_video = video is not None
+        if video is not None:
+            video_slug = video.slug
+        else:
+            video_slug = ""
 
         own_reaction_type = ReactionService.get_user_reaction_type_by_slug(video.slug, current_user)
         all_reactions = ReactionService.count_reactions_by_image_slug(video.slug)
@@ -78,6 +82,7 @@ class GetVideoData(Resource):
             "private": gallery.private,
             "has_cover_image": has_cover_image,
             "has_video": has_video,
+            "video_slug": video_slug,
             "own_reaction": own_reaction_type,
             "all_reactions": all_reactions
             }, 200
