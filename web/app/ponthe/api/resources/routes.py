@@ -13,7 +13,7 @@ from ...services import FileService
 from ...dao import FileDAO, GalleryDAO
 
 ASSET_FOLDER = app.config['ASSET_ROOT']
-
+SIZE_LARGE_THUMB = "630x500"
 
 @api.route('/get-video/<gallery_slug>')
 @api.doc(params={
@@ -67,7 +67,7 @@ class GetVideoCoverImage(Resource):
         gallery = GalleryDAO().find_by_slug(gallery_slug)
         cover_image = FileDAO().get_cover_image_of_video_gallery(gallery)
         if cover_image is not None:
-            thumb_path = FileDAO().get_thumb_path_or_create_it(cover_image)
+            thumb_path = FileDAO().get_thumb_path_or_create_it(cover_image, SIZE_LARGE_THUMB)
             return send_file(
                 open(thumb_path, "rb"),
                 mimetype='image/' + cover_image.extension
