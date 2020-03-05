@@ -70,5 +70,5 @@ class GetVideoData(Resource):
             "description": gallery.description,
             "private": gallery.private,
             "has_cover_image": has_cover_image,
-            "has_video" = has_video
+            "has_video": has_video
             }, 200
