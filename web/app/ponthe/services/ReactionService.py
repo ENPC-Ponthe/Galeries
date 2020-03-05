@@ -74,9 +74,11 @@ class ReactionService():
         reaction_type = ReactionService.get_enum_reaction_name(reaction.type)
         file = reaction.resource
         encoded_string = FileService.get_base64_encoding_thumb(file, SIZE_LARGE_THUMB)
+        all_reactions_for_file = ReactionService.count_reactions_by_image_slug(file.slug)
         gallery_of_file = file.gallery
         return {
             "own_reaction": reaction_type,
+            "all_reactions": all_reactions_for_file,
             "name": gallery_of_file.name,
             "file_path": file.file_path,
             "image": encoded_string
@@ -86,14 +88,5 @@ class ReactionService():
     def format_reactions_to_json(reactions: List[Reaction]):
         list_of_reactions = []
         for reaction in reactions:
-            reaction_type = ReactionService.get_enum_reaction_name(reaction.type)
-            file = reaction.resource
-            encoded_string = FileService.get_base64_encoding_thumb(file, SIZE_LARGE_THUMB)
-            gallery_of_file = file.gallery
-            list_of_reactions.append({
-                "own_reaction": reaction_type,
-                "name": gallery_of_file.name,
-                "file_path": file.file_path,
-                "image": encoded_string
-            })
+            list_of_reactions.append(ReactionService.format_reaction_to_json(reaction))
         return list_of_reactions
