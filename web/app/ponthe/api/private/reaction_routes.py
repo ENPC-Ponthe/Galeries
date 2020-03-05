@@ -54,7 +54,8 @@ class GetAllUserReactions(Resource):
 
         return {
             "number_of_reactions": number_of_reactions,
-            "reactions": list_of_reactions
+            "reactions": list_of_reactions,
+            "gallery": reactions[0].gallery.name
         }, 200
 
 

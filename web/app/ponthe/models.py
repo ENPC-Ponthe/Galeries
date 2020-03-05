@@ -216,6 +216,10 @@ class Reaction(TimestampMixin, db.Model):   # relation many-to-many type Slack, 
             self.resource = resource
         self.type = type
         self.updated = datetime.utcnow()
+    
+    @property
+    def gallery(self):
+        return Gallery.query.filter_by(slug=self.resource.slug).first()
 
 
 class Comment(Resource):
