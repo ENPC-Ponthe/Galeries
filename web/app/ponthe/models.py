@@ -219,7 +219,7 @@ class Reaction(TimestampMixin, db.Model):   # relation many-to-many type Slack, 
     
     @property
     def gallery(self):
-        return Gallery.query.filter_by(slug=self.resource.slug).first()
+        return self.resource.gallery
 
 
 class Comment(Resource):
