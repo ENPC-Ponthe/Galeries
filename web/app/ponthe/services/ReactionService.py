@@ -81,8 +81,7 @@ class ReactionService():
             "all_reactions": all_reactions_for_file,
             "name": gallery_of_file.name,
             "file_path": file.file_path,
-            "image": encoded_string,
-            "gallery_type": reaction.gallery_type.name
+            "image": encoded_string
         }
     
     @staticmethod
