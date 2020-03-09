@@ -51,12 +51,14 @@ class ReactionDAO:
     # All reactions on photos
     @staticmethod
     def all_on_photos_by_user(user: User, page=None, page_size=None):
-        query = Reaction.query.filter_by(user=user).filter(Reaction.gallery_type == GalleryTypeEnum.PHOTO).order_by(desc(Reaction.updated))
+        query = Reaction.query.filter_by(user=user).order_by(desc(Reaction.updated))
         return query_with_offset(query, page, page_size)
 
     @staticmethod
     def find_all_reactions_on_photos_by_user(user: User, page=None, page_size=None):
-        return ReactionDAO().all_on_photos_by_user(user, page, page_size).all()
+        all_reactions = ReactionDAO().all_on_photos_by_user(user, page, page_size).all()
+        filtered_reactions = list(filter(lambda reaction: reaction.gallery_type is GalleryTypeEnum.PHOTO, all_reactions))
+        return filtered_reactions
     
     @staticmethod
     def count_all_reactions_on_photos_by_user(user: User):
