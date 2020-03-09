@@ -70,11 +70,12 @@ class GetVideoData(Resource):
         has_video = video is not None
         if video is not None:
             video_slug = video.slug
+            own_reaction_type = ReactionService.get_user_reaction_type_by_slug(video.slug, current_user)
+            all_reactions = ReactionService.count_reactions_by_image_slug(video.slug)
         else:
             video_slug = ""
-
-        own_reaction_type = ReactionService.get_user_reaction_type_by_slug(video.slug, current_user)
-        all_reactions = ReactionService.count_reactions_by_image_slug(video.slug)
+            own_reaction_type = ""
+            all_reactions = {}
 
         return {
             "name": gallery.name,
