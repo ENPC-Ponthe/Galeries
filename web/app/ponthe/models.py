@@ -454,6 +454,12 @@ class File(Resource):
     @property
     def file_path(self):
         return f"{self.gallery.slug}/{self.slug}.{self.extension}"
+    
+    @property
+    def file_path_resolution(self, resolution=None):
+        if res is None:
+            return f"{self.gallery.slug}/{self.slug}.{self.extension}"
+        return f"{self.gallery.slug}/{self.slug}_{resolution}.{self.extension}"
 
     def __repr__(self):
         return '<File {}>'.format(self.file_path)
