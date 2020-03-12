@@ -1,7 +1,5 @@
 import random
-import base64
 import os
-import time
 
 from flask_jwt_extended import current_user
 from flask_restplus import Resource
@@ -14,14 +12,12 @@ from . import api
 from ... import app
 from ...dao import YearDAO, EventDAO, GalleryDAO, FileDAO
 from ...services import GalleryService, ReactionService, UserService
-from ...file_helper import is_allowed_file, get_base64_encoding
+from ...file_helper import is_allowed_file, get_base64_encoding, is_image, is_video, create_file_slug
 from ...services import FileService
-from ...models import GalleryTypeEnum
 
 
 UPLOAD_FOLDER = app.config['MEDIA_ROOT']
 SIZE_LARGE_THUMB = "630x500"
-
 
 @api.route('/file-upload/<gallery_slug>')
 @api.doc(params={
@@ -41,9 +37,13 @@ class Upload(Resource):
         file = request.files['file']
 
         if file and is_allowed_file(file.filename):
-            filename = secure_filename(base64.b64encode(bytes(str(time.time()) + file.filename,'utf-8')).decode('utf-8')+ "." + file.filename.rsplit('.', 1)[1].lower())
-            file.save(os.path.join(UPLOAD_FOLDER, filename))
-            FileService.create(os.path.join(UPLOAD_FOLDER, filename), filename, gallery_slug, current_user)
+            if is_image(file.filename):
+                file_slug = create_file_slug(file)
+                filename = secure_filename(file_slug + "." + file.filename.rsplit('.', 1)[1].lower())
+                file.save(os.path.join(UPLOAD_FOLDER, filename))
+                FileService.create(os.path.join(UPLOAD_FOLDER, filename), filename, gallery_slug, current_user)
+            if is_video(file.filename):
+                FileService.save_video_in_all_resolutions(file, gallery_slug, current_user)
             return {
                 "msg": "File has been saved"
             }, 200
