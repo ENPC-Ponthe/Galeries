@@ -71,7 +71,7 @@ class FileService:
             original_video = mp.VideoFileClip(original_moved_file_path)
             resized_filename = get_secure_videoname(saved_file.slug, file, resolution)
             resized_file_path = os.path.join(gallery_folder, resized_filename)
-            video_resized = original_video.resize(width=resolution)
+            video_resized = original_video.resize(width=int(resolution))
             video_resized.write_videofile(resized_file_path)
 
     @staticmethod
