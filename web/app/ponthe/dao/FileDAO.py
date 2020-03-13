@@ -3,7 +3,7 @@ from sqlalchemy import desc
 
 from .ResourceDAO import ResourceDAO
 from .. import app, db, thumb
-from ..file_helper import delete_file
+from ..file_helper import delete_file, is_video
 from ..filters import thumb_filter, category_thumb_filter
 from ..models import File, Gallery, FileTypeEnum, Year
 
@@ -12,7 +12,7 @@ import os
 UPLOAD_FOLDER = app.config['MEDIA_ROOT']
 THUMB_FOLDER = app.config['THUMBNAIL_MEDIA_THUMBNAIL_ROOT']
 DEFAULT_SIZE_THUMB = "226x226"
-
+VIDEO_RESOLUTIONS = ["720", "480", "360"] # Default video is uploaded as 1080p
 
 def query_with_offset(query, page=None, page_size=None):
     if page_size is None:
@@ -58,6 +58,10 @@ class FileDAO(ResourceDAO):
         delete_file(thumb_file_path)
         db.session.delete(file)
         db.session.commit()
+
+        if is_video(file.filename):
+            for resolution in VIDEO_RESOLUTIONS:
+                delete_file(os.path.join(UPLOAD_FOLDER, file.file_path_resolution(resolution)))
 
     def delete_by_slug(self, slug: str):
         self.delete(self.find_by_slug(slug))
