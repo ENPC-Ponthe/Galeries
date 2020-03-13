@@ -454,8 +454,7 @@ class File(Resource):
     @property
     def file_path(self):
         return f"{self.gallery.slug}/{self.slug}.{self.extension}"
-    
-    @property
+
     def file_path_resolution(self, resolution=None):
         if resolution is None:
             return f"{self.gallery.slug}/{self.slug}.{self.extension}"
