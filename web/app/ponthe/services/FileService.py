@@ -52,6 +52,7 @@ class FileService:
         db.session.commit()
         if new_file.type == FileTypeEnum.IMAGE:
             thumb_filter(new_file)
+        return new_file
         
     @staticmethod
     def save_video_in_all_resolutions(file: File, gallery_slug: str, user: User):
@@ -61,15 +62,15 @@ class FileService:
         filename = get_secure_videoname(file_slug, file)
         original_file_path = os.path.join(UPLOAD_FOLDER, filename)
         file.save(original_file_path)
-        FileService.create(original_file_path, filename, gallery_slug, user)
+        saved_file = FileService.create(original_file_path, filename, gallery_slug, user)
 
         gallery_folder = os.path.join(UPLOAD_FOLDER, gallery_slug)
-        original_moved_file_path = os.path.join(gallery_folder, filename)
+        original_moved_file_path = os.path.join(gallery_folder, saved_file.filename)
 
         for resolution in VIDEO_RESOLUTIONS:
             original_video = mp.VideoFileClip(original_moved_file_path)
-            resized_filename = get_secure_videoname(file_slug, file, resolution)
-            resized_file_path = os.path.join(UPLOAD_FOLDER, resized_filename)
+            resized_filename = get_secure_videoname(saved_file.slug, file, resolution)
+            resized_file_path = os.path.join(gallery_folder, resized_filename)
             video_resized = original_video.resize(width=resolution)
             video_resized.write_videofile(resized_file_path)
 
