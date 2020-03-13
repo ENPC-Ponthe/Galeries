@@ -79,7 +79,7 @@ class FileService:
         return os.path.join(UPLOAD_FOLDER, file.file_path)
     
     @staticmethod
-    def get_absolute_video_file_path(file: File, resolution=None):
+    def get_absolute_video_file_path(file: File, resolution="1080"):
         return os.path.join(UPLOAD_FOLDER, file.file_path_resolution(resolution))
 
     @classmethod
