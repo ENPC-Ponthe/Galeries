@@ -461,6 +461,8 @@ class File(Resource):
             return f"{self.gallery.slug}/{self.slug}.{self.extension}"
         elif resolution is "720" or resolution is "480" or resolution is "360":
             return f"{self.gallery.slug}/{self.slug}_{resolution}.{self.extension}"
+        else:
+            return "blabla"
 
     def __repr__(self):
         return '<File {}>'.format(self.file_path)
