@@ -80,8 +80,8 @@ class FileService:
     
     @staticmethod
     def get_absolute_video_file_path(file: File, resolution="1080"):
-        app.logger.info("Resolution asked FileService: ", resolution)
-        return os.path.join(UPLOAD_FOLDER, file.file_path_resolution(resolution))
+        app.logger.warning("Resolution asked FileService: ", resolution)
+        return os.path.join(UPLOAD_FOLDER, file.file_path_resolution(resolution=resolution))
 
     @classmethod
     def get_base64_encoding_full(cls, file: File):
