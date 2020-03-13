@@ -61,10 +61,13 @@ class FileService:
         filename = get_secure_videoname(file_slug, file)
         original_file_path = os.path.join(UPLOAD_FOLDER, filename)
         file.save(original_file_path)
-        FileService.create(os.path.join(UPLOAD_FOLDER, filename), filename, gallery_slug, user)
+        FileService.create(original_file_path, filename, gallery_slug, user)
+
+        gallery_folder = os.path.join(UPLOAD_FOLDER, gallery_slug)
+        original_moved_file_path = os.path.join(gallery_folder, filename)
 
         for resolution in VIDEO_RESOLUTIONS:
-            original_video = mp.VideoFileClip(original_file_path)
+            original_video = mp.VideoFileClip(original_moved_file_path)
             resized_filename = get_secure_videoname(file_slug, file, resolution)
             resized_file_path = os.path.join(UPLOAD_FOLDER, resized_filename)
             video_resized = original_video.resize(width=resolution)
