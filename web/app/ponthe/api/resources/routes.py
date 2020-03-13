@@ -44,6 +44,8 @@ class GetVideo(Resource):
     def get(self, resolution: str, gallery_slug: str):
         '''Get the video which is in some gallery with slug gallery_slug'''
         video = FileDAO.get_video_from_gallery_slug(gallery_slug)
+        app.logger.info("Resolution asked: ", resolution)
+        app.logger.info("Resolution asked type: ", type(resolution))
 
         return send_file(
             open(FileService.get_absolute_video_file_path(video, resolution), "rb"),
