@@ -455,7 +455,7 @@ class File(Resource):
     def file_path(self):
         return f"{self.gallery.slug}/{self.slug}.{self.extension}"
 
-    def file_path_resolution(self, resolution=None):
+    def file_path_resolution(self, resolution="1080"):
         if resolution is "1080":
             return f"{self.gallery.slug}/{self.slug}.{self.extension}"
         return f"{self.gallery.slug}/{self.slug}_{resolution}.{self.extension}"
