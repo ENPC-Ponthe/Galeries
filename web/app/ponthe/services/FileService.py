@@ -3,13 +3,14 @@ from werkzeug.utils import secure_filename
 import moviepy.editor as mp
 
 from .. import app, db
-from ..dao import FileDAO, GalleryDAO, VIDEO_RESOLUTIONS
+from ..dao import FileDAO, GalleryDAO
 from ..models import File, User, FileTypeEnum
 from ..file_helper import create_folder, move_file, is_image, is_video, get_extension, get_base64_encoding, create_file_slug
 from ..filters import thumb_filter
 
 UPLOAD_FOLDER = app.config['MEDIA_ROOT']
 DEFAULT_SIZE_THUMB = "226x226"
+VIDEO_RESOLUTIONS = ["720", "480", "360"] # Default video is uploaded as 1080p
 
 def get_secure_videoname(file_slug: str, file: File, resolution="1080"):
     return secure_filename(file_slug + "_" + resolution + "." + file.filename.rsplit('.', 1)[1].lower())
