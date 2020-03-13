@@ -457,6 +457,7 @@ class File(Resource):
 
     def file_path_resolution(self, resolution="1080"):
         app.logger.warning("Resolution asked File db: ", resolution)
+        app.logger.warning("Is 1080px ?", resolution is "1080")
         if resolution is "1080":
             return f"{self.gallery.slug}/{self.slug}.{self.extension}"
         elif resolution is "720" or resolution is "480" or resolution is "360":
