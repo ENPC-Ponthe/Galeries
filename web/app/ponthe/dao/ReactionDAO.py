@@ -3,13 +3,13 @@ from sqlalchemy import desc
 from ..models import Reaction, User, Resource, GalleryTypeEnum
 
 
-def query_with_offset(query, page=None, page_size=None):
+def list_with_offset(full_list, page=None, page_size=None):
     if page_size is None:
-        return query
+        return full_list
     else:
         if page is None:
             page = 1
-        return query.offset((page - 1) * page_size).limit(page_size)
+        return full_list[(page * page_size):((page + 1) * page_size)]
 
 
 class ReactionDAO:
@@ -50,15 +50,15 @@ class ReactionDAO:
 
     # All reactions on photos
     @staticmethod
-    def all_on_photos_by_user(user: User, page=None, page_size=None):
-        query = Reaction.query.filter_by(user=user).order_by(desc(Reaction.updated))
-        return query_with_offset(query, page, page_size)
+    def all_on_photos_by_user(user: User):
+        all_user_reactions = Reaction.query.filter_by(user=user).order_by(desc(Reaction.updated)).all()
+        filtered_reactions = list(filter(lambda reaction: reaction.gallery_type is GalleryTypeEnum.PHOTO, all_user_reactions))
+        return filtered_reactions
 
     @staticmethod
     def find_all_reactions_on_photos_by_user(user: User, page=None, page_size=None):
-        all_reactions = ReactionDAO().all_on_photos_by_user(user, page, page_size).all()
-        filtered_reactions = list(filter(lambda reaction: reaction.gallery_type is GalleryTypeEnum.PHOTO, all_reactions))
-        return filtered_reactions
+        all_reactions = ReactionDAO().all_on_photos_by_user(user)
+        return list_with_offset(all_reactions, page, page_size)
     
     @staticmethod
     def count_all_reactions_on_photos_by_user(user: User):
