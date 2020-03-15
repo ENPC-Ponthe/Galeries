@@ -4,7 +4,7 @@ import datetime
 import json
 
 from flask_restplus import Resource
-from flask import request, redirect, send_file
+from flask import request, redirect, send_file, Response, stream_with_context
 from itsdangerous import SignatureExpired, BadSignature
 
 from . import api
@@ -45,10 +45,11 @@ class GetVideo(Resource):
         '''Get the video which is in some gallery with slug gallery_slug'''
         video = FileDAO.get_video_from_gallery_slug(gallery_slug)
 
-        return send_file(
-            open(FileService.get_absolute_video_file_path(video, resolution), "rb"),
-            mimetype='video/' + video.extension
-            )
+        return Response(stream_with_context(FileService.generate_chunks_video(video, resolution)), mimetype = 'video/' + video.extension)
+        # return send_file(
+        #     open(FileService.get_absolute_video_file_path(video, resolution), "rb"),
+        #     mimetype='video/' + video.extension
+        #     )
 
 
 @api.route('/get-video-cover-image/<gallery_slug>')
