@@ -9,7 +9,7 @@ def list_with_offset(full_list, page=None, page_size=None):
     else:
         if page is None:
             page = 1
-        return full_list[(page * page_size):((page + 1) * page_size)]
+        return full_list[((page - 1) * page_size):(page * page_size)]
 
 
 class ReactionDAO:
