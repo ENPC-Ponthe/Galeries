@@ -7,7 +7,6 @@ from flask import request
 from . import api
 from ...dao import ReactionDAO
 from ...services import ReactionService
-from ...services import FileService
 
 
 @api.route('/update-reaction')
