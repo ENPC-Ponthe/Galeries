@@ -4,15 +4,16 @@ import datetime
 import json
 
 from flask_restplus import Resource
-from flask import request, redirect
+from flask import request, redirect, send_file
+from flask_login import login_user
 from flask_jwt_extended import JWTManager, create_access_token
 from itsdangerous import SignatureExpired, BadSignature
 
 from . import api
 from ... import db, app
 from ...models import User
-from ...services import UserService, CasLoginService
-from ...dao import UserDAO
+from ...services import UserService, CasLoginService, FileService
+from ...dao import UserDAO, FileDAO
 
 
 jwt = JWTManager(app)
@@ -71,6 +72,7 @@ class Login(Resource):
             else:
                 return {"msg": "Compte en attente de confirmation par email"}, 403
         if user.check_password(password):
+            login_user(user)
             app.logger.debug("User authenticating on API :", user)
             access_token = create_access_token(identity=user)
             return {"token": access_token}, 200

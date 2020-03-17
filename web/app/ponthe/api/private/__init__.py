@@ -11,4 +11,4 @@ def before_request():
 
 api = Api(private_api)
 
-from . import routes
+from . import routes, reaction_routes, messages_routes, video_routes, members_routes, user_routes

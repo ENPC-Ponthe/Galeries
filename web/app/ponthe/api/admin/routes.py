@@ -189,14 +189,14 @@ class DeleteEvent(Resource):
         }, 201
 
 
-@api.route('/get-private-galleries')
-class GetPrivateGalleries(Resource):
+@api.route('/get-private-photo-galleries')
+class GetPrivatePhotoGalleries(Resource):
     @api.response(200, 'Success')
     @api.response(403, 'Not authorized - account not valid')
     def get(self):
-        '''Get the list of public galleries of all years'''
+        '''Get the list of private photo galleries of all years'''
         gallery_list = []
-        private_galleries = GalleryDAO().find_private()
+        private_galleries = GalleryDAO().find_all_private_photo()
         for gallery in private_galleries:
             list_of_files = list(filter(lambda file: not file.pending, gallery.files))
             if list_of_files:
@@ -213,6 +213,32 @@ class GetPrivateGalleries(Resource):
             "galleries": gallery_list
         }
         return data, 200
+
+
+@api.route('/get-private-video-galleries')
+class GetPrivateVideoGalleries(Resource):
+    @api.response(200, 'Success')
+    @api.response(403, 'Not authorized - account not valid')
+    def get(self):
+        '''Get the list of private video galleries of all years'''
+        gallery_list = []
+        private_galleries = GalleryDAO().find_all_private_video()
+        for gallery in private_galleries:
+            gallery_data = {
+                "name": gallery.name,
+                "slug": gallery.slug
+            }
+
+            cover_image = FileDAO().get_cover_image_of_video_gallery(gallery)
+            if cover_image is not None:
+                encoded_string = FileService.get_base64_encoding_thumb(cover_image)
+                gallery_data["image"] = encoded_string
+
+            gallery_list.append(gallery_data)
+
+        return {
+            "galleries": gallery_list
+        }, 200
 
 
 @api.route('/files/not-moderated')
@@ -280,7 +306,7 @@ class Gallery(Resource):
 @api.doc(params={
     'gallery_slugs': 'List of slugs of the galleries to be set private'
 })
-class MakeGalleryPublic(Resource):
+class MakeGalleryPrivate(Resource):
     @api.response(200, 'Success')
     @api.response(400, 'Request incorrect - JSON not valid')
     @api.response(403, 'Not authorized - account not valid')

@@ -1,5 +1,6 @@
 import base64
 import os, shutil
+import time
 from ponthe import app
 
 
@@ -97,3 +98,6 @@ def get_extension(filename: str):
 def get_base64_encoding(file_path: str):
     with open(file_path, "rb") as image_file:
         return "data:image/" + get_extension(file_path) + ";base64," + str(base64.b64encode(image_file.read()).decode('utf-8'))
+
+def create_file_slug(file):
+    return base64.b64encode(bytes(str(time.time()) + file.filename,'utf-8')).decode('utf-8')
