@@ -11,7 +11,6 @@ from ..filters import thumb_filter
 UPLOAD_FOLDER = app.config['MEDIA_ROOT']
 DEFAULT_SIZE_THUMB = "226x226"
 VIDEO_RESOLUTIONS = ["720", "480", "360"] # Default video is uploaded as 1080p
-CHUNK_SIZE = 100000
 
 def get_secure_videoname(file_slug: str, file: File, resolution="1080"):
     return secure_filename(file_slug + "_" + resolution + "." + file.filename.rsplit('.', 1)[1].lower())
@@ -90,17 +89,3 @@ class FileService:
     @staticmethod
     def get_base64_encoding_thumb(file: File, size=DEFAULT_SIZE_THUMB):
         return get_base64_encoding(FileDAO.get_thumb_path_or_create_it(file, size))
-
-    @staticmethod
-    def generate_chunks_video(video: File, resolution="1080"):
-        absolute_file_path = FileService.get_absolute_video_file_path(video, resolution)
-        file_size = os.stat(absolute_file_path).st_size
-
-        number_of_chunks = 0
-        with open(absolute_file_path, "rb") as vid:
-            while True:
-                if number_of_chunks * CHUNK_SIZE > file_size:
-                    break
-                vid.seek(number_of_chunks * CHUNK_SIZE)
-                chunk = vid.read(CHUNK_SIZE)
-                yield chunk

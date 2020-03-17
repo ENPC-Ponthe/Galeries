@@ -5,8 +5,7 @@ from flask import request
 from . import api
 from ... import app
 from ...dao import GalleryDAO, FileDAO
-from ...services import UserService
-from ...services import FileService, ReactionService
+from ...services import FileService, ReactionService, UserService
 
 
 SIZE_LARGE_THUMB = "630x500"
@@ -66,8 +65,10 @@ class GetVideoData(Resource):
 
         cover_image = FileDAO().get_cover_image_of_video_gallery(gallery)
         has_cover_image = cover_image is not None
+
         video = FileDAO().get_video_from_gallery_slug(gallery.slug)
         has_video = video is not None
+
         if video is not None:
             video_slug = video.slug
             own_reaction_type = ReactionService.get_user_reaction_type_by_slug(video.slug, current_user)

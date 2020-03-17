@@ -7,7 +7,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 import codecs, translitcodec, enum, re, string, random
 
 from .file_helper import split_filename
-from . import db, app
+from . import db
 
 _punct_re = re.compile(r'[\t !"#$%&\'()*\-/<=>?@\[\\\]^_`{|},.]+')  #   Les slug DSI enlève les ' au lieu de les remplacer par un -
 ALPHANUMERIC_LIST = string.ascii_letters+string.digits
@@ -460,8 +460,6 @@ class File(Resource):
             return f"{self.gallery.slug}/{self.slug}.{self.extension}"
         elif resolution == "720" or resolution == "480" or resolution == "360":
             return f"{self.gallery.slug}/{self.slug}_{resolution}.{self.extension}"
-        else:
-            return "blabla"
 
     def __repr__(self):
         return '<File {}>'.format(self.file_path)

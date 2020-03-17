@@ -1,6 +1,6 @@
 import os
 
-from ..models import User, Gallery, FileTypeEnum, GalleryTypeEnum
+from ..models import User, Gallery, GalleryTypeEnum
 from ..file_helper import delete_folder
 from .FileService import FileService
 from ..dao import GalleryDAO, YearDAO, EventDAO, FileDAO

@@ -216,7 +216,7 @@ class GetPrivatePhotoGalleries(Resource):
 
 
 @api.route('/get-private-video-galleries')
-class GetPrivatePhotoGalleries(Resource):
+class GetPrivateVideoGalleries(Resource):
     @api.response(200, 'Success')
     @api.response(403, 'Not authorized - account not valid')
     def get(self):
@@ -306,7 +306,7 @@ class Gallery(Resource):
 @api.doc(params={
     'gallery_slugs': 'List of slugs of the galleries to be set private'
 })
-class MakeGalleryPublic(Resource):
+class MakeGalleryPrivate(Resource):
     @api.response(200, 'Success')
     @api.response(400, 'Request incorrect - JSON not valid')
     @api.response(403, 'Not authorized - account not valid')
