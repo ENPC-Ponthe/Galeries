@@ -41,6 +41,12 @@ class FileTypeEnum(enum.Enum):
     VIDEO = 2
 
 
+class GalleryTypeEnum(enum.Enum):
+    PHOTO = 1
+    VIDEO = 2
+    MIXED = 3
+
+
 class GenderEnum(enum.Enum):
     M = 1
     F = 2
@@ -209,6 +215,15 @@ class Reaction(TimestampMixin, db.Model):   # relation many-to-many type Slack, 
         elif resource:
             self.resource = resource
         self.type = type
+        self.updated = datetime.utcnow()
+    
+    @property
+    def gallery(self):
+        return self.resource.gallery
+    
+    @property
+    def gallery_type(self):
+        return self.gallery.type
 
 
 class Comment(Resource):
@@ -349,8 +364,9 @@ class Gallery(Resource):
     cover_image = db.relationship('File', backref='galleries', foreign_keys=[cover_image_id])
     description = db.Column(db.String(1024), nullable=True)
     private = db.Column(db.Boolean, nullable=False, default=False)
+    type = db.Column(db.Enum(GalleryTypeEnum), nullable=False)
 
-    def __init__(self, year=None, year_id=None, event=None, event_id=None, cover_image=None, cover_image_id=None, description=None, private=None, **kwargs):
+    def __init__(self, year=None, year_id=None, event=None, event_id=None, cover_image=None, cover_image_id=None, description=None, private=None, type=None, **kwargs):
         super().__init__(**kwargs)
         self.private = private
         if year_id:
@@ -366,6 +382,7 @@ class Gallery(Resource):
         elif cover_image:
             self.cover_image = cover_image
         self.description = description
+        self.type = type
 
     @property
     def cover(self):
@@ -437,6 +454,12 @@ class File(Resource):
     @property
     def file_path(self):
         return f"{self.gallery.slug}/{self.slug}.{self.extension}"
+
+    def file_path_resolution(self, resolution="1080"):
+        if resolution == "1080":
+            return f"{self.gallery.slug}/{self.slug}.{self.extension}"
+        elif resolution == "720" or resolution == "480" or resolution == "360":
+            return f"{self.gallery.slug}/{self.slug}_{resolution}.{self.extension}"
 
     def __repr__(self):
         return '<File {}>'.format(self.file_path)

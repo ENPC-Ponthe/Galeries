@@ -1,13 +1,19 @@
 import os
+from werkzeug.utils import secure_filename
+import moviepy.editor as mp
 
 from .. import app, db
 from ..dao import FileDAO, GalleryDAO
 from ..models import File, User, FileTypeEnum
-from ..file_helper import create_folder, move_file, is_image, is_video, get_extension, get_base64_encoding
+from ..file_helper import create_folder, move_file, is_image, is_video, get_extension, get_base64_encoding, create_file_slug
 from ..filters import thumb_filter
 
 UPLOAD_FOLDER = app.config['MEDIA_ROOT']
 DEFAULT_SIZE_THUMB = "226x226"
+VIDEO_RESOLUTIONS = ["720", "480", "360"] # Default video is uploaded as 1080p
+
+def get_secure_videoname(file_slug: str, file: File, resolution="1080"):
+    return secure_filename(file_slug + "_" + resolution + "." + file.filename.rsplit('.', 1)[1].lower())
 
 class FileService:
     @staticmethod
@@ -46,10 +52,35 @@ class FileService:
         db.session.commit()
         if new_file.type == FileTypeEnum.IMAGE:
             thumb_filter(new_file)
+        return new_file
+        
+    @staticmethod
+    def save_video_in_all_resolutions(file: File, gallery_slug: str, user: User):
+        file_slug = create_file_slug(file)
+
+        # Default uploaded video is considered as 1080p
+        filename = get_secure_videoname(file_slug, file)
+        original_file_path = os.path.join(UPLOAD_FOLDER, filename)
+        file.save(original_file_path)
+        saved_file = FileService.create(original_file_path, filename, gallery_slug, user)
+
+        gallery_folder = os.path.join(UPLOAD_FOLDER, gallery_slug)
+        original_moved_file_path = os.path.join(gallery_folder, saved_file.filename)
+
+        for resolution in VIDEO_RESOLUTIONS:
+            original_video = mp.VideoFileClip(original_moved_file_path)
+            resized_filename = get_secure_videoname(saved_file.slug, file, resolution)
+            resized_file_path = os.path.join(gallery_folder, resized_filename)
+            video_resized = original_video.resize(width=int(resolution))
+            video_resized.write_videofile(resized_file_path)
 
     @staticmethod
     def get_absolute_file_path(file: File):
         return os.path.join(UPLOAD_FOLDER, file.file_path)
+    
+    @staticmethod
+    def get_absolute_video_file_path(file: File, resolution="1080"):
+        return os.path.join(UPLOAD_FOLDER, file.file_path_resolution(resolution=resolution))
 
     @classmethod
     def get_base64_encoding_full(cls, file: File):

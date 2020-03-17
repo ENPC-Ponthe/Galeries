@@ -1,30 +1,23 @@
 import random
-import base64
 import os
-import time
-import json
 
 from flask_jwt_extended import current_user
 from flask_restplus import Resource
-from flask_mail import Message
 from sqlalchemy.orm.exc import NoResultFound
-from flask import send_file
+from flask import send_file, request
 from werkzeug.utils import secure_filename
-from flask import request
 from PIL import Image
 
 from . import api
-from ... import db, mail, app
-from ...dao import YearDAO, EventDAO, GalleryDAO, FileDAO, ReactionDAO
+from ... import app
+from ...dao import YearDAO, EventDAO, GalleryDAO, FileDAO
 from ...services import GalleryService, ReactionService, UserService
-from ...file_helper import is_allowed_file, get_base64_encoding
+from ...file_helper import is_allowed_file, get_base64_encoding, is_image, is_video, create_file_slug
 from ...services import FileService
 
 
 UPLOAD_FOLDER = app.config['MEDIA_ROOT']
-ASSET_FOLDER = app.config['ASSET_ROOT']
 SIZE_LARGE_THUMB = "630x500"
-
 
 @api.route('/file-upload/<gallery_slug>')
 @api.doc(params={
@@ -44,80 +37,16 @@ class Upload(Resource):
         file = request.files['file']
 
         if file and is_allowed_file(file.filename):
-            filename = secure_filename(base64.b64encode(bytes(str(time.time()) + file.filename,'utf-8')).decode('utf-8')+ "." + file.filename.rsplit('.', 1)[1].lower())
-            file.save(os.path.join(UPLOAD_FOLDER, filename))
-            FileService.create(os.path.join(UPLOAD_FOLDER, filename), filename, gallery_slug, current_user)
+            if is_image(file.filename):
+                file_slug = create_file_slug(file)
+                filename = secure_filename(file_slug + "." + file.filename.rsplit('.', 1)[1].lower())
+                file.save(os.path.join(UPLOAD_FOLDER, filename))
+                FileService.create(os.path.join(UPLOAD_FOLDER, filename), filename, gallery_slug, current_user)
+            if is_video(file.filename):
+                FileService.save_video_in_all_resolutions(file, gallery_slug, current_user)
             return {
                 "msg": "File has been saved"
             }, 200
-
-
-@api.route('/get-user-by-jwt')
-class GetUser(Resource):
-    @api.response(200, 'Success')
-    @api.response(403, 'Not authorized - account not valid')
-    def get(self):
-        return {
-            "firstname": current_user.firstname,
-            "lastname": current_user.lastname,
-            "email": current_user.email,
-            "admin": current_user.admin,
-            "promotion": current_user.promotion
-        }, 200
-
-
-@api.route('/materiel')
-@api.doc(params={
-    'device': 'object you would like to borrow to the club',
-    'message': 'your message'
-})
-class Materiel(Resource):
-    @api.response(200, 'Success - Mail sent')
-    @api.response(400, 'Request incorrect - JSON not valid')
-    @api.response(403, 'Not authorized - account not valid')
-    def post(self):
-        '''Send a mail to ponthe to borrow material'''
-        object = request.json.get('device')
-        message = request.json.get('message')
-        if not message:
-            return {
-                "title": "Erreur - Aucun message",
-                "body": "Veuillez saisir un message"
-            }, 400
-        msg = Message(subject=f"Demande d'emprunt de {object} par {current_user.firstname} {current_user.lastname}",
-                      body=message,
-                      sender=f"{current_user.full_name} <no-reply@ponthe.enpc.org>",
-                      recipients=['ponthe@liste.enpc.fr'])
-        mail.send(msg)
-        return {
-            "msg": "Mail envoyé !"
-        }, 200
-
-
-@api.route('/contact')
-@api.doc(params={
-    'message': 'your message'
-})
-class Contact(Resource):
-    @api.response(200, 'Success - Mail sent')
-    @api.response(400, 'Request incorrect - JSON not valid')
-    @api.response(403, 'Not authorized - account not valid')
-    def post(self):
-        '''Send a mail to ponthe to borrow material'''
-        message = request.json.get('message')
-        if not message:
-            return {
-                "title": "Erreur - Aucun message",
-                "body": "Veuillez saisir un message"
-            }, 400
-        msg = Message(subject=f"Message de la part de {current_user.firstname} {current_user.lastname}",
-                      body=message,
-                      sender=f"{current_user.full_name} <no-reply@ponthe.enpc.org>",
-                      recipients=['ponthe@liste.enpc.fr'])
-        mail.send(msg)
-        return {
-            "msg": "Mail envoyé !"
-        }, 200
 
 
 @api.route('/get-galleries-of-year/<year_slug>')
@@ -205,16 +134,13 @@ class GetAllGalleries(Resource):
     def post(self):
         page = request.json.get("page")
         page_size = request.json.get("page_size")
-        starting_year, ending_year = UserService.get_user_allowed_years(current_user.promotion)
+        starting_year, ending_year = UserService.get_user_allowed_years(current_user)
 
         '''Get the list of public galleries of all years'''
         gallery_list = []
-        if current_user.admin:
-            public_galleries = GalleryDAO().find_public_sorted_by_date(page, page_size)
-            number_of_public_galleries = GalleryDAO().count_all_public_sorted_by_date()
-        else:
-            public_galleries = GalleryDAO().find_public_sorted_by_date_filtered_by_years(starting_year, ending_year, page, page_size)
-            number_of_public_galleries = GalleryDAO().count_all_public_sorted_by_date_filtered_by_years(starting_year, ending_year)
+        public_galleries = GalleryDAO().find_all_public_photo_sorted_by_date(page, page_size, starting_year, ending_year)
+        number_of_public_image_galleries = GalleryDAO().count_all_public_photo_sorted_by_date(starting_year, ending_year)
+
         for gallery in public_galleries:
             list_of_files = list(filter(lambda file: not file.pending, gallery.files))
             if list_of_files:
@@ -228,7 +154,7 @@ class GetAllGalleries(Resource):
                 "image": encoded_string
             })
         data =  {
-                    "number_of_galleries": number_of_public_galleries,
+                    "number_of_galleries": number_of_public_image_galleries,
                     "galleries": gallery_list
                 }
         return data, 200
@@ -240,7 +166,8 @@ class GetAllGalleries(Resource):
     'description': '',
     'year_slug': 'Slug of the year of the galery. Ex: 2019',
     'event_slug': 'Slug of the parent event of the galery.',
-    'private': 'Boolean'
+    'private': 'Boolean',
+    'type': 'Type of gallery to create, part of an enum'
 })
 class CreateGallery(Resource):
     @api.response(201, 'Success - Gallery created')
@@ -252,6 +179,7 @@ class CreateGallery(Resource):
         year_slug = request.json.get('year_slug')
         event_slug = request.json.get('event_slug')
         private = request.json.get('private')
+        gallery_type = request.json.get('type')
 
         if not gallery_name:
             return {
@@ -260,7 +188,7 @@ class CreateGallery(Resource):
             }, 401
 
         try:
-            GalleryService.create(gallery_name, current_user, gallery_description, private == "on", year_slug, event_slug)
+            GalleryService.create(gallery_name, current_user, gallery_description, private == "on", year_slug, event_slug, gallery_type)
 
         except Exception as e:
             return  {
@@ -271,13 +199,6 @@ class CreateGallery(Resource):
         return {
             "msg": "Gallerie créée"
         }, 201
-
-@api.route('/members')
-class Members(Resource):
-    def get(self):
-        '''Get Ponthe members'''
-        with open(os.path.join(ASSET_FOLDER, "data/members.json")) as members:
-            return json.load(members, strict=False)
 
 
 @api.route('/get-galleries/<event_slug>')
@@ -371,19 +292,19 @@ class GetImages(Resource):
             list_of_dim.append({"width": width, "height": height})
 
         approved_files = []
-        if without_base64:
-            for i in range(len(list_of_files)):
-                approved_files.append({
-                    'file_path': list_of_files[i].file_path,
-                    'full_dimension': list_of_dim[i],
-                })
-        else:
-            for i in range(len(list_of_files)):
-                approved_files.append({
-                    'file_path': list_of_files[i].file_path,
-                    'full_dimension': list_of_dim[i],
-                    'base64': encoded_list_of_files[i]
-                })
+        for i in range(len(list_of_files)):
+            file_slug = list_of_files[i].slug
+            own_reaction_type = ReactionService.get_user_reaction_type_by_slug(file_slug, current_user)
+            all_reactions = ReactionService.count_reactions_by_image_slug(file_slug)
+            approved_file = {
+                'file_path': list_of_files[i].file_path,
+                'full_dimension': list_of_dim[i],
+                'own_reaction': own_reaction_type,
+                "all_reactions": all_reactions,
+            }
+            if not without_base64:
+                approved_file['base64'] = encoded_list_of_files[i]
+            approved_files.append(approved_file)
 
         return {
             "gallery": gallery.serialize(),
@@ -568,137 +489,41 @@ class GetLatestGalleries(Resource):
         page = request.json.get("page")
         page_size = request.json.get("page_size")
 
-        starting_year, ending_year = UserService.get_user_allowed_years(current_user.promotion)
+        # If user is admin, then starting and ending years equal to None
+        starting_year, ending_year = UserService.get_user_allowed_years(current_user)
 
         '''Get the list of public galleries, with a filter on allowed years for non admin users'''
-        if current_user.admin:
-            public_galleries = GalleryDAO().find_public_sorted_by_date(page, page_size)
-        else:
-            public_galleries = GalleryDAO().find_public_sorted_by_date_filtered_by_years(starting_year, ending_year, page, page_size)
+        # Change this route for getting video galleries
+        public_galleries = GalleryDAO().find_all_public_galleries_sorted_by_date(page, page_size, starting_year, ending_year)
 
-        gallery_list =[]
+        gallery_list = []
 
         for gallery in public_galleries:
-            list_of_files = list(filter(lambda file: not file.pending, gallery.files))
-            if list_of_files:
-                i = random.randint(0, len(list_of_files)-1)
-                encoded_string = FileService.get_base64_encoding_full(list_of_files[i])
-            else:
-                encoded_string = ""
-            gallery_list.append({
+            formatted_gallery = {
                 "name": gallery.name,
                 "slug": gallery.slug,
-                "image": encoded_string,
-                "description": gallery.description
-            })
-        data =  {
+                "description": gallery.description,
+                "type": gallery.type.name
+            }
+
+            if GalleryService.is_photo_gallery(gallery):
+                list_of_files = list(filter(lambda file: not file.pending, gallery.files))
+                if list_of_files:
+                    i = random.randint(0, len(list_of_files)-1)
+                    encoded_string = FileService.get_base64_encoding_full(list_of_files[i])
+                else:
+                    encoded_string = ""
+                formatted_gallery["image"] = encoded_string
+
+            elif GalleryService.is_video_gallery(gallery):
+                cover_image = FileDAO().get_cover_image_of_video_gallery(gallery)
+                if cover_image is not None:
+                    encoded_string = FileService.get_base64_encoding_full(cover_image)
+                else:
+                    encoded_string = ""
+                formatted_gallery["image"] = encoded_string
+
+            gallery_list.append(formatted_gallery)
+        return {
                     "galleries": gallery_list
-                }
-        return data, 200
-
-
-@api.route('/reset-password')
-@api.doc(params={
-    'current_password': 'your current password',
-    'new_password': 'your new password'
-})
-class ResetPasword(Resource):
-    @api.response(200, 'Success')
-    @api.response(400, 'Request incorrect - JSON not valid')
-    @api.response(403, 'Unauthorized - JWT not valid')
-    def post(self):
-        current_password = request.json.get('current_password')
-        new_password = request.json.get('new_password')
-        if current_user.check_password(current_password):
-            current_user.set_password(new_password)
-            db.session.add(current_user)
-            db.session.commit()
-            return {"msg": "Mot de passe réinitialisé avec succès"}, 200
-        else:
-            return {"msg": "Mot de passe incorrect"}, 400
-
-
-@api.route('/update-reaction')
-@api.doc(params={
-    'reaction': 'your reaction on a picture',
-    'image_slug': 'the image you reacted to'
-})
-class UpdateReaction(Resource):
-    @api.response(200, 'Success')
-    @api.response(400, 'Request incorrect - JSON not valid')
-    @api.response(403, 'Not authorized - account not valid')
-    def post(self):
-        '''Add a reaction on a picture'''
-        reaction = request.json.get('reaction')
-        image_slug = request.json.get('image_slug')
-
-        reaction_from_enum = ReactionService.get_enum_reaction(reaction)
-
-        if image_has_reaction_from_user(image_slug, current_user):
-            ReactionService.update(reaction_from_enum, image_slug, current_user)
-        else:
-            ReactionService.create(reaction_from_enum, image_slug, current_user)
-        
-        return {
-            "msg": "Réaction enregistrée !"
-        }, 200
-
-
-@api.route('/create-reaction')
-@api.doc(params={
-    'reaction': 'your reaction on a picture',
-    'image_slug': 'the image you reacted to'
-})
-class CreateReaction(Resource):
-    @api.response(200, 'Success')
-    @api.response(400, 'Request incorrect - JSON not valid')
-    @api.response(403, 'Not authorized - account not valid')
-    def post(self):
-        '''Add a reaction on a picture'''
-        reaction = request.json.get('reaction')
-        image_slug = request.json.get('image_slug')
-
-        reaction_from_enum = ReactionService.get_enum_reaction(reaction)
-        ReactionService.create(reaction, image_slug, current_user)
-        
-        return {
-            "msg": "Réaction enregistrée !",
-            "reaction": reaction_from_enum
-        }, 200
-
-@api.route('/get-all-user-reactions')
-@api.doc(params={
-    'reaction': 'your reaction on a picture',
-    'image_slug': 'the image you reacted to'
-})
-class GetAllUserReaction(Resource):
-    @api.response(200, 'Success')
-    @api.response(400, 'Request incorrect - JSON not valid')
-    @api.response(403, 'Not authorized - account not valid')
-    def get(self):
-        '''Add a reaction on a picture'''
-        reactions = ReactionDAO.find_all_by_user(user=current_user)
-        # ReactionService.create(reaction_from_enum, image_slug, current_user)
-        
-        return {
-            "reactions": reactions
-        }, 200
-
-@api.route('/get-all-reactions-for-image')
-@api.doc(params={
-    'reaction': 'your reaction on a picture',
-    'image_slug': 'the image you reacted to'
-})
-class GetAllUserReaction(Resource):
-    @api.response(200, 'Success')
-    @api.response(400, 'Request incorrect - JSON not valid')
-    @api.response(403, 'Not authorized - account not valid')
-    def get(self):
-        '''Add a reaction on a picture'''
-        image_slug = request.json.get('image_slug')
-        reactions = ReactionDAO.find_all_by_slug(slug=image_slug)
-        # ReactionService.create(reaction_from_enum, image_slug, current_user)
-        
-        return {
-            "reactions": reactions
-        }, 200
+                }, 200
