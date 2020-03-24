@@ -8,6 +8,7 @@ RUN apt-key update && apt-get update && apt-get install -y redis-server openssl
 RUN git clone https://github.com/vishnubob/wait-for-it.git /wait-for-it
 
 COPY ./app /app
+COPY custom.conf /etc/nginx/conf.d/
 
 RUN mkdir -p /app/instance/static
 RUN mkdir -p /app/instance/tmp/uploads
