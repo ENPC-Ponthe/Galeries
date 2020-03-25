@@ -33,8 +33,11 @@ class Upload(Resource):
             return {
                 "msg": "Bad request"
             }, 401
+        
+        app.logger.warn("request start")
 
         file = request.files['file']
+        app.logger.warn("file received")
 
         if file and is_allowed_file(file.filename):
             if is_image(file.filename):

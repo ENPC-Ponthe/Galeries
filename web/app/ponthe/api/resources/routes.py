@@ -39,6 +39,9 @@ class GetVideo(Resource):
         '''Get the video which is in some gallery with slug gallery_slug'''
         video = FileDAO.get_video_from_gallery_slug(gallery_slug)
 
+        if video is None:
+            return { "msg": "Pas de vidéo existante"}, 200
+
         return send_file(
             open(FileService.get_absolute_video_file_path(video, resolution), "rb"),
             mimetype='video/' + video.extension
