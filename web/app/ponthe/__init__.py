@@ -56,5 +56,5 @@ app.register_blueprint(resources_api, url_prefix=API_V2)
 
 @app.before_request
 def log_request_info():
-    app.logger.debug('Headers: %s', request.headers)
-    app.logger.debug('Body: %s', request.get_data())
+    app.logger.warn('Headers: %s', request.headers)
+    app.logger.warn('Body: %s', request.get_data())
