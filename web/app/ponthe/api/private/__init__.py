@@ -1,13 +1,16 @@
-from flask import Blueprint
+from flask import Blueprint, request
 from flask_jwt_extended import jwt_required
 from flask_restplus import Api
+
+from ... import app
 
 private_api = Blueprint('api.private', __name__)
 
 @private_api.before_request     # login nécessaire pour tout le blueprint
 @jwt_required
 def before_request():
-    pass
+    app.logger.warn('Headers: %s', request.headers)
+    app.logger.warn('Body: %s', request.get_data())
 
 api = Api(private_api)
 
