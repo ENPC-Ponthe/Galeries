@@ -10,7 +10,7 @@ private_api = Blueprint('api.private', __name__)
 @jwt_required
 def before_request():
     app.logger.warn('Headers: %s', request.headers)
-    app.logger.warn('Body: %s', request.get_data())
+    # app.logger.warn('Body: %s', request.get_data())
 
 api = Api(private_api)
 
