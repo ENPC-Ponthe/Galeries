@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, request
 from flask_cas import CAS
 from flask_cli import FlaskCLI
 from flask_login import LoginManager
@@ -53,3 +53,7 @@ app.register_blueprint(admin_api, url_prefix=API_V2)
 app.register_blueprint(public_api, url_prefix=API_V2)
 app.register_blueprint(private_api, url_prefix=API_V2)
 app.register_blueprint(resources_api, url_prefix=API_V2)
+
+@app.before_request
+def log_request_info():
+    app.logger.warn('Headers: %s', request.headers)
