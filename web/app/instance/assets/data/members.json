@@ -1,6 +1,23 @@
 {
     "team_ponthe" : [
         {
+          "year": "022",
+          "year_id": "p022",
+          "members": ["Président : Adrien Sadé",
+                     "Vice-Présidente Images : Louise Eymery",
+                     "Vice-Présidente Création : Sarah Ropert",
+                     "Trésorier : Jean-Paul Eisenmann",
+                     "Respo Communication : Lise Dousset",
+                     "Respo Matériel : Cyril Nederveen",
+                     "Respo Formation : Brieuc Valokuvaaja",
+                     "Respo Drone : Hadrien Thébault",
+                     "Respos Retouche : Romain Chaussonnier, Valentin Cheval",
+                     "Monteurs : Emma-Jane Touhey, Victor Guichard, Juliette Piquois",
+                     "Photographes : Coline Mazas, Thibaud Cambronne, Clément Daguenet"
+                    ],
+          "prev_year_id" : "p021"
+        },
+        {
           "year": "021",
           "year_id": "p021",
 
