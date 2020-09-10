@@ -1,4 +1,5 @@
 import os
+from datetime import datetime
 from flask import Flask
 
 
@@ -7,9 +8,15 @@ SUBDOMAIN_NAME = "ponthe" if IS_PROD_ENV else "ponthe-testing"
 DOMAIN_NAME = f"https://{SUBDOMAIN_NAME}.enpc.org/"
 
 
+def get_latest_promotion():
+    now = datetime.now()
+    prom_increment = 3 if now.month >= 8 else 2
+    latest_prom = str(now.year + prom_increment)[-3:]
+    return latest_prom
+
 class Constants:
     AVAILABLE_PROMOTIONS = ["022", "021", "020", "019", "018"]
-    LAST_PROMOTION = "022"
+    LAST_PROMOTION = get_latest_promotion()
 
 
 def load(app: Flask):
