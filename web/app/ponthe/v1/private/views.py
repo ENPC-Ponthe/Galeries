@@ -28,7 +28,8 @@ def upload_file_handler(upload_file_path, filename, gallery_slug):
 @private.before_request     # login nécessaire pour tout le blueprint
 @login_required
 def before_request():
-    pass
+    if not current_user.admin:
+        redirect(url_for('private.login'))
 
 
 @private.route('/')
