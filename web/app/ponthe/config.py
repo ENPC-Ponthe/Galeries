@@ -2,6 +2,11 @@ import os
 from flask import Flask
 
 
+IS_PROD_ENV = True # CHANGE BETWEEN STAGING AND PRODUCTION ENVS
+SUBDOMAIN_NAME = "ponthe" if IS_PROD_ENV else "ponthe-testing"
+DOMAIN_NAME = f"https://{SUBDOMAIN_NAME}.enpc.org/"
+
+
 class Constants:
     AVAILABLE_PROMOTIONS = ["022", "021", "020", "019", "018"]
     LAST_PROMOTION = "022"
