@@ -67,7 +67,7 @@ class GalleryDAO(ResourceDAO):
 
     # Get all public galleries
     @staticmethod
-    def all_public_sorted_by_date(page=None, page_size=None, starting_year=None, ending_year=None):
+    def all_public_sorted_by_date(starting_year=None, ending_year=None):
         if starting_year is None and ending_year is None:
             galleries = Gallery.query.filter_by(private=False)
         elif starting_year is not None and ending_year is not None:
@@ -78,14 +78,14 @@ class GalleryDAO(ResourceDAO):
     
     @staticmethod
     def find_all_public_galleries_sorted_by_date(page=None, page_size=None, starting_year=None, ending_year=None):
-        galleries = GalleryDAO.all_public_sorted_by_date(page, page_size, starting_year, ending_year)
+        galleries = GalleryDAO.all_public_sorted_by_date(starting_year, ending_year)
         return query_with_offset(galleries, page, page_size)
 
 
     # Get all public photo galleries
     @staticmethod
     def all_public_photo_sorted_by_date(page=None, page_size=None, starting_year=None, ending_year=None):
-        galleries = GalleryDAO.all_public_sorted_by_date(page, page_size, starting_year, ending_year)
+        galleries = GalleryDAO.all_public_sorted_by_date(starting_year, ending_year)
         photo_galleries = galleries.filter(Gallery.type == GalleryTypeEnum.PHOTO.name)
         return query_with_offset(photo_galleries, page, page_size)
 
@@ -101,7 +101,7 @@ class GalleryDAO(ResourceDAO):
     # Get all public video galleries
     @staticmethod
     def all_public_video_sorted_by_date(page=None, page_size=None, starting_year=None, ending_year=None):
-        galleries = GalleryDAO.all_public_sorted_by_date(page, page_size, starting_year, ending_year)
+        galleries = GalleryDAO.all_public_sorted_by_date(starting_year, ending_year)
         photo_galleries = galleries.filter(Gallery.type == GalleryTypeEnum.VIDEO.name)
         return query_with_offset(photo_galleries, page, page_size)
 
