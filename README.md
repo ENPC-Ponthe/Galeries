@@ -1,5 +1,5 @@
 # Galeries Ponthé
-[![CircleCI](https://circleci.com/gh/ENPC-Ponthe/Galeries.svg?style=svg)](https://circleci.com/gh/ENPC-Ponthe/Galeries)
+[![CircleCI](https://circleci.com/gh/ENPC-Ponthe/Galeries.svg?style=svg)](https://app.circleci.com/pipelines/github/ENPC-Ponthe/Galeries)
 
 ### Installation
 
