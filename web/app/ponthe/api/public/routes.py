@@ -14,6 +14,7 @@ from ... import db, app
 from ...models import User
 from ...services import UserService, CasLoginService, FileService
 from ...dao import UserDAO, FileDAO
+from ...config import DOMAIN_NAME
 
 
 jwt = JWTManager(app)
@@ -182,7 +183,6 @@ class CasAuthenticate(Resource):
         """
         token = CasLoginService.login_v2()
         if token is not None:
-            app_base_url = 'https://ponthe.enpc.org/'
-            return redirect(app_base_url + '?token={}'.format(token))
+            return redirect(f'{DOMAIN_NAME}?token={token}')
         else:
             return { "msg": "Erreur d'authentification" }, 400
