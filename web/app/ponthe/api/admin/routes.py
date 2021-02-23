@@ -384,3 +384,17 @@ class EditCgu(Resource):
         
         response = {"msg": "success"}
         return response, 200
+
+
+@api.route('/edit-members')
+@api.response(200, 'Success')
+@api.doc(params={
+    'members': 'json with the new members'
+})
+class EditMembers(Resource):
+    def post(self):
+        new_members = request.json.get('members')
+        AssetService.edit_members(new_members)
+        
+        response = {"msg": "success"}
+        return response, 200

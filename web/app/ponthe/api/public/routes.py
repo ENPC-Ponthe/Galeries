@@ -1,7 +1,6 @@
 import re
 import os
 import datetime
-import json
 
 from flask_restplus import Resource
 from flask import request, redirect, send_file
@@ -18,8 +17,6 @@ from ...config import DOMAIN_NAME
 
 
 jwt = JWTManager(app)
-
-ASSET_FOLDER = app.config['ASSET_ROOT']
 
 
 @jwt.user_claims_loader
