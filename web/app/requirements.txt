@@ -11,7 +11,7 @@ Flask-Migrate
 Flask-Script
 translitcodec # to slugify foreign letters like ü in ue
 slack-logger
-Flask-JWT-extended[asymmetric_crypto]
+Flask-JWT-extended[asymmetric_crypto]==3.25.1
 click
 Flask-Thumbnails
 Pillow
