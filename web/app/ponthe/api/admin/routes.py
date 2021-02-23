@@ -8,7 +8,7 @@ from werkzeug.exceptions import BadRequest
 
 from . import api
 from ...dao import EventDAO, GalleryDAO, FileDAO
-from ...services import EventService, YearService, GalleryService, FileService, CategoryService, UserService
+from ...services import EventService, YearService, GalleryService, FileService, CategoryService, UserService, AssetService
 
 
 @api.route('/create-event')
@@ -370,3 +370,17 @@ class ImportUsers(Resource):
             raise BadRequest("No CSV uploaded")
 
         UserService.create_users(file)
+
+
+@api.route('/edit-cgu')
+@api.response(200, 'Success')
+@api.doc(params={
+    'cgu': 'json with the new cgus'
+})
+class EditCgu(Resource):
+    def post(self):
+        new_cgu = request.json.get('cgu')
+        AssetService.edit_cgu(new_cgu)
+        
+        response = {"msg": "success"}
+        return response, 200

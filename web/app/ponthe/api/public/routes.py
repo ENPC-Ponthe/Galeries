@@ -12,7 +12,7 @@ from itsdangerous import SignatureExpired, BadSignature
 from . import api
 from ... import db, app
 from ...models import User
-from ...services import UserService, CasLoginService, FileService
+from ...services import UserService, CasLoginService, FileService, AssetService
 from ...dao import UserDAO, FileDAO
 from ...config import DOMAIN_NAME
 
@@ -170,8 +170,8 @@ class Cgu(Resource):
         """
             Return the General Conditions of Use
         """
-        with open(os.path.join(ASSET_FOLDER, "data/cgu.json")) as cgu:
-            return json.load(cgu, strict=False), 200
+        cgu = AssetService.get_cgu()
+        return cgu, 200
 
 
 @api.route('/cas/authenticate')
