@@ -9,6 +9,8 @@ CGU_FILE = "data/cgu.json"
 CGU_PATH = os.path.join(ASSET_FOLDER, CGU_FILE)
 MEMBERS_FILE = "data/members.json"
 MEMBERS_PATH = os.path.join(ASSET_FOLDER, MEMBERS_FILE)
+USEFUL_LINKS_FILE = "data/useful-links.json"
+USEFUL_LINKS_PATH = os.path.join(ASSET_FOLDER, USEFUL_LINKS_FILE)
 
 
 def load_json(path):
@@ -38,3 +40,11 @@ class AssetService:
     @staticmethod
     def edit_members(new_members):
         edit_json(MEMBERS_PATH, new_members)
+
+    @staticmethod
+    def get_useful_links():
+        return load_json(USEFUL_LINKS_PATH)
+
+    @staticmethod
+    def edit_useful_links(new_useful_links):
+        edit_json(USEFUL_LINKS_PATH, new_useful_links)
