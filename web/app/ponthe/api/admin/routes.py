@@ -400,14 +400,14 @@ class EditMembers(Resource):
         return response, 200
 
 
-@api.route('/useful-link')
+@api.route('/useful-links')
 class GetUsefulLinks(Resource):
     def get(self):
         useful_links = AssetService.get_useful_links()
         return useful_links, 200
 
 
-@api.route('/edit-useful-link')
+@api.route('/edit-useful-links')
 @api.response(200, 'Success')
 @api.doc(params={
     'links': 'json with the new useful links'
