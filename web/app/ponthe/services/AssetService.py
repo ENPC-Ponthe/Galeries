@@ -12,7 +12,7 @@ MEMBERS_PATH = os.path.join(ASSET_FOLDER, MEMBERS_FILE)
 USEFUL_LINKS_FILE = "data/useful-links.json"
 USEFUL_LINKS_PATH = os.path.join(ASSET_FOLDER, USEFUL_LINKS_FILE)
 ADMIN_TUTORIALS_FILE = "data/admin-tutorials.json"
-ADMIN_TUTORIALS_PATH = os.path.join(ASSET_FOLDER, TUTORIALS_FILE)
+ADMIN_TUTORIALS_PATH = os.path.join(ASSET_FOLDER, ADMIN_TUTORIALS_FILE)
 
 
 def load_json(path):
