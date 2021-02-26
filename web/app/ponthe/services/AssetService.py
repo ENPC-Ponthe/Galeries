@@ -11,6 +11,8 @@ MEMBERS_FILE = "data/members.json"
 MEMBERS_PATH = os.path.join(ASSET_FOLDER, MEMBERS_FILE)
 USEFUL_LINKS_FILE = "data/useful-links.json"
 USEFUL_LINKS_PATH = os.path.join(ASSET_FOLDER, USEFUL_LINKS_FILE)
+ADMIN_TUTORIALS_FILE = "data/admin-tutorials.json"
+ADMIN_TUTORIALS_PATH = os.path.join(ASSET_FOLDER, TUTORIALS_FILE)
 
 
 def load_json(path):
@@ -48,3 +50,11 @@ class AssetService:
     @staticmethod
     def edit_useful_links(new_useful_links):
         edit_json(USEFUL_LINKS_PATH, new_useful_links)
+
+    @staticmethod
+    def get_admin_tutorials():
+        return load_json(ADMIN_TUTORIALS_PATH)
+
+    @staticmethod
+    def edit_admin_tutorials(new_admin_tutorials):
+        edit_json(ADMIN_TUTORIALS_PATH, new_admin_tutorials)
