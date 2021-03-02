@@ -6,7 +6,6 @@ from ... import app
 from ...services import FileService
 from ...dao import FileDAO, GalleryDAO
 
-ASSET_FOLDER = app.config['ASSET_ROOT']
 SIZE_LARGE_THUMB = "630x500"
 
 @api.route('/get-video/<gallery_slug>')

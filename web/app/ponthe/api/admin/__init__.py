@@ -15,4 +15,4 @@ def before_request():
 api = Api(admin_api)
 
 
-from . import routes
+from . import routes, dashboard_routes

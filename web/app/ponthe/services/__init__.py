@@ -6,3 +6,4 @@ from .EventService import EventService
 from .CasLoginService import CasLoginService
 from .CategoryService import CategoryService
 from .ReactionService import ReactionService
+from .AssetService import AssetService
