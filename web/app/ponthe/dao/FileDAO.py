@@ -11,8 +11,8 @@ from ..models import File, Gallery, FileTypeEnum, Year
 
 UPLOAD_FOLDER = app.config['MEDIA_ROOT']
 THUMB_FOLDER = app.config['THUMBNAIL_MEDIA_THUMBNAIL_ROOT']
-DEFAULT_SIZE_THUMB = "226x226"
-VIDEO_RESOLUTIONS = ["720", "480", "360"] # Default video is uploaded as 1080p
+DEFAULT_SIZE_THUMB = '226x226'
+VIDEO_RESOLUTIONS = ['720', '480', '360'] # Default video is uploaded as 1080p
 
 def query_with_offset(query, page=None, page_size=None):
     if page_size is None:
@@ -34,7 +34,7 @@ class FileDAO(ResourceDAO):
     @staticmethod
     def get_thumb_path(file: File, size=DEFAULT_SIZE_THUMB):
         return os.path.join(THUMB_FOLDER, file.gallery.slug,
-                                  utils.generate_filename(file.filename, size, "fit", "90"))
+                                  utils.generate_filename(file.filename, size, 'fit', '90'))
 
     @staticmethod
     def get_video_path(file: File):

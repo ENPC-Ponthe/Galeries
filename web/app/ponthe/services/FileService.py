@@ -16,19 +16,19 @@ from ..file_helper import (
 from ..filters import thumb_filter
 
 UPLOAD_FOLDER = app.config['MEDIA_ROOT']
-DEFAULT_SIZE_THUMB = "226x226"
-VIDEO_RESOLUTIONS = ["720", "480", "360"]  # Default video is uploaded as 1080p
+DEFAULT_SIZE_THUMB = '226x226'
+VIDEO_RESOLUTIONS = ['720', '480', '360']  # Default video is uploaded as 1080p
 
 
 # Tags for image metadata
-EXIF_TAGS_TO_KEEP = ["DateTimeOriginal", "DateTime", "Artist", "Model"]
+EXIF_TAGS_TO_KEEP = ['DateTimeOriginal', 'DateTime', 'Artist', 'Model']
 IMAGE_EXIF_TAGS = {
     val: key for key, val in ExifTags.TAGS.items() if val in EXIF_TAGS_TO_KEEP
 }
 
 
-def get_secure_videoname(file_slug: str, file: File, resolution="1080"):
-    return secure_filename(file_slug + "_" + resolution + "." + file.filename.rsplit('.', 1)[1].lower())
+def get_secure_videoname(file_slug: str, file: File, resolution='1080'):
+    return secure_filename(file_slug + '_' + resolution + '.' + file.filename.rsplit('.', 1)[1].lower())
 
 
 class FileService:
@@ -61,7 +61,7 @@ class FileService:
         elif is_video(filename):
             new_file.type = FileTypeEnum.VIDEO
         else:
-            raise ValueError("File extension not supported")
+            raise ValueError('File extension not supported')
 
         gallery_folder = os.path.join(UPLOAD_FOLDER, gallery_slug)
         create_folder(gallery_folder)
@@ -78,7 +78,7 @@ class FileService:
     def save_photo(file: File, gallery_slug: str, user: User):
         file_slug = create_file_slug(file)
         filename = secure_filename(
-            file_slug + "." + file.filename.rsplit('.', 1)[1].lower())
+            file_slug + '.' + file.filename.rsplit('.', 1)[1].lower())
         save_path = os.path.join(UPLOAD_FOLDER, filename)
         file.save(save_path)
 
@@ -90,17 +90,17 @@ class FileService:
 
         # TODO: Add metadata extraction from png and other files
         artist, camera_model, datetime_original, datetime_edited = None, None, None, None
-        ext = file.filename.rsplit(".", 1)[1].lower()
-        if ext == "jpg":
+        ext = file.filename.rsplit('.', 1)[1].lower()
+        if ext == 'jpg':
             img_metadata = Image.open(save_path)._getexif()
-            if IMAGE_EXIF_TAGS["Artist"] in img_metadata.keys():
-                artist = img_metadata[IMAGE_EXIF_TAGS["Artist"]]
-            if IMAGE_EXIF_TAGS["Model"] in img_metadata.keys():
-                camera_model = img_metadata[IMAGE_EXIF_TAGS["Model"]]
-            if IMAGE_EXIF_TAGS["DateTimeOriginal"] in img_metadata.keys():
-                datetime_original = get_datetime_from_dict("DateTimeOriginal")
-            if IMAGE_EXIF_TAGS["DateTime"] in img_metadata.keys():
-                datetime_edited = get_datetime_from_dict("DateTime")
+            if IMAGE_EXIF_TAGS['Artist'] in img_metadata.keys():
+                artist = img_metadata[IMAGE_EXIF_TAGS['Artist']]
+            if IMAGE_EXIF_TAGS['Model'] in img_metadata.keys():
+                camera_model = img_metadata[IMAGE_EXIF_TAGS['Model']]
+            if IMAGE_EXIF_TAGS['DateTimeOriginal'] in img_metadata.keys():
+                datetime_original = get_datetime_from_dict('DateTimeOriginal')
+            if IMAGE_EXIF_TAGS['DateTime'] in img_metadata.keys():
+                datetime_edited = get_datetime_from_dict('DateTime')
 
         FileService.create(save_path, filename, gallery_slug, user,
                            artist, camera_model, datetime_original, datetime_edited)
@@ -135,7 +135,7 @@ class FileService:
         file.save(save_path)
 
         # Extract images from zip
-        dest_folder = '.'.join(save_path.split(".")[:-1]) + "/"
+        dest_folder = '.'.join(save_path.split('.')[:-1]) + '/'
         if os.path.exists(dest_folder):
             os.removedirs(dest_folder)
         with zipfile.ZipFile(save_path, 'r') as zip_ref:
@@ -143,13 +143,13 @@ class FileService:
         os.remove(save_path)
 
         # Save each image
-        img_paths = glob(dest_folder + "**.**")
+        img_paths = glob(dest_folder + '**.**')
         for path in img_paths:
             filename = os.path.split(path)[-1]
             if is_image(filename):
-                with open(path, "rb") as file:
+                with open(path, 'rb') as file:
                     ext = filename.rsplit('.', 1)[-1].lower()
-                    img = FileStorage(file, filename, content_type=f"image/{ext}")
+                    img = FileStorage(file, filename, content_type=f'image/{ext}')
                     FileService.save_photo(img, gallery_slug, user)
 
         os.removedirs(dest_folder)
@@ -159,7 +159,7 @@ class FileService:
         return os.path.join(UPLOAD_FOLDER, file.file_path)
 
     @staticmethod
-    def get_absolute_video_file_path(file: File, resolution="1080"):
+    def get_absolute_video_file_path(file: File, resolution='1080'):
         return os.path.join(UPLOAD_FOLDER, file.file_path_resolution(resolution=resolution))
 
     @classmethod

@@ -6,7 +6,7 @@ from ..models import User, ReactionEnum, Reaction
 from ..services import FileService
 
 
-SIZE_LARGE_THUMB = "630x500"
+SIZE_LARGE_THUMB = '630x500'
 
 
 class ReactionService():
@@ -76,11 +76,11 @@ class ReactionService():
         all_reactions_for_file = ReactionService.count_reactions_by_image_slug(file.slug)
         gallery_of_file = file.gallery
         return {
-            "own_reaction": reaction_type,
-            "all_reactions": all_reactions_for_file,
-            "name": gallery_of_file.name,
-            "file_path": file.file_path,
-            "image": encoded_string
+            'own_reaction': reaction_type,
+            'all_reactions': all_reactions_for_file,
+            'name': gallery_of_file.name,
+            'file_path': file.file_path,
+            'image': encoded_string
         }
 
     @staticmethod

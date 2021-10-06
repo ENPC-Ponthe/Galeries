@@ -29,7 +29,7 @@ class YearDAO(ResourceDAO):
             image_file = file_dao.find_by_id(year.cover_image_id)
             url_to_image = image_file.file_path()
         else:
-            url_to_image = "not specified"
+            url_to_image = 'not specified'
         return {
             'year_id': year.id,
             'cover_image_url': url_to_image,

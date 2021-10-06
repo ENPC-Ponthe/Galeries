@@ -1,8 +1,8 @@
-import logging.config as config
 import os
+import logging.config as config
 
-LOG_FILE = "ponthe.log"
-LOG_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "instance", "logs", LOG_FILE)
+LOG_FILE = 'ponthe.log'
+LOG_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'instance', 'logs', LOG_FILE)
 
 def get_handler_list():
     handler_list = ['console', 'rotating']

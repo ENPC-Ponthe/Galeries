@@ -22,10 +22,10 @@ jwt = JWTManager(app)
 @jwt.user_claims_loader
 def add_claims_to_access_token(user):
     return {
-        "username" : user.username,
-        "firstname" : user.firstname,
-        "lastname" : user.lastname,
-        "roles" : ["USER", "ADMIN"] if user.admin else ["USER"]
+        'username' : user.username,
+        'firstname' : user.firstname,
+        'lastname' : user.lastname,
+        'roles' : ['USER', 'ADMIN'] if user.admin else ['USER']
     }
 
 @jwt.user_identity_loader
@@ -50,32 +50,32 @@ class Login(Resource):
     @api.response(401, 'User not identified - incorrect email or password')
     def post(self):
         if not request.is_json:
-            return {"msg": "Missing JSON in request"}, 400
+            return {'msg': 'Missing JSON in request'}, 400
 
         email = request.json.get('email', None)
         password = request.json.get('password', None)
         if not email:
-            return {"msg": "Missing email parameter"}, 400
+            return {'msg': 'Missing email parameter'}, 400
         if not password:
-            return {"msg": "Missing password parameter"}, 400
+            return {'msg': 'Missing password parameter'}, 400
 
         user = User.query.filter_by(email=email).first()
 
         if user is None:
-            return {"msg": "Identifiants incorrectes"}, 401
+            return {'msg': 'Identifiants incorrectes'}, 401
         if not user.email_confirmed:
             if (datetime.datetime.utcnow()-user.created).total_seconds() > 3600:
                 db.session.delete(user)
                 db.session.commit()
             else:
-                return {"msg": "Compte en attente de confirmation par email"}, 403
+                return {'msg': 'Compte en attente de confirmation par email'}, 403
         if user.check_password(password):
             login_user(user)
-            app.logger.debug("User authenticating on API :", user)
+            app.logger.debug('User authenticating on API :', user)
             access_token = create_access_token(identity=user)
-            return {"token": access_token}, 200
+            return {'token': access_token}, 200
         else:
-            return {"msg": "Bad email or password"}, 401
+            return {'msg': 'Bad email or password'}, 401
 
 
 @api.route('/register')
@@ -98,15 +98,15 @@ class Register(Resource):
         password = request.json.get('password')
         promotion = request.json.get('promotion')
         if password != request.json.get('confirmation_password'):
-            return {"msg": "Les deux mot de passe ne correspondent pas"}, 400
+            return {'msg': 'Les deux mot de passe ne correspondent pas'}, 400
         elif not re.fullmatch(r"[a-z0-9\-]+\.[a-z0-9\-]+", username):
-            return {"msg": "Adresse non valide"}, 400
+            return {'msg': 'Adresse non valide'}, 400
         else:
             try:
                 UserService.register(username, firstname, lastname, password, promotion)
             except ValueError:
-                return {"msg": "Il existe déjà un compte pour cet adresse email"}, 403
-        return {"msg": "utilisateur créé"}, 200
+                return {'msg': 'Il existe déjà un compte pour cet adresse email'}, 403
+        return {'msg': 'utilisateur créé'}, 200
 
 
 @api.route('/reset/')
@@ -118,7 +118,7 @@ class ResetPasswordSendMail(Resource):
     def post(self):
         email = request.json.get('email')
         UserService.reset(email)
-        return {"msg": "Si un compte est associé à cette adresse, un mail a été envoyé"}, 200
+        return {'msg': 'Si un compte est associé à cette adresse, un mail a été envoyé'}, 200
 
 @api.route('/reset/<token>')
 @api.response(200, 'Success - Password updated')
@@ -135,29 +135,29 @@ class PasswordResetForm(Resource):
         try:
             user_id = UserService.get_id_from_token(token)
             if user_id is None:
-                return {"msg": "compte introuvable"}, 404
+                return {'msg': 'compte introuvable'}, 404
         except BadSignature:
-            return {"msg": "token invalide"}, 404
+            return {'msg': 'token invalide'}, 404
         except SignatureExpired :
             return  {
-                        "title": "Le token est expiré",
-                        "body": "Tu as dépassé le délai de 24h."
+                        'title': 'Le token est expiré',
+                        'body': 'Tu as dépassé le délai de 24h.'
                     }, 403
         user = UserDAO.get_by_id(user_id)
         if user is None:
             return  {
-                        "title": "Erreur - Aucun utilisateur correspondant",
-                        "body": "Le compte associé n'existe plus"
+                        'title': 'Erreur - Aucun utilisateur correspondant',
+                        'body': 'Le compte associé n\'existe plus'
                     }, 401
 
         new_password = request.json.get('new_password')
         if new_password != request.json.get('confirmation_password'):
-            return {"msg": "Les deux mots de passe ne correspondent pas"}, 400
+            return {'msg': 'Les deux mots de passe ne correspondent pas'}, 400
         else:
             user.set_password(new_password)
             db.session.add(user)
             db.session.commit()
-            return {"msg": "Mot de passe réinitialisé avec succès"}, 200
+            return {'msg': 'Mot de passe réinitialisé avec succès'}, 200
 
 
 @api.route('/cgu')
@@ -182,4 +182,4 @@ class CasAuthenticate(Resource):
         if token is not None:
             return redirect(f'{DOMAIN_NAME}?token={token}')
         else:
-            return { "msg": "Erreur d'authentification" }, 400
+            return { 'msg': 'Erreur d\'authentification' }, 400

@@ -15,10 +15,10 @@ class ImportUsers(Resource):
     @api.response(400, 'Request incorrect - Form-data not valid')
     @api.response(403, 'Not authorized - account not valid')
     def post(self):
-        if "csv" in request.files:
+        if 'csv' in request.files:
             file = request.files['csv']
         else:
-            raise BadRequest("No CSV uploaded")
+            raise BadRequest('No CSV uploaded')
 
         UserService.create_users(file)
 
@@ -33,7 +33,7 @@ class EditCgu(Resource):
         new_cgu = request.json.get('cgu')
         AssetService.edit_cgu(new_cgu)
         
-        response = {"msg": "success"}
+        response = {'msg': 'success'}
         return response, 200
 
 
@@ -47,7 +47,7 @@ class EditMembers(Resource):
         new_members = request.json.get('members')
         AssetService.edit_members(new_members)
         
-        response = {"msg": "success"}
+        response = {'msg': 'success'}
         return response, 200
 
 
@@ -68,7 +68,7 @@ class EditUsefulLinks(Resource):
         new_useful_links = request.json.get('links')
         AssetService.edit_useful_links(new_useful_links)
 
-        response = {"msg": "success"}
+        response = {'msg': 'success'}
         return response, 200
 
 
@@ -89,5 +89,5 @@ class EditAdminTutorials(Resource):
         new_admin_tutorials = request.json.get('tutorials')
         AssetService.edit_admin_tutorials(new_admin_tutorials)
 
-        response = {"msg": "success"}
+        response = {'msg': 'success'}
         return response, 200

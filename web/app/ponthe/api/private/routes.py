@@ -16,7 +16,7 @@ from ...services import FileService
 
 
 UPLOAD_FOLDER = app.config['MEDIA_ROOT']
-SIZE_LARGE_THUMB = "630x500"
+SIZE_LARGE_THUMB = '630x500'
 
 
 @api.route('/file-upload/<gallery_slug>')
@@ -31,7 +31,7 @@ class Upload(Resource):
         '''upload a file in a gallery'''
         if 'file' not in request.files:
             return {
-                "msg": "Bad request"
+                'msg': 'Bad request'
             }, 401
 
         file = request.files['file']
@@ -47,10 +47,10 @@ class Upload(Resource):
                     FileService.save_archive(file, gallery_slug, current_user)
                 else:
                     return {
-                        "msg": "Not admin"
+                        'msg': 'Not admin'
                     }, 403
             return {
-                "msg": "File has been saved"
+                'msg': 'File has been saved'
             }, 200
 
 
@@ -69,8 +69,8 @@ class Year(Resource):
             public_galleries = list(
                 filter(lambda gallery: not gallery.private, year.galleries))
             return {
-                "year": year_dao.serialize(year_slug),
-                "public_galleries": [gallery.slug for gallery in public_galleries]
+                'year': year_dao.serialize(year_slug),
+                'public_galleries': [gallery.slug for gallery in public_galleries]
             }, 200
         except NoResultFound:
             return {'msg': 'year not found'}, 404
@@ -116,23 +116,23 @@ class GetGalleriesByYear(Resource):
                     i = random.randint(0, len(list_of_files)-1)
                     if without_base64:
                         gallery_list.append({
-                            "name": gallery.name,
-                            "slug": gallery.slug,
-                            "file_path": list_of_files[i].file_path
+                            'name': gallery.name,
+                            'slug': gallery.slug,
+                            'file_path': list_of_files[i].file_path
                         })
                     else:
                         gallery_list.append({
-                            "name": gallery.name,
-                            "slug": gallery.slug,
-                            "file_path": list_of_files[i].file_path,
-                            "image": FileService.get_base64_encoding_thumb(list_of_files[i])
+                            'name': gallery.name,
+                            'slug': gallery.slug,
+                            'file_path': list_of_files[i].file_path,
+                            'image': FileService.get_base64_encoding_thumb(list_of_files[i])
                         })
             data.append({
-                "year": year.value,
-                "galleries": gallery_list
+                'year': year.value,
+                'galleries': gallery_list
             })
         return {
-            "data": data
+            'data': data
         }, 200
 
 
@@ -140,8 +140,8 @@ class GetGalleriesByYear(Resource):
 class GetAllGalleries(Resource):
     @api.response(200, 'Success')
     def post(self):
-        page = request.json.get("page")
-        page_size = request.json.get("page_size")
+        page = request.json.get('page')
+        page_size = request.json.get('page_size')
         starting_year, ending_year = UserService.get_user_allowed_years(
             current_user)
 
@@ -160,15 +160,15 @@ class GetAllGalleries(Resource):
                 encoded_string = FileService.get_base64_encoding_thumb(
                     list_of_files[i], SIZE_LARGE_THUMB)
             else:
-                encoded_string = ""
+                encoded_string = ''
             gallery_list.append({
-                "name": gallery.name,
-                "slug": gallery.slug,
-                "image": encoded_string
+                'name': gallery.name,
+                'slug': gallery.slug,
+                'image': encoded_string
             })
         data = {
-            "number_of_galleries": number_of_public_image_galleries,
-            "galleries": gallery_list
+            'number_of_galleries': number_of_public_image_galleries,
+            'galleries': gallery_list
         }
         return data, 200
 
@@ -196,22 +196,22 @@ class CreateGallery(Resource):
 
         if not gallery_name:
             return {
-                "title": "Erreur - Paramètre manquant",
-                "body": "Veuillez renseigner le nom de la nouvelle galerie"
+                'title': 'Erreur - Paramètre manquant',
+                'body': 'Veuillez renseigner le nom de la nouvelle galerie'
             }, 401
 
         try:
             GalleryService.create(gallery_name, current_user, gallery_description,
-                                  private == "on", year_slug, event_slug, gallery_type)
+                                  private == 'on', year_slug, event_slug, gallery_type)
 
         except Exception as e:
             return {
-                "title": "Erreur - Impossible de créer la gallerie",
-                "body": "Une erreur est survenue lors de la création de la gallerie. Probablement qu'un des objets donné n'existe pas (year ou event). "+str(e)
+                'title': 'Erreur - Impossible de créer la galerie',
+                'body': 'Une erreur est survenue lors de la création de la galerie. Probablement qu\'un des objets donné n\'existe pas (year ou event). '+str(e)
             }, 401
 
         return {
-            "msg": "Gallerie créée"
+            'msg': 'Galerie créée'
         }, 201
 
 
@@ -227,8 +227,8 @@ class GetGalleries(Resource):
             event = event_dao.find_by_slug(event_slug)
         except NoResultFound:
             return {
-                "title": "Erreur - Impossible de trouver l'événement",
-                "body": "Aucun événement ne correspond à : " + event_slug
+                'title': 'Erreur - Impossible de trouver l\'événement',
+                'body': 'Aucun événement ne correspond à : ' + event_slug
             }, 404
 
         galleries_by_year = {}
@@ -253,9 +253,9 @@ class GetGalleries(Resource):
         og_list = [gallery.serialize() for gallery in other_galleries]
 
         return {
-            "event": event.serialize(),
-            "galleries_by_year": gby_dict,
-            "other_galleries": og_list
+            'event': event.serialize(),
+            'galleries_by_year': gby_dict,
+            'other_galleries': og_list
         }, 200
 
 
@@ -267,9 +267,9 @@ class GetImages(Resource):
     @api.response(404, 'Not found - No matching gallery_slug')
     def post(self, gallery_slug: str):
         '''Get the list of approved images path of a given gallery'''
-        page = request.json.get("page")
-        page_size = request.json.get("page_size")
-        without_base64 = request.json.get("without_base64")
+        page = request.json.get('page')
+        page_size = request.json.get('page_size')
+        without_base64 = request.json.get('without_base64')
 
         if without_base64 is None:
             without_base64 = False
@@ -278,15 +278,15 @@ class GetImages(Resource):
             gallery = GalleryDAO().find_by_slug(gallery_slug)
         except NoResultFound:
             return {
-                "title": "Erreur - Not found",
-                "body": "Aucune gallerie ne correspond à : " + gallery_slug
+                'title': 'Erreur - Not found',
+                'body': 'Aucune galerie ne correspond à : ' + gallery_slug
             }, 404
 
         if (gallery.private and not GalleryDAO.has_right_on(gallery, current_user) or
                 not gallery.private and not UserService.has_basic_user_right_on_gallery(gallery, current_user)):
             return {
-                "title": "Error - Forbidden",
-                "body": "Vous n'avez pas les droits pour accéder à : " + gallery_slug
+                'title': 'Error - Forbidden',
+                'body': 'Vous n\'avez pas les droits pour accéder à : ' + gallery_slug
             }, 403
 
         if GalleryDAO.has_right_on(gallery, current_user):
@@ -310,7 +310,7 @@ class GetImages(Resource):
 
             im = Image.open(FileService.get_absolute_file_path(file))
             width, height = im.size
-            list_of_dim.append({"width": width, "height": height})
+            list_of_dim.append({'width': width, 'height': height})
 
         approved_files = []
         for i in range(len(list_of_files)):
@@ -323,16 +323,16 @@ class GetImages(Resource):
                 'file_path': list_of_files[i].file_path,
                 'full_dimension': list_of_dim[i],
                 'own_reaction': own_reaction_type,
-                "all_reactions": all_reactions,
+                'all_reactions': all_reactions,
             }
             if not without_base64:
                 approved_file['base64'] = encoded_list_of_files[i]
             approved_files.append(approved_file)
 
         return {
-            "gallery": gallery.serialize(),
-            "number_of_files": total_number_of_files,
-            "files": approved_files
+            'gallery': gallery.serialize(),
+            'number_of_files': total_number_of_files,
+            'files': approved_files
         }, 200
 
 
@@ -355,9 +355,9 @@ class GetFullImage(Resource):
         im.close()
 
         return {
-            "width": width,
-            "height": height,
-            "base64": get_base64_encoding(os.path.join(UPLOAD_FOLDER, file_path))
+            'width': width,
+            'height': height,
+            'base64': get_base64_encoding(os.path.join(UPLOAD_FOLDER, file_path))
         }, 200
 
 
@@ -409,7 +409,7 @@ class GetFullImageRawGet(Resource):
         im = Image.open(os.path.join(UPLOAD_FOLDER, file_path))
 
         return send_file(
-            open(FileDAO.get_thumb_path_or_create_it(file), "rb"),
+            open(FileDAO.get_thumb_path_or_create_it(file), 'rb'),
             mimetype='image/'+im.format
         )
 
@@ -426,14 +426,14 @@ class GetRandomImage(Resource):
             gallery = GalleryDAO().find_by_slug(gallery_slug)
         except NoResultFound:
             return {
-                "title": "Erreur - Not found",
-                "body": "Aucune gallerie ne correspond à : "+gallery_slug
+                'title': 'Erreur - Not found',
+                'body': 'Aucune galerie ne correspond à : '+gallery_slug
             }, 404
 
         if gallery.private and not GalleryDAO.has_right_on(gallery, current_user):
             return {
-                "title": "Erreur - Forbidden",
-                "body": "Vous n'avez pas les droits pour accéder à : "+gallery_slug
+                'title': 'Erreur - Forbidden',
+                'body': 'Vous n\'avez pas les droits pour accéder à : '+gallery_slug
             }, 403
 
         list_of_files = list(
@@ -441,9 +441,9 @@ class GetRandomImage(Resource):
         i = random.randint(0, len(list_of_files)-1)
 
         return {
-            "gallery": gallery.serialize(),
-            "thumbnail": FileService.get_base64_encoding_thumb(list_of_files[i]),
-            "url": list_of_files[i].file_path
+            'gallery': gallery.serialize(),
+            'thumbnail': FileService.get_base64_encoding_thumb(list_of_files[i]),
+            'url': list_of_files[i].file_path
         }, 200
 
 
@@ -458,9 +458,9 @@ class GetLatestImages(Resource):
     @api.response(403, 'Not authorized - account not valid')
     @api.response(404, 'Not found - No matching gallery_slug')
     def post(self):
-        page = request.json.get("page")
-        page_size = request.json.get("page_size")
-        without_base64 = request.json.get("without_base64")
+        page = request.json.get('page')
+        page_size = request.json.get('page_size')
+        without_base64 = request.json.get('without_base64')
 
         if without_base64 is None:
             without_base64 = False
@@ -476,25 +476,25 @@ class GetLatestImages(Resource):
 
             im = Image.open(os.path.join(UPLOAD_FOLDER, file.file_path))
             width, height = im.size
-            list_of_dim.append({"width": width, "height": height})
+            list_of_dim.append({'width': width, 'height': height})
 
         latest_files = []
         for i in range(len(list_of_files)):
             if not list_of_files[i].pending:
                 if without_base64:
                     latest_files.append({
-                        "file_path": list_of_files[i].file_path,
-                        "full_dimension": list_of_dim[i]
+                        'file_path': list_of_files[i].file_path,
+                        'full_dimension': list_of_dim[i]
                     })
                 else:
                     latest_files.append({
-                        "file_path": list_of_files[i].file_path,
-                        "base64": encoded_list_of_files[i],
-                        "full_dimension": list_of_dim[i]
+                        'file_path': list_of_files[i].file_path,
+                        'base64': encoded_list_of_files[i],
+                        'full_dimension': list_of_dim[i]
                     })
 
         return {
-            "files": latest_files
+            'files': latest_files
         }, 200
 
 
@@ -509,8 +509,8 @@ class GetLatestGalleries(Resource):
     @api.response(403, 'Not authorized - account not valid')
     @api.response(404, 'Not found - No matching gallery_slug')
     def post(self):
-        page = request.json.get("page")
-        page_size = request.json.get("page_size")
+        page = request.json.get('page')
+        page_size = request.json.get('page_size')
 
         # If user is admin, then starting and ending years equal to None
         starting_year, ending_year = UserService.get_user_allowed_years(
@@ -525,10 +525,10 @@ class GetLatestGalleries(Resource):
 
         for gallery in public_galleries:
             formatted_gallery = {
-                "name": gallery.name,
-                "slug": gallery.slug,
-                "description": gallery.description,
-                "type": gallery.type.name
+                'name': gallery.name,
+                'slug': gallery.slug,
+                'description': gallery.description,
+                'type': gallery.type.name
             }
 
             if GalleryService.is_photo_gallery(gallery):
@@ -539,8 +539,8 @@ class GetLatestGalleries(Resource):
                     encoded_string = FileService.get_base64_encoding_full(
                         list_of_files[i])
                 else:
-                    encoded_string = ""
-                formatted_gallery["image"] = encoded_string
+                    encoded_string = ''
+                formatted_gallery['image'] = encoded_string
 
             elif GalleryService.is_video_gallery(gallery):
                 cover_image = FileDAO().get_cover_image_of_video_gallery(gallery)
@@ -548,10 +548,10 @@ class GetLatestGalleries(Resource):
                     encoded_string = FileService.get_base64_encoding_full(
                         cover_image)
                 else:
-                    encoded_string = ""
-                formatted_gallery["image"] = encoded_string
+                    encoded_string = ''
+                formatted_gallery['image'] = encoded_string
 
             gallery_list.append(formatted_gallery)
         return {
-            "galleries": gallery_list
+            'galleries': gallery_list
         }, 200

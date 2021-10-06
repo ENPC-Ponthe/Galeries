@@ -6,7 +6,7 @@ from ... import app
 from ...services import FileService
 from ...dao import FileDAO, GalleryDAO
 
-SIZE_LARGE_THUMB = "630x500"
+SIZE_LARGE_THUMB = '630x500'
 
 @api.route('/get-video/<gallery_slug>')
 @api.doc(params={
@@ -21,7 +21,7 @@ class GetVideo(Resource):
         video = FileDAO.get_video_from_gallery_slug(gallery_slug)
 
         return send_file(
-            open(FileService.get_absolute_file_path(video), "rb"),
+            open(FileService.get_absolute_file_path(video), 'rb'),
             mimetype='video/' + video.extension
             )
 
@@ -39,10 +39,10 @@ class GetVideo(Resource):
         video = FileDAO.get_video_from_gallery_slug(gallery_slug)
 
         if video is None:
-            return { "msg": "Pas de vidéo existante"}, 200
+            return { 'msg': 'Pas de vidéo existante'}, 200
 
         return send_file(
-            open(FileService.get_absolute_video_file_path(video, resolution), "rb"),
+            open(FileService.get_absolute_video_file_path(video, resolution), 'rb'),
             mimetype='video/' + video.extension
             )
 
@@ -61,11 +61,11 @@ class GetVideoCoverImage(Resource):
         cover_image = FileDAO().get_cover_image_of_video_gallery(gallery)
         if cover_image is not None:
             return send_file(
-                open(FileService.get_absolute_file_path(cover_image), "rb"),
+                open(FileService.get_absolute_file_path(cover_image), 'rb'),
                 mimetype='image/' + cover_image.extension
                 )
         else:
-            return { "msg": "The video has no cover image" }, 200
+            return { 'msg': 'The video has no cover image' }, 200
 
 
 @api.route('/get-video-cover-image-thumb/<gallery_slug>')
@@ -83,8 +83,8 @@ class GetVideoCoverImage(Resource):
         if cover_image is not None:
             thumb_path = FileDAO().get_thumb_path_or_create_it(cover_image, SIZE_LARGE_THUMB)
             return send_file(
-                open(thumb_path, "rb"),
+                open(thumb_path, 'rb'),
                 mimetype='image/' + cover_image.extension
                 )
         else:
-            return { "msg": "The video has no cover image" }, 200
+            return { 'msg': 'The video has no cover image' }, 200

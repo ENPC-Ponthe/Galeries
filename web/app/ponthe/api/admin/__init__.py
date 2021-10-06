@@ -9,7 +9,7 @@ admin_api = Blueprint('api.admin', __name__)
 @jwt_required
 def before_request():
     if not current_user or not current_user.admin:
-        abort(code=HTTPStatus.FORBIDDEN, message="You are not an admin")
+        abort(code=HTTPStatus.FORBIDDEN, message='You are not an admin')
 
 
 api = Api(admin_api)
