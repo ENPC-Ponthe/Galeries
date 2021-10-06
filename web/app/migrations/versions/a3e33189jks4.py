@@ -20,7 +20,7 @@ def upgrade():
     op.add_column('files', sa.Column('artist', sa.String(length=128), nullable=True))
     op.add_column('files', sa.Column('camera_model', sa.String(length=128), nullable=True))
     op.add_column('files', sa.Column('date_time_original', sa.DateTime(), nullable=False))
-    op.add_column('files', sa.Column('date_time_edited', sa.String(), nullable=False))
+    op.add_column('files', sa.Column('date_time_edited', sa.DateTime(), nullable=False))
 
 
 def downgrade():
