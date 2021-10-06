@@ -427,8 +427,12 @@ class File(Resource):
     gallery = db.relationship('Gallery', backref='files', foreign_keys=[gallery_id])
     pending = db.Column(db.Boolean, nullable=False, default=True)
     tags = db.relationship('Tag', secondary=file_tag, lazy='subquery', backref=db.backref('files', lazy=True))
+    artist = db.Column(db.String(128), nullable=True)
+    camera_model = db.Column(db.String(128), nullable=True)
+    date_time_original = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    date_time_edited = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
 
-    def __init__(self, type=None, gallery=None, gallery_id=None, filename=None, extension=None, pending=None, tags=None, **kwargs):
+    def __init__(self, type=None, gallery=None, gallery_id=None, filename=None, extension=None, pending=None, tags=None, artist=None, camera_model=None, date_time_original=None, date_time_edited=None, **kwargs):
         if filename:
             slug, ext = split_filename(filename)
             if "slug" not in kwargs:
@@ -446,6 +450,14 @@ class File(Resource):
             self.tags = tags
         if pending is not None:
             self.pending = pending
+        if artist is not None:
+            self.artist = artist
+        if camera_model is not None:
+            self.camera_model = camera_model
+        if date_time_original is not None:
+            self.date_time_original = date_time_original
+        if date_time_edited is not None:
+            self.date_time_edited = date_time_edited
 
     @property
     def filename(self):
