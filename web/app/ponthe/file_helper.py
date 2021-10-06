@@ -6,6 +6,7 @@ from ponthe import app
 
 ACCEPTED_FORMATS_IMAGES = ('png', 'jpg', 'jpeg', 'gif', 'bmp')
 ACCEPTED_FORMATS_VIDEOS = ('mp4', 'avi', 'mov')
+ACCEPTED_FORMATS_ARCHIVES = ("zip")
 
 
 def is_image(filename: str) -> bool:
@@ -18,8 +19,13 @@ def is_video(filename: str) -> bool:
     return '.' in filename and filename.rsplit('.', 1)[-1].lower() in ACCEPTED_FORMATS_VIDEOS
 
 
+def is_archive(filename: str) -> bool:
+    """ Renvoie True si le fichier possede une extension de zip valide. """
+    return '.' in filename and filename.rsplit('.', 1)[-1].lower() in ACCEPTED_FORMATS_ARCHIVES
+
+
 def is_allowed_file(filename: str) -> bool:
-    return is_image(filename) or is_video(filename)
+    return is_image(filename) or is_video(filename) or is_archive(filename)
 
 
 def create_folder(directory: str):

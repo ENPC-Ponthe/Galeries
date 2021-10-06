@@ -1,4 +1,7 @@
 import os
+from glob import glob
+import zipfile
+from werkzeug.datastructures import FileStorage
 from werkzeug.utils import secure_filename
 import moviepy.editor as mp
 from PIL import Image, ExifTags
@@ -85,7 +88,8 @@ class FileService:
 
         # TODO: Add metadata extraction from png and other files
         artist, camera_model, datetime_original, datetime_edited = None, None, None, None
-        if file.filename.rsplit(".", 1)[1].lower() == "jpg":
+        ext = file.filename.rsplit(".", 1)[1].lower()
+        if ext == "jpg":
             img_metadata = Image.open(save_path)._getexif()
             if IMAGE_EXIF_TAGS["Artist"] in img_metadata.keys():
                 artist = img_metadata[IMAGE_EXIF_TAGS["Artist"]]
@@ -122,6 +126,31 @@ class FileService:
             resized_file_path = os.path.join(gallery_folder, resized_filename)
             video_resized = original_video.resize(width=int(resolution))
             video_resized.write_videofile(resized_file_path)
+
+    @staticmethod
+    def save_archive(file: File, gallery_slug: str, user: User):
+        save_path = os.path.join(UPLOAD_FOLDER, file.filename)
+        file.save(save_path)
+
+        # Extract images from zip
+        dest_folder = '.'.join(save_path.split(".")[:-1]) + "/"
+        if os.path.exists(dest_folder):
+            os.removedirs(dest_folder)
+        with zipfile.ZipFile(save_path, 'r') as zip_ref:
+            zip_ref.extractall(dest_folder)
+        os.remove(save_path)
+
+        # Save each image
+        img_paths = glob(dest_folder + "**.**")
+        for path in img_paths:
+            filename = os.path.split(path)[-1]
+            if is_image(filename):
+                with open(path, "rb") as f:
+                    ext = filename.rsplit('.', 1)[-1].lower()
+                    img = FileStorage(f, filename, content_type=f"image/{ext}")
+                    FileService.save_photo(img, gallery_slug, user)
+
+        os.removedirs(dest_folder)
 
     @staticmethod
     def get_absolute_file_path(file: File):
