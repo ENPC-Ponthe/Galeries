@@ -1,21 +1,31 @@
 import base64
-import os, shutil
+import os
+import shutil
 import time
 from ponthe import app
+
+ACCEPTED_FORMATS_IMAGES = ('png', 'jpg', 'jpeg', 'gif', 'bmp')
+ACCEPTED_FORMATS_VIDEOS = ('mp4', 'avi', 'mov')
+ACCEPTED_FORMATS_ARCHIVES = ("zip")
 
 
 def is_image(filename: str) -> bool:
     """ Renvoie True si le fichier possede une extension d'image valide. """
-    return '.' in filename and filename.rsplit('.', 1)[-1].lower() in ('png', 'jpg', 'jpeg', 'gif', 'bmp')
+    return '.' in filename and filename.rsplit('.', 1)[-1].lower() in ACCEPTED_FORMATS_IMAGES
 
 
 def is_video(filename: str) -> bool:
     """ Renvoie True si le fichier possede une extension de video valide. """
-    return '.' in filename and filename.rsplit('.', 1)[-1].lower() in ('mp4', 'avi', 'mov')
+    return '.' in filename and filename.rsplit('.', 1)[-1].lower() in ACCEPTED_FORMATS_VIDEOS
+
+
+def is_archive(filename: str) -> bool:
+    """ Renvoie True si le fichier possede une extension de zip valide. """
+    return '.' in filename and filename.rsplit('.', 1)[-1].lower() in ACCEPTED_FORMATS_ARCHIVES
 
 
 def is_allowed_file(filename: str) -> bool:
-    return is_image(filename) or is_video(filename)
+    return is_image(filename) or is_video(filename) or is_archive(filename)
 
 
 def create_folder(directory: str):
@@ -95,9 +105,11 @@ def split_filename(filename: str):
 def get_extension(filename: str):
     return split_filename(filename)[1]
 
+
 def get_base64_encoding(file_path: str):
     with open(file_path, "rb") as image_file:
         return "data:image/" + get_extension(file_path) + ";base64," + str(base64.b64encode(image_file.read()).decode('utf-8'))
 
+
 def create_file_slug(file):
-    return base64.b64encode(bytes(str(time.time()) + file.filename,'utf-8')).decode('utf-8')
+    return base64.b64encode(bytes(str(time.time()) + file.filename, 'utf-8')).decode('utf-8')
