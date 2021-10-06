@@ -29,14 +29,14 @@ class CreateEvent(Resource):
 
         if not name:
             return  {
-                "title": "Erreur - Impossible de créer l'événement",
-                "body": "Veuillez renseigner un nom pour l'événement."
+                'title': 'Erreur - Impossible de créer l\'événement',
+                'body': 'Veuillez renseigner un nom pour l\'événement.'
             }, 401
 
         EventService.create(name, event_description, category_slug, current_user)
 
         return {
-            "msg": "Événement créé"
+            'msg': 'Événement créé'
         }, 201
 
 
@@ -54,20 +54,20 @@ class CreateYear(Resource):
 
         if not year_value:
             return {
-                "title": "Erreur - Impossible de créer l'année",
-                "body": "Veuillez renseigner une valeur pour l'année."
+                'title': 'Erreur - Impossible de créer l\'année',
+                'body': 'Veuillez renseigner une valeur pour l\'année.'
             }, 401
 
         try:
             YearService.create(year_value, year_description, current_user)
         except Exception:
             return {
-                "title": "Erreur - Impossible de créer l'année",
-                "body": "Une erreur est survenue lors de la création de l'année."
+                'title': 'Erreur - Impossible de créer l\'année',
+                'body': 'Une erreur est survenue lors de la création de l\'année.'
             }, 401
 
         return {
-            "msg": "Année créée"
+            'msg': 'Année créée'
         }, 201
 
 
@@ -85,14 +85,14 @@ class CreateCategory(Resource):
 
         if not category_value:
             return {
-                "title": "Erreur - Impossible de créer la categorie",
-                "body": "Veuillez renseigner une valeur pour la categorie."
+                'title': 'Erreur - Impossible de créer la categorie',
+                'body': 'Veuillez renseigner une valeur pour la categorie.'
             }, 401
 
         CategoryService.create(category_value, category_description, current_user)
 
         return {
-            "msg": "Catégorie créée"
+            'msg': 'Catégorie créée'
         }, 201
 
 
@@ -155,16 +155,16 @@ class Moderation(Resource):
 
         if error:
             return {
-                "title": "Erreur - Impossible de modérer certains éléments",
-                "body": "Une erreur est survenue lors de la modération d'un ou plusieurs éléments.",
-                "galeries_failed_to_delete": galeries_failed_to_delete,
-                "galeries_failed_to_approve": galeries_failed_to_approve,
-                "files_failed_to_delete": files_failed_to_delete,
-                "files_failed_to_approve": files_failed_to_approve
+                'title': 'Erreur - Impossible de modérer certains éléments',
+                'body': 'Une erreur est survenue lors de la modération d\'un ou plusieurs éléments.',
+                'galeries_failed_to_delete': galeries_failed_to_delete,
+                'galeries_failed_to_approve': galeries_failed_to_approve,
+                'files_failed_to_delete': files_failed_to_delete,
+                'files_failed_to_approve': files_failed_to_approve
             }, 401
 
         return {
-            "msg": "Toutes les modérations ont été effectuées."
+            'msg': 'Toutes les modérations ont été effectuées.'
         }, 200
 
 
@@ -181,11 +181,11 @@ class DeleteEvent(Resource):
             event_dao.delete_detaching_galleries(event_slug)
         except Exception:
             return {
-                "title": "Erreur - Impossible de supprimer l'événement",
-                "body": "Erreur lors de la suppresion"
+                'title': 'Erreur - Impossible de supprimer l\'événement',
+                'body': 'Erreur lors de la suppression'
             }, 401
         return {
-            "msg": "Événement supprimé"
+            'msg': 'Événement supprimé'
         }, 201
 
 
@@ -203,14 +203,14 @@ class GetPrivatePhotoGalleries(Resource):
                 i = random.randint(0, len(list_of_files)-1)
                 encoded_string = FileService.get_base64_encoding_thumb(list_of_files[i])
             else:
-                encoded_string = ""
+                encoded_string = ''
             gallery_list.append({
-                "name": gallery.name,
-                "slug": gallery.slug,
-                "image": encoded_string
+                'name': gallery.name,
+                'slug': gallery.slug,
+                'image': encoded_string
             })
         data = {
-            "galleries": gallery_list
+            'galleries': gallery_list
         }
         return data, 200
 
@@ -225,19 +225,19 @@ class GetPrivateVideoGalleries(Resource):
         private_galleries = GalleryDAO().find_all_private_video()
         for gallery in private_galleries:
             gallery_data = {
-                "name": gallery.name,
-                "slug": gallery.slug
+                'name': gallery.name,
+                'slug': gallery.slug
             }
 
             cover_image = FileDAO().get_cover_image_of_video_gallery(gallery)
             if cover_image is not None:
                 encoded_string = FileService.get_base64_encoding_thumb(cover_image)
-                gallery_data["image"] = encoded_string
+                gallery_data['image'] = encoded_string
 
             gallery_list.append(gallery_data)
 
         return {
-            "galleries": gallery_list
+            'galleries': gallery_list
         }, 200
 
 
@@ -256,22 +256,22 @@ class GetFilesToModerate(Resource):
         for file in list_of_files:
             encoded_file = FileService.get_base64_encoding_thumb(file)
             encoded_list_of_files.append(encoded_file)
-            im = Image.open("/app/ponthe/data/galleries/" + file.file_path)
+            im = Image.open('/app/ponthe/data/galleries/' + file.file_path)
             width, height = im.size
-            list_of_dim.append({"width": width, "height": height})
+            list_of_dim.append({'width': width, 'height': height})
             list_of_slugs.append(file.slug)
 
         unaproved_files = []
         for i in range(len(list_of_files)):
             unaproved_files.append({
-                "slug": list_of_slugs[i],
-                "file_path": list_of_files[i].file_path,
-                "base64": encoded_list_of_files[i],
-                "full_dimension": list_of_dim[i]
+                'slug': list_of_slugs[i],
+                'file_path': list_of_files[i].file_path,
+                'base64': encoded_list_of_files[i],
+                'full_dimension': list_of_dim[i]
             })
 
         return  {
-                    "unaproved_files": unaproved_files
+                    'unaproved_files': unaproved_files
                 }, 200
 
 
@@ -287,7 +287,7 @@ class GetGaleriesToModerate(Resource):
             list_of_slugs.append(gallery.slug)
 
         return  {
-                    "unaproved_galeries": list_of_slugs
+                    'unaproved_galeries': list_of_slugs
                 }, 200
 
 
@@ -321,11 +321,11 @@ class MakeGalleryPrivate(Resource):
                 ListOfGalleryFailedToMakePublic.append(gallery_slug)
         if len(ListOfGalleryFailedToMakePublic)!=0:
             response = {
-                            "msg": "Error failed to make galleries private",
-                            "failed_with": ListOfGalleryFailedToMakePublic
+                            'msg': 'Error failed to make galleries private',
+                            'failed_with': ListOfGalleryFailedToMakePublic
                         }
             return response, 400
-        response = {"msg": "success"}
+        response = {'msg': 'success'}
         return response, 200
 
 
@@ -348,9 +348,9 @@ class MakeGalleryPublic(Resource):
                 ListOfGalleryFailedToMakePublic.append(gallery_slug)
         if len(ListOfGalleryFailedToMakePublic)!=0:
             response = {
-                            "msg": "Error failed to make galleries public",
-                            "failed_with": ListOfGalleryFailedToMakePublic
+                            'msg': 'Error failed to make galleries public',
+                            'failed_with': ListOfGalleryFailedToMakePublic
                         }
             return response, 400
-        response = {"msg": "success"}
+        response = {'msg': 'success'}
         return response, 200

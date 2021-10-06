@@ -110,7 +110,7 @@ class GalleryService:
     @staticmethod
     def is_photo_gallery(gallery: Gallery):
         return gallery.type == GalleryTypeEnum.PHOTO
-    
+
     @staticmethod
     def is_video_gallery(gallery: Gallery):
         return gallery.type == GalleryTypeEnum.VIDEO

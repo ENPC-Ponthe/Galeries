@@ -15,7 +15,7 @@ from ..dao import UserDAO
 from .MailService import MailService
 
 
-serializer=URLSafeTimedSerializer(app.secret_key)
+serializer = URLSafeTimedSerializer(app.secret_key)
 
 
 class UserService:
@@ -29,7 +29,7 @@ class UserService:
 
     @classmethod
     def get_reset_link(cls, user: User):
-        return f"ponthe.enpc.org/reset/{cls.get_token(user)}"
+        return f'ponthe.enpc.org/reset/{cls.get_token(user)}'
 
     @classmethod
     def register(cls, username: str, firstname: str, lastname: str, password: str, promotion: str):
@@ -58,7 +58,8 @@ class UserService:
                 raise ValueError
 
         token = cls.get_token(new_user)
-        MailService.send_registering_email(new_user.firstname, new_user.email, token)
+        MailService.send_registering_email(
+            new_user.firstname, new_user.email, token)
 
         return new_user
 
@@ -67,7 +68,8 @@ class UserService:
         user = UserDAO.find_by_email(email)
         if user is not None and user.email_confirmed:
             reset_link = cls.get_reset_link(user)
-            MailService.send_resetting_email(user.firstname, user.email, reset_link)
+            MailService.send_resetting_email(
+                user.firstname, user.email, reset_link)
 
     @staticmethod
     def create_users(csv_file: TextIO):
@@ -85,8 +87,8 @@ class UserService:
                 msg.body = 'Ton club d\'audiovisuel te souhaite la bienvenue aux Ponts ! ' \
                            + 'Ton compte Ponthé a été créé sur https://ponthe.enpc.org. ' \
                            + 'Connecte-toi dès maintenant avec les identifiants suivants :\n' \
-                           + 'Email : {}\n'.format(user.email) \
-                           + 'Mot de passe : {}'.format(password)
+                           + f'Email : {user.email}\n' \
+                           + f'Mot de passe : {password}'
                 msg.html = render_template(
                     'email/create_account.html',
                     firstname=user.firstname,
@@ -95,14 +97,15 @@ class UserService:
                     reset_link=UserService.get_reset_link(user)
                 )
                 mail.send(msg)
-                app.logger.info(f"Account successfully created for user {user}")
+                app.logger.info(
+                    f'Account successfully created for user {user}')
             except IntegrityError:
                 db.session.rollback()
-                app.logger.warning(f"Account can't be created. User {user} already exists.")
+                app.logger.warning(f'Account can\'t be created. User {user} already exists.')
             except SMTPException as e:
                 db.session.rollback()
-                app.logger.error(f"Account creation canceled for user {user}"
-                                 f" because email could not be sent to {user.email}.")
+                app.logger.error(f'Account creation canceled for user {user}'
+                                 f' because email could not be sent to {user.email}.')
 
     @staticmethod
     def get_user_allowed_years(user: User):
@@ -113,10 +116,11 @@ class UserService:
         starting_year = full_promotion_year - 3
         ending_year = starting_year + 3
         return starting_year, ending_year
-    
+
     @staticmethod
     def has_basic_user_right_on_gallery(gallery, current_user: User):
-        first_allowed_year, last_allowed_year = UserService.get_user_allowed_years(current_user)
+        first_allowed_year, last_allowed_year = UserService.get_user_allowed_years(
+            current_user)
         if first_allowed_year is None and last_allowed_year is None:
             return True
         gallery_year = gallery.year.value

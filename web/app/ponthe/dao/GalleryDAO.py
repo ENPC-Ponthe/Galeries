@@ -1,4 +1,4 @@
-from sqlalchemy import desc, between
+from sqlalchemy import desc
 
 from .ResourceDAO import ResourceDAO
 from ..models import Gallery, Year, Event, User, GalleryTypeEnum
@@ -40,26 +40,26 @@ class GalleryDAO(ResourceDAO):
     def all_private_photo(page=None, page_size=None):
         private_galleries = Gallery.query.filter_by(private=True, type=GalleryTypeEnum.PHOTO.name).order_by(desc(Gallery.created))
         return query_with_offset(private_galleries, page, page_size)
-    
+
     @staticmethod
     def find_all_private_photo(page=None, page_size=None):
         return GalleryDAO.all_private_photo(page, page_size).all()
-    
+
     @staticmethod
     def count_all_private_photo(page=None, page_size=None):
         return GalleryDAO.all_private_photo(page, page_size).count()
-    
+
 
     # Get all private video galleries
     @staticmethod
     def all_private_video(page=None, page_size=None):
         private_galleries = Gallery.query.filter_by(private=True, type=GalleryTypeEnum.VIDEO.name).order_by(desc(Gallery.created))
         return query_with_offset(private_galleries, page, page_size)
-    
+
     @staticmethod
     def find_all_private_video(page=None, page_size=None):
         return GalleryDAO.all_private_video(page, page_size).all()
-    
+
     @staticmethod
     def count_all_private_video(page=None, page_size=None):
         return GalleryDAO.all_private_video(page, page_size).count()
@@ -75,7 +75,7 @@ class GalleryDAO(ResourceDAO):
         else:
             return []
         return galleries.order_by(desc(Gallery.created))
-    
+
     @staticmethod
     def find_all_public_galleries_sorted_by_date(page=None, page_size=None, starting_year=None, ending_year=None):
         galleries = GalleryDAO.all_public_sorted_by_date(starting_year, ending_year)
@@ -92,11 +92,11 @@ class GalleryDAO(ResourceDAO):
     @staticmethod
     def find_all_public_photo_sorted_by_date(page=None, page_size=None, starting_year=None, ending_year=None):
         return GalleryDAO.all_public_photo_sorted_by_date(page, page_size, starting_year, ending_year).all()
-    
+
     @staticmethod
     def count_all_public_photo_sorted_by_date(starting_year=None, ending_year=None):
         return GalleryDAO.all_public_photo_sorted_by_date(starting_year=starting_year, ending_year=ending_year).count()
-    
+
 
     # Get all public video galleries
     @staticmethod
@@ -108,7 +108,7 @@ class GalleryDAO(ResourceDAO):
     @staticmethod
     def find_all_public_video_sorted_by_date(page=None, page_size=None, starting_year=None, ending_year=None):
         return GalleryDAO.all_public_video_sorted_by_date(page, page_size, starting_year, ending_year).all()
-    
+
     @staticmethod
     def count_all_public_video_sorted_by_date(starting_year=None, ending_year=None):
         return GalleryDAO.all_public_video_sorted_by_date(starting_year=starting_year, ending_year=ending_year).count()

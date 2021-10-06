@@ -12,11 +12,11 @@ class GetUser(Resource):
     @api.response(403, 'Not authorized - account not valid')
     def get(self):
         return {
-            "firstname": current_user.firstname,
-            "lastname": current_user.lastname,
-            "email": current_user.email,
-            "admin": current_user.admin,
-            "promotion": current_user.promotion
+            'firstname': current_user.firstname,
+            'lastname': current_user.lastname,
+            'email': current_user.email,
+            'admin': current_user.admin,
+            'promotion': current_user.promotion
         }, 200
 
 
@@ -37,6 +37,6 @@ class ResetPasword(Resource):
             current_user.set_password(new_password)
             db.session.add(current_user)
             db.session.commit()
-            return {"msg": "Mot de passe réinitialisé avec succès"}, 200
+            return {'msg': 'Mot de passe réinitialisé avec succès'}, 200
         else:
-            return {"msg": "Mot de passe incorrect"}, 400
+            return {'msg': 'Mot de passe incorrect'}, 400

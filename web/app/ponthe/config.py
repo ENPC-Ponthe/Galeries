@@ -4,8 +4,8 @@ from flask import Flask
 
 
 IS_PROD_ENV = True # CHANGE BETWEEN STAGING AND PRODUCTION ENVS
-SUBDOMAIN_NAME = "ponthe" if IS_PROD_ENV else "ponthe-testing"
-DOMAIN_NAME = f"https://{SUBDOMAIN_NAME}.enpc.org/"
+SUBDOMAIN_NAME = 'ponthe' if IS_PROD_ENV else 'ponthe-testing'
+DOMAIN_NAME = f'https://{SUBDOMAIN_NAME}.enpc.org/'
 
 
 def get_latest_promotion():
@@ -15,13 +15,13 @@ def get_latest_promotion():
     return latest_prom
 
 class Constants:
-    AVAILABLE_PROMOTIONS = ["024","023","022", "021", "020", "019", "018"]
+    AVAILABLE_PROMOTIONS = ['024', '023', '022', '021', '020', '019', '018']
     LAST_PROMOTION = get_latest_promotion()
 
 
 def load(app: Flask):
     if os.environ.get('PROD_MODE') == 'true':
-        app.logger.info("Galeries Ponthé starting in PROD mode")
+        app.logger.info('Galeries Ponthé starting in PROD mode')
         app.config.update(
             DEBUG = False,
             SECRET_KEY = os.environ['SECRET_KEY'],
@@ -37,15 +37,15 @@ def load(app: Flask):
             CAS_SERVER = 'https://cas.enpc.fr',
             CAS_AFTER_LOGIN = 'api.public.cas_authenticate',
         )
-        # FIXME: Hotfix, it valued "/app/ponthe/./instance" in docker
-        app.instance_path = "/app/instance"
+        # FIXME: Hotfix, it valued '/app/ponthe/./instance' in docker
+        app.instance_path = '/app/instance'
     else:
-        app.logger.warning("Galeries Ponthé starting in DEV mode")
+        app.logger.warning('Galeries Ponthé starting in DEV mode')
         app.config.from_pyfile('ponthe.cfg')
 
-    with open(os.path.join(app.instance_path, "keys", "jwtRS256-public.pem"), 'r') as public_key:
+    with open(os.path.join(app.instance_path, 'keys', 'jwtRS256-public.pem'), 'r') as public_key:
         app.config['JWT_PUBLIC_KEY'] = public_key.read()
-    with open(os.path.join(app.instance_path, "keys", "jwtRS256-private.pem"), 'r') as private_key:
+    with open(os.path.join(app.instance_path, 'keys', 'jwtRS256-private.pem'), 'r') as private_key:
         app.config['JWT_PRIVATE_KEY'] = private_key.read()
     app.config['ASSET_ROOT'] = os.path.join(app.instance_path, 'static', 'assets')
     app.config['UPLOAD_TMP_ROOT'] = os.path.join(app.instance_path, 'tmp', 'uploads')

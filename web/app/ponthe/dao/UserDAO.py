@@ -14,5 +14,5 @@ class UserDAO:
         return User.query.filter_by(username=username).first()
 
     @staticmethod
-    def get_by_id(id: int):
-        return User.query.get(id)
+    def get_by_id(user_id: int):
+        return User.query.get(user_id)

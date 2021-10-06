@@ -1,18 +1,18 @@
+import os
 from flask_thumbnails import utils
 from sqlalchemy import desc
 
 from .ResourceDAO import ResourceDAO
-from .. import app, db, thumb
+from .. import app, db
 from ..file_helper import delete_file, is_video
-from ..filters import thumb_filter, category_thumb_filter
+from ..filters import thumb_filter
 from ..models import File, Gallery, FileTypeEnum, Year
 
-import os
 
 UPLOAD_FOLDER = app.config['MEDIA_ROOT']
 THUMB_FOLDER = app.config['THUMBNAIL_MEDIA_THUMBNAIL_ROOT']
-DEFAULT_SIZE_THUMB = "226x226"
-VIDEO_RESOLUTIONS = ["720", "480", "360"] # Default video is uploaded as 1080p
+DEFAULT_SIZE_THUMB = '226x226'
+VIDEO_RESOLUTIONS = ['720', '480', '360'] # Default video is uploaded as 1080p
 
 def query_with_offset(query, page=None, page_size=None):
     if page_size is None:
@@ -34,7 +34,7 @@ class FileDAO(ResourceDAO):
     @staticmethod
     def get_thumb_path(file: File, size=DEFAULT_SIZE_THUMB):
         return os.path.join(THUMB_FOLDER, file.gallery.slug,
-                                  utils.generate_filename(file.filename, size, "fit", "90"))
+                                  utils.generate_filename(file.filename, size, 'fit', '90'))
 
     @staticmethod
     def get_video_path(file: File):
@@ -87,7 +87,7 @@ class FileDAO(ResourceDAO):
     @staticmethod
     def get_number_of_files_by_gallery(gallery: Gallery):
         return FileDAO.all_files_by_gallery(gallery).count()
-    
+
     @staticmethod
     def get_number_of_not_pending_files_by_gallery(gallery: Gallery):
         return len(FileDAO.find_not_pending_files_by_gallery(gallery))
@@ -102,11 +102,11 @@ class FileDAO(ResourceDAO):
         else :
             return []
         return query_with_offset(files, page, page_size)
-    
+
     @staticmethod
     def find_all_public_videos(page, page_size, starting_year=None, ending_year=None):
         return FileDAO().all_public_videos(page, page_size, starting_year, ending_year).all()
-    
+
     @staticmethod
     def count_all_public_videos(starting_year=None, ending_year=None):
         return FileDAO().all_public_videos(starting_year=starting_year, ending_year=ending_year).count()

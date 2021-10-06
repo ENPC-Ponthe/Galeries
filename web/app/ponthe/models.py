@@ -1,10 +1,10 @@
 # coding=utf-8
 from datetime import datetime
 from typing import List
+import codecs, translitcodec, enum, re, string, random
 
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
-import codecs, translitcodec, enum, re, string, random
 
 from .file_helper import split_filename
 from . import db
@@ -14,7 +14,7 @@ ALPHANUMERIC_LIST = string.ascii_letters+string.digits
 
 
 def generate_random_string(size: int, char_list: List[str]=ALPHANUMERIC_LIST):
-    return "".join([char_list[random.randint(0,len(char_list)-1)] for i in range(size)])
+    return ''.join([char_list[random.randint(0,len(char_list)-1)] for i in range(size)])
 
 
 def slugify(text: str, delim: str=u'-'):
@@ -87,11 +87,11 @@ class User(UserMixin, db.Model):
         if username:
             self.username = username
             if not email:
-                self.email = "{}@eleves.enpc.fr".format(username)
+                self.email = f'{username}@eleves.enpc.fr'
         if email:
             self.email = email
             if not username:
-                self.username = email.split("@")[0]
+                self.username = email.split('@')[0]
         if password:
             self.set_password(password)
         if admin is not None:
@@ -107,14 +107,14 @@ class User(UserMixin, db.Model):
 
     @property
     def full_name(self):
-        return f"{self.firstname} {self.lastname}"
+        return f'{self.firstname} {self.lastname}'
 
     @staticmethod
     def generate_random_password():
         return generate_random_string(random.randint(8, 12))
 
     def __repr__(self):
-        return '{} {}'.format(self.firstname, self.lastname)
+        return f'{self.firstname} {self.lastname}'
 
 
 class TimestampMixin(object):
@@ -173,7 +173,7 @@ class Resource(TimestampMixin, db.Model):
         self.slug = indexed_slug
 
     def __repr__(self):
-        return '<Resource {}>'.format(self.name)
+        return f'<Resource {self.name}>'
 
 
 class Group(Resource):
@@ -182,7 +182,7 @@ class Group(Resource):
         'polymorphic_identity': 'group'
     }
 
-    id = db.Column(db.Integer, db.ForeignKey('resources.id', onupdate="CASCADE", ondelete="CASCADE"), primary_key=True)
+    id = db.Column(db.Integer, db.ForeignKey('resources.id', onupdate='CASCADE', ondelete='CASCADE'), primary_key=True)
     gallery_id = db.Column(db.Integer, db.ForeignKey('galleries.id'), nullable=True)
     gallery = db.relationship('Gallery', backref='groups', foreign_keys=[gallery_id])
     # pour les galeries d'attribut private = True
@@ -216,11 +216,11 @@ class Reaction(TimestampMixin, db.Model):   # relation many-to-many type Slack, 
             self.resource = resource
         self.type = type
         self.updated = datetime.utcnow()
-    
+
     @property
     def gallery(self):
         return self.resource.gallery
-    
+
     @property
     def gallery_type(self):
         return self.gallery.type
@@ -232,13 +232,13 @@ class Comment(Resource):
         'polymorphic_identity': 'comment'
     }
 
-    id = db.Column(db.Integer, db.ForeignKey('resources.id', onupdate="CASCADE", ondelete="CASCADE"), primary_key=True)
+    id = db.Column(db.Integer, db.ForeignKey('resources.id', onupdate='CASCADE', ondelete='CASCADE'), primary_key=True)
     text = db.Column(db.String(1024), nullable=False)
     resource_id = db.Column(db.Integer, db.ForeignKey('resources.id', name='fk_comments_resource'))
     resource = db.relationship('Resource', backref='comments', foreign_keys=[resource_id])
 
     __mapper_args__ = {
-        "inherit_condition": id == Resource.id
+        'inherit_condition': id == Resource.id
     }
 
     def __init__(self, text=None,resource=None, resource_id=None, **kwargs):
@@ -250,7 +250,7 @@ class Comment(Resource):
             self.resource = resource
 
     def __repr__(self):
-        return '<Comment {}>'.format(self.id)
+        return '<Comment {self.id}>'
 
 
 class Category(Resource):
@@ -259,7 +259,7 @@ class Category(Resource):
         'polymorphic_identity': 'category'
     }
 
-    id = db.Column(db.Integer, db.ForeignKey('resources.id', onupdate="CASCADE", ondelete="CASCADE"), primary_key=True)
+    id = db.Column(db.Integer, db.ForeignKey('resources.id', onupdate='CASCADE', ondelete='CASCADE'), primary_key=True)
     description = db.Column(db.String(1024), nullable=False)
     cover_image_id = db.Column(db.Integer, db.ForeignKey('files.id', name='fk_categories_file'), nullable=True)
     cover_image = db.relationship('File', backref='categories', foreign_keys=[cover_image_id])
@@ -273,7 +273,7 @@ class Category(Resource):
             self.cover_image = cover_image
 
     def __repr__(self):
-        return '<Category {}>'.format(self.name)
+        return f'<Category {self.name}>'
 
 
 class Event(Resource):
@@ -282,7 +282,7 @@ class Event(Resource):
         'polymorphic_identity': 'event'
     }
 
-    id = db.Column(db.Integer, db.ForeignKey('resources.id', onupdate="CASCADE", ondelete="CASCADE"), primary_key=True)
+    id = db.Column(db.Integer, db.ForeignKey('resources.id', onupdate='CASCADE', ondelete='CASCADE'), primary_key=True)
     category_id = db.Column(db.Integer, db.ForeignKey('categories.id', name='fk_events_category'), nullable=True)
     category = db.relationship('Category', backref='events', foreign_keys=[category_id])
     # dépendance circulaire entre table à migrer séparemment
@@ -310,17 +310,17 @@ class Event(Resource):
             for gallery in self.galleries:
                 if len(gallery.files) > 0:
                     return gallery.files[0]
-            return File.query.filter_by(slug="default-image").one()
+            return File.query.filter_by(slug='default-image').one()
 
     def serialize(self):
         return {
-            "description": self.description,
-            "slug": self.slug,
-            "name": self.name
+            'description': self.description,
+            'slug': self.slug,
+            'name': self.name
         }
 
     def __repr__(self):
-        return '<Event {}>'.format(self.name)
+        return f'<Event {self.name}>'
 
 class Year(Resource):
     __tablename__ = 'years'
@@ -329,14 +329,14 @@ class Year(Resource):
         'polymorphic_identity': 'year'
     }
 
-    id = db.Column(db.Integer, db.ForeignKey('resources.id', onupdate="CASCADE", ondelete="CASCADE"), primary_key=True)
+    id = db.Column(db.Integer, db.ForeignKey('resources.id', onupdate='CASCADE', ondelete='CASCADE'), primary_key=True)
     value = db.Column(db.Integer, nullable=False)
     cover_image_id = db.Column(db.Integer, db.ForeignKey('files.id', name='fk_years_file'), nullable=True)
     cover_image = db.relationship('File', backref='years', foreign_keys=[cover_image_id])
     description = db.Column(db.String(1024), nullable=True)
 
     def __init__(self, value: int=None, cover_image=None, cover_image_id=None, description=None, **kwargs):
-        kwargs["name"] = str(value)
+        kwargs['name'] = str(value)
         super().__init__(**kwargs)
         self.value = value
         if cover_image_id:
@@ -346,7 +346,7 @@ class Year(Resource):
         self.description = description
 
     def __repr__(self):
-        return '<Year {}>'.format(self.value)
+        return f'<Year {self.value}>'
 
 
 class Gallery(Resource):
@@ -355,7 +355,7 @@ class Gallery(Resource):
         'polymorphic_identity': 'gallery'
     }
 
-    id = db.Column(db.Integer, db.ForeignKey('resources.id', onupdate="CASCADE", ondelete="CASCADE"), primary_key=True)
+    id = db.Column(db.Integer, db.ForeignKey('resources.id', onupdate='CASCADE', ondelete='CASCADE'), primary_key=True)
     year_id = db.Column(db.Integer, db.ForeignKey('years.id', name='fk_galleries_year'), nullable=True)
     year = db.relationship('Year', backref='galleries', foreign_keys=[year_id])
     event_id = db.Column(db.Integer, db.ForeignKey('events.id', name='fk_galleries_event'), nullable=True)
@@ -391,7 +391,7 @@ class Gallery(Resource):
         else:
             if self.files and self.files[0].type == FileTypeEnum.IMAGE:
                 return self.files[0]
-            return File.query.filter_by(slug="default-image").one()
+            return File.query.filter_by(slug='default-image').one()
 
     @property
     def is_pending(self):
@@ -402,10 +402,10 @@ class Gallery(Resource):
 
     def serialize(self):
         return {
-            "cover_image_id": self.cover_image_id,
-            "description": self.description,
-            "slug": self.slug,
-            "name": self.name
+            'cover_image_id': self.cover_image_id,
+            'description': self.description,
+            'slug': self.slug,
+            'name': self.name
         }
 
 file_tag = db.Table('file_tag',
@@ -420,7 +420,7 @@ class File(Resource):
         'polymorphic_identity': 'file'
     }
 
-    id = db.Column(db.Integer, db.ForeignKey('resources.id', onupdate="CASCADE", ondelete="CASCADE"), primary_key=True)
+    id = db.Column(db.Integer, db.ForeignKey('resources.id', onupdate='CASCADE', ondelete='CASCADE'), primary_key=True)
     type = db.Column(db.Enum(FileTypeEnum), nullable=False)
     extension = db.Column(db.String(64), nullable=True)
     gallery_id = db.Column(db.Integer, db.ForeignKey('galleries.id', name='fk_files_gallery'), nullable=False)
@@ -435,8 +435,8 @@ class File(Resource):
     def __init__(self, type=None, gallery=None, gallery_id=None, filename=None, extension=None, pending=None, tags=None, artist=None, camera_model=None, date_time_original=None, date_time_edited=None, **kwargs):
         if filename:
             slug, ext = split_filename(filename)
-            if "slug" not in kwargs:
-                kwargs["slug"] = slug
+            if 'slug' not in kwargs:
+                kwargs['slug'] = slug
             if not extension:
                 extension = ext
         super().__init__(**kwargs)
@@ -461,20 +461,20 @@ class File(Resource):
 
     @property
     def filename(self):
-        return f"{self.slug}.{self.extension}"
+        return f'{self.slug}.{self.extension}'
 
     @property
     def file_path(self):
-        return f"{self.gallery.slug}/{self.slug}.{self.extension}"
+        return f'{self.gallery.slug}/{self.slug}.{self.extension}'
 
-    def file_path_resolution(self, resolution="1080"):
-        if resolution == "1080":
-            return f"{self.gallery.slug}/{self.slug}.{self.extension}"
-        elif resolution == "720" or resolution == "480" or resolution == "360":
-            return f"{self.gallery.slug}/{self.slug}_{resolution}.{self.extension}"
+    def file_path_resolution(self, resolution='1080'):
+        if resolution == '1080':
+            return f'{self.gallery.slug}/{self.slug}.{self.extension}'
+        elif resolution in ('720', '480', '360'):
+            return f'{self.gallery.slug}/{self.slug}_{resolution}.{self.extension}'
 
     def __repr__(self):
-        return '<File {}>'.format(self.file_path)
+        return f'<File {self.file_path}>'
 
 
 class Tag(Resource):
@@ -483,4 +483,4 @@ class Tag(Resource):
         'polymorphic_identity': 'tag'
     }
 
-    id = db.Column(db.Integer, db.ForeignKey('resources.id', onupdate="CASCADE", ondelete="CASCADE"), primary_key=True)
+    id = db.Column(db.Integer, db.ForeignKey('resources.id', onupdate='CASCADE', ondelete='CASCADE'), primary_key=True)

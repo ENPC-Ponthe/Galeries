@@ -6,7 +6,7 @@ from ponthe import app
 
 ACCEPTED_FORMATS_IMAGES = ('png', 'jpg', 'jpeg', 'gif', 'bmp')
 ACCEPTED_FORMATS_VIDEOS = ('mp4', 'avi', 'mov')
-ACCEPTED_FORMATS_ARCHIVES = ("zip")
+ACCEPTED_FORMATS_ARCHIVES = ('zip')
 
 
 def is_image(filename: str) -> bool:
@@ -33,7 +33,7 @@ def create_folder(directory: str):
         if not os.path.exists(directory):
             os.makedirs(directory)
     except OSError:
-        app.logger.error('Error: Creating directory. {}'.format(directory))
+        app.logger.error(f'Error: Creating directory. {directory}')
 
 
 def delete_folder(directory: str):
@@ -41,7 +41,7 @@ def delete_folder(directory: str):
         if os.path.exists(directory):
             shutil.rmtree(directory)
     except OSError:
-        print('Error: Deleting directory. {}'.format(directory))
+        print(f'Error: Deleting directory. {directory}')
 
 
 def delete_folders_in_folder(directory: str):
@@ -62,10 +62,10 @@ def copy_folder(src: str, dest: str):
         shutil.copytree(src, dest)
     # Directories are the same
     except shutil.Error as e:
-        print('Directory not copied. Error: %s' % e)
+        print(f'Directory not copied. Error: {e}')
     # Any error saying that the directory doesn't exist
     except OSError as e:
-        print('Directory not copied. Error: %s' % e)
+        print(f'Directory not copied. Error: {e}')
 
 
 def copy_file(src: str, dest: str):
@@ -73,10 +73,10 @@ def copy_file(src: str, dest: str):
         shutil.copy(src, dest)
     # Directories are the same
     except shutil.Error as e:
-        print('File not copied. Error: %s' % e)
+        print(f'File not copied. Error: {e}')
     # Any error saying that the directory doesn't exist
     except OSError as e:
-        print('File not copied. Error: %s' % e)
+        print(f'File not copied. Error: {e}')
 
 
 def move_file(src: str, dest: str):
@@ -84,17 +84,17 @@ def move_file(src: str, dest: str):
         shutil.move(src, dest)
     # Directories are the same
     except shutil.Error as e:
-        print('File not moved. Error: %s' % e)
+        print(f'File not moved. Error: {e}')
     # Any error saying that the directory doesn't exist
     except OSError as e:
-        print('File not moved. Error: %s' % e)
+        print(f'File not moved. Error: {e}')
 
 
 def delete_file(file_path: str):
     try:
         os.remove(file_path)
     except OSError:
-        print('Error: Deleting file. {}'.format(file_path))
+        print(f'Error: Deleting file. {file_path}')
 
 
 def split_filename(filename: str):
@@ -107,8 +107,8 @@ def get_extension(filename: str):
 
 
 def get_base64_encoding(file_path: str):
-    with open(file_path, "rb") as image_file:
-        return "data:image/" + get_extension(file_path) + ";base64," + str(base64.b64encode(image_file.read()).decode('utf-8'))
+    with open(file_path, 'rb') as image_file:
+        return 'data:image/' + get_extension(file_path) + ';base64,' + str(base64.b64encode(image_file.read()).decode('utf-8'))
 
 
 def create_file_slug(file):

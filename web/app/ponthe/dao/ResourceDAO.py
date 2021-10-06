@@ -8,8 +8,8 @@ class ResourceDAO:
     def find_by_slug(self, slug: str):
         return self.SubResource.query.filter_by(slug=slug).one()
 
-    def find_by_id(self, id: int):
-        return self.SubResource.query.get(id)
+    def find_by_id(self, resource_id: int):
+        return self.SubResource.query.get(resource_id)
 
     def find_all(self):
         return self.SubResource.query.all()

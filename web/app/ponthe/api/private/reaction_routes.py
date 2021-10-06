@@ -23,7 +23,7 @@ class UpdateReaction(Resource):
         reaction = request.json.get('reaction')
         image_slug = request.json.get('image_slug')
 
-        if reaction == "NONE":
+        if reaction == 'NONE':
             ReactionService.delete(image_slug, current_user)
         elif ReactionService.image_has_reaction_from_user(image_slug, current_user):
             ReactionService.update(reaction, image_slug, current_user)
@@ -31,8 +31,8 @@ class UpdateReaction(Resource):
             ReactionService.create(reaction, image_slug, current_user)
 
         return {
-            "msg": "Réaction enregistrée !",
-            "reaction": reaction,
+            'msg': 'Réaction enregistrée !',
+            'reaction': reaction,
         }, 200
 
 
@@ -43,8 +43,8 @@ class GetAllUserReactions(Resource):
     @api.response(403, 'Not authorized - account not valid')
     def post(self):
         '''Get all the pictures the user reacted to'''
-        page = request.json.get("page")
-        page_size = request.json.get("page_size")
+        page = request.json.get('page')
+        page_size = request.json.get('page_size')
 
         reactions = ReactionDAO().find_all_reactions_on_photos_by_user(current_user, page, page_size)
         number_of_reactions = ReactionDAO().count_all_reactions_on_photos_by_user(current_user)
@@ -52,8 +52,8 @@ class GetAllUserReactions(Resource):
         list_of_reactions = ReactionService.format_reactions_to_json(reactions)
 
         return {
-            "number_of_reactions": number_of_reactions,
-            "reactions": list_of_reactions
+            'number_of_reactions': number_of_reactions,
+            'reactions': list_of_reactions
         }, 200
 
 
@@ -67,7 +67,7 @@ class GetRandomUserReactions(Resource):
     @api.response(403, 'Not authorized - account not valid')
     def post(self):
         '''Get random pictures among those the user reacted to'''
-        number_of_pics = request.json.get("number_of_pics")
+        number_of_pics = request.json.get('number_of_pics')
 
         all_reactions = ReactionDAO().find_all_reactions_on_photos_by_user(current_user)
         list_of_reactions = list(all_reactions)
@@ -86,5 +86,5 @@ class GetRandomUserReactions(Resource):
         response_reactions = ReactionService.format_reactions_to_json(reactions)
 
         return {
-            "reactions": response_reactions
+            'reactions': response_reactions
         }, 200

@@ -1,7 +1,8 @@
 from . import app, thumb
 from .models import FileTypeEnum, File
 
-DEFAULT_SIZE_THUMB="226x226"
+DEFAULT_SIZE_THUMB = '226x226'
+
 
 @app.template_filter('thumb')
 def thumb_filter(file: File, size=DEFAULT_SIZE_THUMB):
