@@ -2,6 +2,7 @@ import os
 from werkzeug.utils import secure_filename
 import moviepy.editor as mp
 from PIL import Image, ExifTags
+from datetime import datetime
 
 from .. import app, db
 from ..dao import FileDAO, GalleryDAO
@@ -77,6 +78,11 @@ class FileService:
         file.save(save_path)
 
         # Get the metadata from the picture
+        def get_datetime_from_dict(key):
+            value = img_metadata[IMAGE_EXIF_TAGS[key]]
+            value = datetime.strptime(value, '%Y:%m:%d %H:%M:%S')
+            return value
+
         # TODO: Add metadata extraction from png and other files
         artist, camera_model, datetime_original, datetime_edited = None, None, None, None
         if file.filename.rsplit(".", 1)[1].lower() == "jpg":
@@ -86,9 +92,9 @@ class FileService:
             if IMAGE_EXIF_TAGS["Model"] in img_metadata.keys():
                 camera_model = img_metadata[IMAGE_EXIF_TAGS["Model"]]
             if IMAGE_EXIF_TAGS["DateTimeOriginal"] in img_metadata.keys():
-                datetime_original = img_metadata[IMAGE_EXIF_TAGS["DateTimeOriginal"]]
+                datetime_original = get_datetime_from_dict("DateTimeOriginal")
             if IMAGE_EXIF_TAGS["DateTime"] in img_metadata.keys():
-                datetime_edited = img_metadata[IMAGE_EXIF_TAGS["DateTime"]]
+                datetime_edited = get_datetime_from_dict("DateTime")
 
         FileService.create(save_path, filename, gallery_slug, user,
                            artist, camera_model, datetime_original, datetime_edited)
