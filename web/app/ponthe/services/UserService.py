@@ -85,8 +85,8 @@ class UserService:
                 msg.body = 'Ton club d\'audiovisuel te souhaite la bienvenue aux Ponts ! ' \
                            + 'Ton compte Ponthé a été créé sur https://ponthe.enpc.org. ' \
                            + 'Connecte-toi dès maintenant avec les identifiants suivants :\n' \
-                           + 'Email : {}\n'.format(user.email) \
-                           + 'Mot de passe : {}'.format(password)
+                           + f'Email : {user.email}\n' \
+                           + f'Mot de passe : {password}'
                 msg.html = render_template(
                     'email/create_account.html',
                     firstname=user.firstname,

@@ -428,6 +428,6 @@ overgeneral-exceptions=Exception
 
 [OTHER]
 
-string-quote=double
+string-quote=single
 triple-quote=double
 docstring-quote=double

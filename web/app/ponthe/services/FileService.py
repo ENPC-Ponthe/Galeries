@@ -1,16 +1,18 @@
 import os
-from glob import glob
 import zipfile
+from glob import glob
+from datetime import datetime
 from werkzeug.datastructures import FileStorage
 from werkzeug.utils import secure_filename
 import moviepy.editor as mp
 from PIL import Image, ExifTags
-from datetime import datetime
 
 from .. import app, db
 from ..dao import FileDAO, GalleryDAO
 from ..models import File, User, FileTypeEnum
-from ..file_helper import create_folder, move_file, is_image, is_video, get_extension, get_base64_encoding, create_file_slug
+from ..file_helper import (
+    create_folder, move_file, is_image, is_video, get_extension, get_base64_encoding, create_file_slug
+)
 from ..filters import thumb_filter
 
 UPLOAD_FOLDER = app.config['MEDIA_ROOT']
@@ -145,9 +147,9 @@ class FileService:
         for path in img_paths:
             filename = os.path.split(path)[-1]
             if is_image(filename):
-                with open(path, "rb") as f:
+                with open(path, "rb") as file:
                     ext = filename.rsplit('.', 1)[-1].lower()
-                    img = FileStorage(f, filename, content_type=f"image/{ext}")
+                    img = FileStorage(file, filename, content_type=f"image/{ext}")
                     FileService.save_photo(img, gallery_slug, user)
 
         os.removedirs(dest_folder)

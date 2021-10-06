@@ -16,7 +16,7 @@ class ReactionDAO:
     @staticmethod
     def find_by_slug_and_user(slug: str, user: User):
         return Reaction.query.join(Reaction.resource).filter(Resource.slug == slug, Reaction.user == user).first()
-    
+
     @staticmethod
     def find_by_resource_id_and_user(resource_id: int, user: User):
         return Reaction.query.filter(Reaction.resource_id == resource_id, Reaction.user == user).first()
@@ -24,7 +24,7 @@ class ReactionDAO:
     @staticmethod
     def find_all_by_slug(slug: str):
         return Reaction.query.join(Reaction.resource).filter(Resource.slug == slug).all()
-    
+
     @staticmethod
     def all_by_user(user: User):
         return Reaction.query.filter_by(user=user)
@@ -32,11 +32,11 @@ class ReactionDAO:
     @staticmethod
     def find_all_by_user(user: User):
         return ReactionDAO().all_by_user(user).all()
-    
+
     @staticmethod
     def count_all_by_user(user: User):
         return ReactionDAO().all_by_user(user).count()
-    
+
     # Currently unused
     @staticmethod
     def find_by_user(user: User, page=None, page_size=None):
@@ -59,7 +59,7 @@ class ReactionDAO:
     def find_all_reactions_on_photos_by_user(user: User, page=None, page_size=None):
         all_reactions = ReactionDAO().all_on_photos_by_user(user)
         return list_with_offset(all_reactions, page, page_size)
-    
+
     @staticmethod
     def count_all_reactions_on_photos_by_user(user: User):
         return len(ReactionDAO().find_all_reactions_on_photos_by_user(user))

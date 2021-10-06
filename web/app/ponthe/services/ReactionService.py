@@ -1,7 +1,6 @@
-import os
 from typing import List
 
-from .. import app, db
+from .. import db
 from ..dao import FileDAO, ReactionDAO
 from ..models import User, ReactionEnum, Reaction
 from ..services import FileService
@@ -15,7 +14,7 @@ class ReactionService():
     def create(reaction: ReactionEnum, image_slug: str, user: User):
         resource = FileDAO().find_by_slug(image_slug)
         new_reaction = Reaction(user=user, resource=resource, type=reaction)
-        
+
         db.session.add(new_reaction)
         db.session.commit()
 
@@ -24,17 +23,17 @@ class ReactionService():
         current_reaction = ReactionDAO().find_by_slug_and_user(image_slug, user)
         current_reaction.type = new_reaction_type
         db.session.commit()
-    
+
     @staticmethod
     def delete(image_slug: str, user: User):
         reaction = ReactionDAO().find_by_slug_and_user(image_slug, user)
         db.session.delete(reaction)
         db.session.commit()
-    
+
     @staticmethod
     def get_enum_reaction(reaction: str):
         return ReactionEnum[reaction].value
-    
+
     @staticmethod
     def get_enum_reaction_name(index: int):
         return ReactionEnum(index).name
@@ -45,7 +44,7 @@ class ReactionService():
         if reaction is not None:
             return True
         return False
-    
+
     @staticmethod
     def count_reactions_by_image_slug(image_slug: str):
         reactions = ReactionDAO().find_all_by_slug(slug=image_slug)
@@ -53,7 +52,7 @@ class ReactionService():
 
         for reaction in reactions:
             reaction_type = ReactionService.get_enum_reaction_name(reaction.type)
-            if not reaction_type in count_reactions:
+            if reaction_type not in count_reactions:
                 count_reactions[reaction_type] = 1
             else:
                 count_reactions[reaction_type] += 1
@@ -83,7 +82,7 @@ class ReactionService():
             "file_path": file.file_path,
             "image": encoded_string
         }
-    
+
     @staticmethod
     def format_reactions_to_json(reactions: List[Reaction]):
         list_of_reactions = []

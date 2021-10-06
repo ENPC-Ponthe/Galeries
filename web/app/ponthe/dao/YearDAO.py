@@ -30,8 +30,8 @@ class YearDAO(ResourceDAO):
             url_to_image = image_file.file_path()
         else:
             url_to_image = "not specified"
-        return  {
-                    'year_id': year.id,
-                    'cover_image_url': url_to_image,
-                    'year_slug': year.value
-                }
+        return {
+            'year_id': year.id,
+            'cover_image_url': url_to_image,
+            'year_slug': year.value
+        }

@@ -1,13 +1,13 @@
+import os
 from flask_thumbnails import utils
 from sqlalchemy import desc
 
 from .ResourceDAO import ResourceDAO
-from .. import app, db, thumb
+from .. import app, db
 from ..file_helper import delete_file, is_video
-from ..filters import thumb_filter, category_thumb_filter
+from ..filters import thumb_filter
 from ..models import File, Gallery, FileTypeEnum, Year
 
-import os
 
 UPLOAD_FOLDER = app.config['MEDIA_ROOT']
 THUMB_FOLDER = app.config['THUMBNAIL_MEDIA_THUMBNAIL_ROOT']
@@ -87,7 +87,7 @@ class FileDAO(ResourceDAO):
     @staticmethod
     def get_number_of_files_by_gallery(gallery: Gallery):
         return FileDAO.all_files_by_gallery(gallery).count()
-    
+
     @staticmethod
     def get_number_of_not_pending_files_by_gallery(gallery: Gallery):
         return len(FileDAO.find_not_pending_files_by_gallery(gallery))
@@ -102,11 +102,11 @@ class FileDAO(ResourceDAO):
         else :
             return []
         return query_with_offset(files, page, page_size)
-    
+
     @staticmethod
     def find_all_public_videos(page, page_size, starting_year=None, ending_year=None):
         return FileDAO().all_public_videos(page, page_size, starting_year, ending_year).all()
-    
+
     @staticmethod
     def count_all_public_videos(starting_year=None, ending_year=None):
         return FileDAO().all_public_videos(starting_year=starting_year, ending_year=ending_year).count()
