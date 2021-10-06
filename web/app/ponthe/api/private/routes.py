@@ -38,10 +38,7 @@ class Upload(Resource):
 
         if file and is_allowed_file(file.filename):
             if is_image(file.filename):
-                file_slug = create_file_slug(file)
-                filename = secure_filename(file_slug + "." + file.filename.rsplit('.', 1)[1].lower())
-                file.save(os.path.join(UPLOAD_FOLDER, filename))
-                FileService.create(os.path.join(UPLOAD_FOLDER, filename), filename, gallery_slug, current_user)
+                FileService.save_photo(file, gallery_slug, current_user)
             if is_video(file.filename):
                 FileService.save_video_in_all_resolutions(file, gallery_slug, current_user)
             return {
