@@ -66,13 +66,36 @@ class FileService:
         gallery_folder = os.path.join(UPLOAD_FOLDER, gallery_slug)
         create_folder(gallery_folder)
         # can't use os.rename to move to docker volume : OSError: [Errno 18] Invalid cross-device link
-        move_file(upload_file_path, os.path.join(
-            gallery_folder, new_file.filename))
+        saved_path = os.path.join(gallery_folder, new_file.filename)
+        move_file(upload_file_path, saved_path)
         db.session.add(new_file)
         db.session.commit()
         if new_file.type == FileTypeEnum.IMAGE:
             thumb_filter(new_file)
+            # Add image to archive of the gallery
+            FileService.add_file_to_gallery_archive(saved_path, gallery_slug)
         return new_file
+
+    @staticmethod
+    def add_file_to_gallery_archive(file_path, gallery_slug):
+        gallery_folder = os.path.join(UPLOAD_FOLDER, gallery_slug)
+        archive_path = os.path.join(gallery_folder, f'{gallery_slug}.zip')
+
+        # Create an empty archive if it doesn't exist yet
+        if not os.path.exists(archive_path):
+            zipfile.ZipFile(archive_path, 'w', zipfile.ZIP_DEFLATED).close()
+
+        # Add photo to archive
+        with zipfile.ZipFile(archive_path, 'a', zipfile.ZIP_DEFLATED) as zipper:
+            filename = os.path.basename(file_path)
+            if is_image(filename) and filename not in zipper.namelist():
+                zipper.write(file_path, filename)
+
+    @staticmethod
+    def get_archive_name_and_path(gallery_slug):
+        gallery_folder = os.path.join(UPLOAD_FOLDER, gallery_slug)
+        archive_path = f'{gallery_slug}.zip'
+        return gallery_folder, archive_path
 
     @staticmethod
     def save_photo(file: File, gallery_slug: str, user: User):
@@ -149,7 +172,8 @@ class FileService:
             if is_image(filename):
                 with open(path, 'rb') as file:
                     ext = filename.rsplit('.', 1)[-1].lower()
-                    img = FileStorage(file, filename, content_type=f'image/{ext}')
+                    img = FileStorage(
+                        file, filename, content_type=f'image/{ext}')
                     FileService.save_photo(img, gallery_slug, user)
 
         os.removedirs(dest_folder)

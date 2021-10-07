@@ -4,7 +4,7 @@ import os
 from flask_jwt_extended import current_user
 from flask_restplus import Resource
 from sqlalchemy.orm.exc import NoResultFound
-from flask import send_file, request
+from flask import send_file, request, send_from_directory
 from PIL import Image
 
 from . import api
@@ -53,6 +53,21 @@ class Upload(Resource):
                 'msg': 'File has been saved'
             }, 200
 
+@api.route('/download-archive')
+@api.doc(params={
+    'gallery_slug': 'the gallery to download the archive from'
+})
+class DownloadArchive(Resource):
+    @api.response(200, 'Success')
+    @api.response(400, 'Request incorrect - JSON not valid')
+    @api.response(403, 'Not authorized - account not valid')
+    def post(self):
+        '''Download the archive from some gallery with slug gallery_slug'''
+        gallery_slug = request.json.get('gallery_slug')
+
+        gallery_path, archive_name = FileService.get_archive_name_and_path(gallery_slug)
+
+        return send_from_directory(gallery_path, filename=archive_name, as_attachment=True)
 
 @api.route('/get-galleries-of-year/<year_slug>')
 @api.doc(params={
