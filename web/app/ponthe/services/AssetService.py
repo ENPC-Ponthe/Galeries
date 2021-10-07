@@ -5,14 +5,17 @@ from .. import app
 
 ASSET_FOLDER = app.config['ASSET_ROOT']
 
-CGU_FILE = 'data/cgu.json'
-CGU_PATH = os.path.join(ASSET_FOLDER, CGU_FILE)
-MEMBERS_FILE = 'data/members.json'
-MEMBERS_PATH = os.path.join(ASSET_FOLDER, MEMBERS_FILE)
-USEFUL_LINKS_FILE = 'data/useful-links.json'
-USEFUL_LINKS_PATH = os.path.join(ASSET_FOLDER, USEFUL_LINKS_FILE)
-ADMIN_TUTORIALS_FILE = 'data/admin-tutorials.json'
-ADMIN_TUTORIALS_PATH = os.path.join(ASSET_FOLDER, ADMIN_TUTORIALS_FILE)
+DATA_FOLDER = os.path.join(ASSET_FOLDER, 'data')
+CGU_FILE = 'cgu.json'
+CGU_PATH = os.path.join(DATA_FOLDER, CGU_FILE)
+MEMBERS_FILE = 'members.json'
+MEMBERS_PATH = os.path.join(DATA_FOLDER, MEMBERS_FILE)
+USEFUL_LINKS_FILE = 'useful-links.json'
+USEFUL_LINKS_PATH = os.path.join(DATA_FOLDER, USEFUL_LINKS_FILE)
+ADMIN_TUTORIALS_FILE = 'admin-tutorials.json'
+ADMIN_TUTORIALS_PATH = os.path.join(DATA_FOLDER, ADMIN_TUTORIALS_FILE)
+if not os.path.exists(DATA_FOLDER):
+    os.makedirs(DATA_FOLDER)
 
 
 def load_json(path):
