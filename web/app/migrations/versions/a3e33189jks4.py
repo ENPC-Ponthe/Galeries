@@ -29,12 +29,12 @@ def upgrade():
         print(e)
     try:
         op.add_column('files', sa.Column(
-            'date_time_original', sa.DateTime(), nullable=False, server_default=sa.func.current_timestamp()))
+            'date_time_original', sa.DateTime, nullable=False, server_default=sa.func.current_timestamp()))
     except Exception as e:
         print(e)
     try:
         op.add_column('files', sa.Column(
-            'date_time_edited', sa.DateTime(), nullable=False, server_default=sa.func.current_timestamp()))
+            'date_time_edited', sa.DateTime, nullable=False, server_default=sa.func.current_timestamp()))
     except Exception as e:
         print(e)
 
