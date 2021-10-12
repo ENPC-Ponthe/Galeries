@@ -17,14 +17,42 @@ depends_on = None
 
 
 def upgrade():
-    op.add_column('files', sa.Column('artist', sa.String(length=128), nullable=True))
-    op.add_column('files', sa.Column('camera_model', sa.String(length=128), nullable=True))
-    op.add_column('files', sa.Column('date_time_original', sa.DateTime(), nullable=False))
-    op.add_column('files', sa.Column('date_time_edited', sa.DateTime(), nullable=False))
+    try:
+        op.add_column('files', sa.Column(
+            'artist', sa.String(length=128), nullable=True))
+    except Exception as e:
+        print(e)
+    try:
+        op.add_column('files', sa.Column('camera_model',
+                      sa.String(length=128), nullable=True))
+    except Exception as e:
+        print(e)
+    try:
+        op.add_column('files', sa.Column(
+            'date_time_original', sa.DateTime(), nullable=False))
+    except Exception as e:
+        print(e)
+    try:
+        op.add_column('files', sa.Column(
+            'date_time_edited', sa.DateTime(), nullable=False))
+    except Exception as e:
+        print(e)
 
 
 def downgrade():
-    op.drop_column('files', 'artist')
-    op.drop_column('files', 'camera_model')
-    op.drop_column('files', 'date_time_original')
-    op.drop_column('files', 'date_time_edited')
+    try:
+        op.drop_column('files', 'artist')
+    except Exception as e:
+        print(e)
+    try:
+        op.drop_column('files', 'camera_model')
+    except Exception as e:
+        print(e)
+    try:
+        op.drop_column('files', 'date_time_original')
+    except Exception as e:
+        print(e)
+    try:
+        op.drop_column('files', 'date_time_edited')
+    except Exception as e:
+        print(e)
