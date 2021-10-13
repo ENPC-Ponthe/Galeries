@@ -12,7 +12,8 @@ from ..models import File, Gallery, FileTypeEnum, Year
 UPLOAD_FOLDER = app.config['MEDIA_ROOT']
 THUMB_FOLDER = app.config['THUMBNAIL_MEDIA_THUMBNAIL_ROOT']
 DEFAULT_SIZE_THUMB = '226x226'
-VIDEO_RESOLUTIONS = ['720', '480', '360'] # Default video is uploaded as 1080p
+VIDEO_RESOLUTIONS = ['720', '480', '360']  # Default video is uploaded as 1080p
+
 
 def query_with_offset(query, page=None, page_size=None):
     if page_size is None:
@@ -34,7 +35,7 @@ class FileDAO(ResourceDAO):
     @staticmethod
     def get_thumb_path(file: File, size=DEFAULT_SIZE_THUMB):
         return os.path.join(THUMB_FOLDER, file.gallery.slug,
-                                  utils.generate_filename(file.filename, size, 'fit', '90'))
+                            utils.generate_filename(file.filename, size, 'fit', '90'))
 
     @staticmethod
     def get_video_path(file: File):
@@ -61,18 +62,20 @@ class FileDAO(ResourceDAO):
 
         if is_video(file.filename):
             for resolution in VIDEO_RESOLUTIONS:
-                delete_file(os.path.join(UPLOAD_FOLDER, file.file_path_resolution(resolution)))
+                delete_file(os.path.join(UPLOAD_FOLDER,
+                            file.file_path_resolution(resolution)))
 
     def delete_by_slug(self, slug: str):
         self.delete(self.find_by_slug(slug))
 
     @staticmethod
     def find_all_moderated_sorted_by_date(page: int, page_size: int):
-        return File.query.filter_by(pending=False).order_by(desc(File.created)).offset((page-1)*page_size).limit(page_size).all()
+        return File.query.filter_by(pending=False).order_by(desc(File.date_time_original)).offset((page-1)*page_size).limit(page_size).all()
 
     @staticmethod
     def all_files_by_gallery(gallery: Gallery, page=None, page_size=None):
-        files = File.query.filter_by(gallery=gallery)
+        files = File.query.filter_by(gallery=gallery).order_by(
+            desc(File.date_time_original))
         return query_with_offset(files, page, page_size)
 
     @staticmethod
@@ -96,10 +99,12 @@ class FileDAO(ResourceDAO):
     @staticmethod
     def all_public_videos(page=None, page_size=None, starting_year=None, ending_year=None):
         if starting_year is None and ending_year is None:
-            files = File.query.join(File.gallery).filter(File.type == FileTypeEnum.VIDEO.name, Gallery.private == False)
+            files = File.query.join(File.gallery).filter(
+                File.type == FileTypeEnum.VIDEO.name, Gallery.private == False)
         elif starting_year is not None and ending_year is not None:
-            files = File.query.join(File.gallery).join(Gallery.year).filter(File.type == FileTypeEnum.VIDEO.name, Gallery.private == False).filter(Year.slug >= starting_year, Year.slug <= ending_year)
-        else :
+            files = File.query.join(File.gallery).join(Gallery.year).filter(
+                File.type == FileTypeEnum.VIDEO.name, Gallery.private == False).filter(Year.slug >= starting_year, Year.slug <= ending_year)
+        else:
             return []
         return query_with_offset(files, page, page_size)
 
