@@ -75,7 +75,7 @@ class FileService:
             # Add image to archive of the gallery
             formatting = '%Y_%m_%d_%H%M%S'
             datetime_photo = new_file.date_time_original.strftime(formatting)
-            filename_for_archive = f'Ponthe_{gallery_slug}_{datetime_photo}.{new_file.extension}'
+            filename_for_archive = f'Ponthe_{datetime_photo}.{new_file.extension}'
             FileService.add_file_to_gallery_archive(
                 saved_path, gallery_slug, filename_for_archive)
         return new_file
