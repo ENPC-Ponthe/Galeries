@@ -73,11 +73,15 @@ class FileService:
         if new_file.type == FileTypeEnum.IMAGE:
             thumb_filter(new_file)
             # Add image to archive of the gallery
-            FileService.add_file_to_gallery_archive(saved_path, gallery_slug)
+            formatting = '%Y_%m_%d_%H%M%S'
+            datetime_photo = new_file.date_time_original.strftime(formatting)
+            filename_for_archive = f'Ponthe_{gallery_slug}_{datetime_photo}.{new_file.extension}'
+            FileService.add_file_to_gallery_archive(
+                saved_path, gallery_slug, filename_for_archive)
         return new_file
 
     @staticmethod
-    def add_file_to_gallery_archive(file_path, gallery_slug):
+    def add_file_to_gallery_archive(file_path, gallery_slug, filename_for_archive):
         gallery_folder = os.path.join(UPLOAD_FOLDER, gallery_slug)
         archive_path = os.path.join(gallery_folder, f'{gallery_slug}.zip')
 
@@ -87,9 +91,8 @@ class FileService:
 
         # Add photo to archive
         with zipfile.ZipFile(archive_path, 'a', zipfile.ZIP_DEFLATED) as zipper:
-            filename = os.path.basename(file_path)
-            if is_image(filename) and filename not in zipper.namelist():
-                zipper.write(file_path, filename)
+            if is_image(filename_for_archive) and filename_for_archive not in zipper.namelist():
+                zipper.write(file_path, filename_for_archive)
 
     @staticmethod
     def get_archive_name_and_path(gallery_slug):
