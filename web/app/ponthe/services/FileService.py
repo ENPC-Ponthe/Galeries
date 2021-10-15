@@ -1,4 +1,5 @@
 import os
+import shutil
 import zipfile
 from glob import glob
 from datetime import datetime
@@ -163,7 +164,7 @@ class FileService:
         # Extract images from zip
         dest_folder = '.'.join(save_path.split('.')[:-1]) + '/'
         if os.path.exists(dest_folder):
-            os.removedirs(dest_folder)
+            shutil.rmtree(dest_folder)
         with zipfile.ZipFile(save_path, 'r') as zip_ref:
             zip_ref.extractall(dest_folder)
         os.remove(save_path)
@@ -179,7 +180,7 @@ class FileService:
                         file, filename, content_type=f'image/{ext}')
                     FileService.save_photo(img, gallery_slug, user)
 
-        os.removedirs(dest_folder)
+        shutil.rmtree(dest_folder)
 
     @staticmethod
     def get_absolute_file_path(file: File):
