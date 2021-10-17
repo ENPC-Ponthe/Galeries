@@ -39,6 +39,7 @@ def load(app: Flask):
         )
         # FIXME: Hotfix, it valued '/app/ponthe/./instance' in docker
         app.instance_path = '/app/instance'
+        app.config['PREFERRED_URL_SCHEME'] = 'https'
     else:
         app.logger.warning('Galeries Ponthé starting in DEV mode')
         app.config.from_pyfile('ponthe.cfg')
