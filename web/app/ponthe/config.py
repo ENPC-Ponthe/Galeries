@@ -55,3 +55,5 @@ def load(app: Flask):
     app.config['THUMBNAIL_MEDIA_ROOT'] = app.config['MEDIA_ROOT']
     app.config['THUMBNAIL_MEDIA_THUMBNAIL_ROOT'] = os.path.join(app.instance_path, 'static', 'thumbs')
     app.config['THUMBNAIL_MEDIA_THUMBNAIL_URL'] = '/v1/thumbs'
+    app.config['PREFERRED_URL_SCHEME'] = 'https'
+    app.config['SERVER_NAME'] = DOMAIN_NAME
