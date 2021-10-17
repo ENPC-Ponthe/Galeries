@@ -39,6 +39,8 @@ def load(app: Flask):
         )
         # FIXME: Hotfix, it valued '/app/ponthe/./instance' in docker
         app.instance_path = '/app/instance'
+        app.config['PREFERRED_URL_SCHEME'] = 'https'
+        app.config['SERVER_NAME'] = DOMAIN_NAME
     else:
         app.logger.warning('Galeries Ponthé starting in DEV mode')
         app.config.from_pyfile('ponthe.cfg')
@@ -55,4 +57,3 @@ def load(app: Flask):
     app.config['THUMBNAIL_MEDIA_ROOT'] = app.config['MEDIA_ROOT']
     app.config['THUMBNAIL_MEDIA_THUMBNAIL_ROOT'] = os.path.join(app.instance_path, 'static', 'thumbs')
     app.config['THUMBNAIL_MEDIA_THUMBNAIL_URL'] = '/v1/thumbs'
-    app.config['SERVER_NAME'] = DOMAIN_NAME
