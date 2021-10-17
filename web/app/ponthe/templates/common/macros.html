@@ -51,6 +51,6 @@
               },
               browserBackButtonClose: true
           })
-          .use(Uppy.Tus, {endpoint: "{{ url_for('private.file-upload', gallery_slug=gallery_slug, _external="https://ponthe.enpc.org") }}"});
+          .use(Uppy.Tus, {endpoint: "https://ponthe.enpc.org{{ url_for('private.file-upload', gallery_slug=gallery_slug) }}"});
     </script>
 {%- endmacro %}
