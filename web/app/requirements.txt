@@ -15,7 +15,7 @@ Flask-JWT-extended[asymmetric_crypto]==3.25.1
 click
 Flask-Thumbnails
 Pillow
-Flask-Tus-Ponthe==1.1.3
+Flask-Tus-Ponthe==1.1.4
 Flask-CORS
 Flask-Restplus
 moviepy
