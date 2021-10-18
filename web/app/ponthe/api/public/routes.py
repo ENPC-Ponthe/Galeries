@@ -120,7 +120,29 @@ class ResetPasswordSendMail(Resource):
         UserService.reset(email)
         return {'msg': 'Si un compte est associé à cette adresse, un mail a été envoyé'}, 200
 
-@api.route('/reset/<token>')
+
+@api.route('/confirm-email')
+class ConfirmEmail(Resource):
+    def post(self):
+        token = request.json.get('token')
+        try:
+            user_id = UserService.get_id_from_token(token)
+            if user_id is None:
+                return { 'msg': 'compte introuvable' }, 404
+        except BadSignature:
+            return { 'msg': 'Bad token' }, 401
+        except SignatureExpired:
+            return { 'msg': 'Token expiré, délai de 24h dépassé.' }, 401
+
+        user = UserDAO.get_by_id(user_id)
+        if user is None:
+            return { 'msg': 'Erreur - Aucun utilisateur correspondant' }, 401
+        user.email_confirmed = True
+        db.session.commit()
+        return { 'msg': 'Compte validé.' }, 200
+
+
+@api.route('/set-new-password')
 @api.response(200, 'Success - Password updated')
 @api.response(404, 'Not Found - invalid token')
 @api.response(403, 'Unauthorized - token expired')
@@ -130,19 +152,21 @@ class ResetPasswordSendMail(Resource):
                         'new_password': '-',
                         'confirmation_password': 'confirmation of your new password'
                     })
-class PasswordResetForm(Resource):
-    def post(self, token):
+class SetNewPassword(Resource):
+    def post(self):
+        token = request.json.get('token')
         try:
             user_id = UserService.get_id_from_token(token)
             if user_id is None:
-                return {'msg': 'compte introuvable'}, 404
+                return { 'msg': 'compte introuvable' }, 404
         except BadSignature:
-            return {'msg': 'token invalide'}, 404
+            return { 'msg': 'token invalide' }, 404
         except SignatureExpired :
             return  {
                         'title': 'Le token est expiré',
                         'body': 'Tu as dépassé le délai de 24h.'
                     }, 403
+
         user = UserDAO.get_by_id(user_id)
         if user is None:
             return  {
