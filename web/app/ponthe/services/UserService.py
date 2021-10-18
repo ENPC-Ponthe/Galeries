@@ -67,9 +67,11 @@ class UserService:
     def reset(cls, email: str):
         user = UserDAO.find_by_email(email)
         if user is not None and user.email_confirmed:
-            reset_link = cls.get_reset_link(user)
+            # reset_link = cls.get_reset_link(user)
+            reset_token = cls.get_token(user)
             MailService.send_resetting_email(
-                user.firstname, user.email, reset_link)
+                # user.firstname, user.email, reset_link)
+                user.firstname, user.email, reset_token)
 
     @staticmethod
     def create_users(csv_file: TextIO):
@@ -101,7 +103,8 @@ class UserService:
                     f'Account successfully created for user {user}')
             except IntegrityError:
                 db.session.rollback()
-                app.logger.warning(f'Account can\'t be created. User {user} already exists.')
+                app.logger.warning(
+                    f'Account can\'t be created. User {user} already exists.')
             except SMTPException as e:
                 db.session.rollback()
                 app.logger.error(f'Account creation canceled for user {user}'
