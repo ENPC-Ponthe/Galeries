@@ -1,0 +1,243 @@
+<!doctype html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml"
+  xmlns:o="urn:schemas-microsoft-com:office:office">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,500,600,900">
+  <title>Confirme ton adresse mail</title>
+
+  <style type="text/css">
+    p {
+      margin: 10px 0;
+      padding: 0;
+      font-family: 'Source Sans Pro';
+    }
+
+
+    h2 {
+      display: block;
+      margin: 0;
+      padding: 0;
+    }
+
+    img,
+    a img {
+      border: 0;
+      height: auto;
+      outline: none;
+      text-decoration: none;
+    }
+
+    body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      width: 100%;
+    }
+
+    img {
+      -ms-interpolation-mode: bicubic;
+    }
+
+    p,
+    a,
+    li {
+      mso-line-height-rule: exactly;
+    }
+
+    p,
+    a,
+    li,
+    body {
+      -ms-text-size-adjust: 100%;
+      -webkit-text-size-adjust: 100%;
+    }
+
+
+    a[x-apple-data-detectors] {
+      color: inherit !important;
+      text-decoration: none !important;
+      font-size: inherit !important;
+      font-family: inherit !important;
+      font-weight: inherit !important;
+      line-height: inherit !important;
+    }
+
+    h2 {
+      color: #222222;
+      font-family: Helvetica;
+      font-size: 34px;
+      font-style: normal;
+      font-weight: bold;
+      line-height: 150%;
+      letter-spacing: normal;
+      text-align: center;
+    }
+
+    @media only screen and (max-width: 480px) {
+
+      body,
+      p,
+      a,
+      li {
+        -webkit-text-size-adjust: none !important;
+      }
+    }
+
+    @media only screen and (max-width: 480px) {
+      body {
+        width: 100% !important;
+        min-width: 100% !important;
+      }
+    }
+
+
+    @media only screen and (max-width: 480px) {
+      h2 {
+        font-size: 26px !important;
+        line-height: 125% !important;
+      }
+    }
+
+    #header {
+      width: 100%;
+      background: #ececec;
+      padding: 16px 0;
+      text-align: center;
+    }
+
+    #logo {
+      width: 200px;
+    }
+
+    #content {
+      margin: 0 20vw;
+      margin-top: 32px;
+    }
+
+    #team_picture {
+      max-width: 60vw;
+      border-radius: 32px;
+      margin: 16px 0;
+    }
+
+    @media only screen and (max-width: 480px) {
+      #content {
+        margin: 0 10vw;
+        margin-top: 32px;
+      }
+
+      #team_picture {
+        max-width: 80vw;
+        border-radius: 24px;
+      }
+    }
+
+    #footer {
+      width: 100%;
+      background: #ececec;
+      padding: 16px 0;
+      text-align: center;
+      margin-top: 16px;
+    }
+
+    .text {
+      font-family: 'Source Sans Pro' !important;
+      font-weight: 500 !important;
+      font-size: 18px !important;
+      color: #404040;
+    }
+
+    .mail {
+      font-weight: bold;
+      letter-spacing: normal;
+      line-height: 100%;
+      text-align: center;
+      text-decoration: none;
+      mso-line-height-rule: exactly;
+      -ms-text-size-adjust: 100%;
+      -webkit-text-size-adjust: 100%;
+      color: #fc3
+    }
+
+    .paragraph {
+      margin: 10px 0;
+      padding: 0;
+      mso-line-height-rule: exactly;
+      -ms-text-size-adjust: 100%;
+      -webkit-text-size-adjust: 100%;
+      color: #808080;
+      font-family: Helvetica;
+      font-size: 16px;
+      line-height: 150%;
+      text-align: justify;
+    }
+
+    .button {
+      background: #fc3;
+      padding: 16px;
+      margin: 12px 0;
+      border-radius: 8px;
+      color: white;
+      font-weight: bold;
+      font-size: 16px;
+      border: 0;
+      cursor: pointer;
+      font-family: 'Source Sans Pro';
+      font-weight: 600;
+      font-size: 20px;
+    }
+
+    .button_wrapper {
+      font-weight: bold;
+      letter-spacing: normal;
+      line-height: 100%;
+      text-align: center;
+      text-decoration: none;
+      color: #FFFFFF;
+      mso-line-height-rule: exactly;
+      -ms-text-size-adjust: 100%;
+      -webkit-text-size-adjust: 100%;
+      display: block;
+    }
+  </style>
+</head>
+
+<body style="height: 100%;margin: 0;padding: 0;width: 100%;-ms-text-size-adjust: 100%;-webkit-text-size-adjust: 100%;">
+  <div id="header">
+    <img src="https://ponthe.enpc.org/assets/images/logo-ponthe.svg" id="logo" />
+  </div>
+
+  <div id="content">
+    <p class="text paragraph">
+      Bienvenue {{ firstname }} !
+    </p>
+    <p class="text paragraph">
+      Clique sur le bouton de confirmation sous 24h pour activer ton compte.
+    </p>
+    <a class="button_wrapper" title="Confirmer mon compte" href="{{ register_link }}" target="_blank">
+      <button class="button">Confirmer</button>
+    </a>
+    <p class="text paragraph">
+      En cas de besoin, tu peux contacter le Ponthé par notre mailing list <a href="mailto:ponthe@liste.enpc.fr"
+        class="mail">ponthe@liste.enpc.fr</a>.
+    </p>
+    <img id="team_picture" src="https://ponthe.enpc.org/assets/images/ponthe_teams/023_gala.jpg">
+    <h2>Bonne visite !</h2>
+  </div>
+
+  <div id="footer" class="text">
+    <em>Copyright &copy; 2021 Ponthé, Tous droits réservés.</em><br /> <br />
+    <strong>Notre adresse postale est :</strong><br />
+    Ponthé, Club d'audiovisuel du BDE<br />
+    6-8 Avenue Blaise Pascal<br />
+    Ecole des Ponts ParisTech - Cit&eacute; Descartes<br />
+    Champs-sur-Marne 77455<br />
+    France
+  </div>
+</body>
+
+</html>
