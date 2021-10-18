@@ -1,6 +1,6 @@
 import os
 from flask_thumbnails import utils
-from sqlalchemy import desc
+from sqlalchemy import asc
 
 from .ResourceDAO import ResourceDAO
 from .. import app, db
@@ -70,12 +70,12 @@ class FileDAO(ResourceDAO):
 
     @staticmethod
     def find_all_moderated_sorted_by_date(page: int, page_size: int):
-        return File.query.filter_by(pending=False).order_by(desc(File.date_time_original)).offset((page-1)*page_size).limit(page_size).all()
+        return File.query.filter_by(pending=False).order_by(asc(File.date_time_original)).offset((page-1)*page_size).limit(page_size).all()
 
     @staticmethod
     def all_files_by_gallery(gallery: Gallery, page=None, page_size=None):
         files = File.query.filter_by(gallery=gallery).order_by(
-            desc(File.date_time_original))
+            asc(File.date_time_original))
         return query_with_offset(files, page, page_size)
 
     @staticmethod
