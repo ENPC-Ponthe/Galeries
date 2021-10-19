@@ -7,13 +7,12 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,500,600,900">
-  <title>Confirme ton adresse mail</title>
+  <title>Réinitialise ton mot de passe</title>
 
   <style type="text/css">
     p {
       margin: 10px 0;
       padding: 0;
-      font-family: 'Source Sans Pro';
     }
 
 
@@ -54,16 +53,6 @@
     body {
       -ms-text-size-adjust: 100%;
       -webkit-text-size-adjust: 100%;
-    }
-
-
-    a[x-apple-data-detectors] {
-      color: inherit !important;
-      text-decoration: none !important;
-      font-size: inherit !important;
-      font-family: inherit !important;
-      font-weight: inherit !important;
-      line-height: inherit !important;
     }
 
     h2 {
@@ -124,6 +113,18 @@
       margin: 16px 0;
     }
 
+    @media only screen and (max-width: 1200px) {
+      #content {
+        margin: 0 10vw;
+        margin-top: 32px;
+      }
+
+      #team_picture {
+        max-width: 80vw;
+        border-radius: 24px;
+      }
+    }
+
     @media only screen and (max-width: 480px) {
       #content {
         margin: 0 10vw;
@@ -142,10 +143,11 @@
       padding: 16px 0;
       text-align: center;
       margin-top: 16px;
+      font-size: 16px !important;
     }
 
     .text {
-      font-family: 'Source Sans Pro' !important;
+      font-family: 'Source Sans Pro', Helvetica, sans-serif !important;
       font-weight: 500 !important;
       font-size: 18px !important;
       color: #404040;
@@ -160,7 +162,7 @@
       mso-line-height-rule: exactly;
       -ms-text-size-adjust: 100%;
       -webkit-text-size-adjust: 100%;
-      color: #fc3
+      color: #fc3 !important;
     }
 
     .paragraph {
@@ -170,7 +172,6 @@
       -ms-text-size-adjust: 100%;
       -webkit-text-size-adjust: 100%;
       color: #808080;
-      font-family: Helvetica;
       font-size: 16px;
       line-height: 150%;
       text-align: justify;
@@ -203,6 +204,10 @@
       -webkit-text-size-adjust: 100%;
       display: block;
     }
+
+    #address {
+      font-size: 15px !important;
+    }
   </style>
 </head>
 
@@ -218,25 +223,27 @@
     <p class="text paragraph">
       Pour réinitialiser ton mot de passe, clique sur le bouton de réinitialisation sous 24h.
     </p>
-    <a class="button_wrapper" title="Réinitialiser mon mot de passe" href="https://{{ reset_link }}" target="_blank">
+    <a class="button_wrapper" title="Réinitialiser mon mot de passe" href="{{ reset_link }}" target="_blank">
       <button class="button">Réinitialiser</button>
     </a>
     <p class="text paragraph">
       En cas de besoin, tu peux contacter le Ponthé par notre mailing list <a href="mailto:ponthe@liste.enpc.fr"
         class="mail">ponthe@liste.enpc.fr</a>.
     </p>
-    <img id="team_picture" src="https://ponthe.enpc.org/assets/images/ponthe_teams/023_gala.jpg">
+    <img id="team_picture" src="{{ team_photo_url }}">
     <h2>Bonne visite !</h2>
   </div>
 
   <div id="footer" class="text">
-    <em>Copyright &copy; 2021 Ponthé, Tous droits réservés.</em><br /> <br />
+    <em>Copyright &copy; {{ year }} Ponthé, Tous droits réservés.</em><br /> <br />
     <strong>Notre adresse postale est :</strong><br />
-    Ponthé, Club d'audiovisuel du BDE<br />
-    6-8 Avenue Blaise Pascal<br />
-    Ecole des Ponts ParisTech - Cit&eacute; Descartes<br />
-    Champs-sur-Marne 77455<br />
-    France
+    <div id="address">
+      Ponthé, Club d'audiovisuel du BDE<br />
+      6-8 Avenue Blaise Pascal<br />
+      Ecole des Ponts ParisTech - Cit&eacute; Descartes<br />
+      77455 Champs-sur-Marne<br />
+      France
+    </div>
   </div>
 </body>
 
