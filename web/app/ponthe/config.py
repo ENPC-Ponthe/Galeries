@@ -15,7 +15,7 @@ def get_latest_promotion():
     return latest_prom
 
 class Constants:
-    AVAILABLE_PROMOTIONS = ['024', '023', '022', '021', '020', '019', '018']
+    AVAILABLE_PROMOTIONS = ['025','024', '023', '022', '021', '020', '019', '018']
     LAST_PROMOTION = get_latest_promotion()
 
 
