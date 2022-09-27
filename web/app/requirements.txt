@@ -19,3 +19,4 @@ Flask-Tus-Ponthe==1.1.4
 Flask-CORS
 Flask-Restplus
 moviepy
+markupsafe==2.0.1
