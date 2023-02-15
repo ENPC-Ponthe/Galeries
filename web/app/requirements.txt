@@ -3,7 +3,7 @@ Flask_Mail
 Flask-Login
 Flask-CAS
 Flask-Cli
-Werkzeug==0.16.1
+Werkzeug==2.2.3
 SQLAlchemy
 Flask-SQLAlchemy
 mysqlclient
